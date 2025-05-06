@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import Image from "next/image"
 import { Info } from "lucide-react"
+import loginImage from '../assets/images/login.png';
 
 export default function CreateAccount() {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ export default function CreateAccount() {
 
   return (
     <div className="flex min-h-screen bg-white">
-      <div className="flex flex-col md:flex-row w-full max-w-6xl mx-auto p-4 md:p-8">
+      <div className="flex flex-col md:flex-row w-full max-w-6xl mx-auto p-4 md:p-8 items-stretch">
         <div className="w-full md:w-1/2 pr-0 md:pr-8">
           <div className="mb-6">
             <div className="flex items-center mb-2">
@@ -127,14 +128,15 @@ export default function CreateAccount() {
           </form>
         </div>
 
-        <div className="hidden md:block w-1/2 mt-8 md:mt-0">
-          <div className="bg-gray-300 rounded-lg h-full w-full overflow-hidden relative">
+        <div className="w-full md:w-[50%] flex items-stretch justify-center">
+          <div className="relative w-full max-w-[500px] h-full rounded-lg overflow-hidden">
             <Image
-              src="/placeholder.svg?key=tostq"
+              src={loginImage}
               alt="WellnexAI illustration"
-              width={500}
-              height={600}
-              className="object-cover w-full h-full"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
             />
           </div>
         </div>

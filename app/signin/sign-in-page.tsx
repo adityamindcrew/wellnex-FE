@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image"
+import loginImage from '../assets/images/login.png';
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -8,10 +9,11 @@ export default function SignInPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Form submitted")
+    // Here you would handle login, not redirect to signup
   }
   return (
-    <div className="flex min-h-screen bg-white">
-      <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
+    <div className="flex min-h-screen bg-white flex-col md:flex-row items-center justify-center">
+      <div className="w-full md:w-[30%] p-8 md:p-16 flex flex-col justify-center">
         <div className="mb-12">
           <div className="flex items-center">
             <div className="h-8 w-8 mr-2">
@@ -60,25 +62,24 @@ export default function SignInPage() {
           </Link>
           <div className="text-sm text-gray-700">
             Don&apos;t have an account?{" "}
-            <span
-              className="text-gray-900 font-medium cursor-pointer"
-              onClick={() => router.push("/signup")}
-            >
+            <Link href="/signup" className="text-gray-900 font-medium">
               Sign Up
-            </span>
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="hidden md:block w-1/2">
-        <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WellnexAI__Copy_-Hpz7gM5V0ERnequtCjpoMwyccqUiG4.png"
-          alt="WellnexAI illustration"
-          fill
-          className="object-cover"
-          sizes="50vw"
-          priority
-        />
+      <div className="w-full md:w-[50%] flex items-center justify-center">
+        <div className="relative w-full max-w-[500px] h-[350px] md:h-[400px] rounded-lg overflow-hidden shadow">
+          <Image
+            src={loginImage}
+            alt="WellnexAI illustration"
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+          />
+        </div>
       </div>
     </div>
   )
