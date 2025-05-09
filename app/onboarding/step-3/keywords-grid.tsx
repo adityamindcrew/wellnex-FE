@@ -1,22 +1,88 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useToast } from "@/components/ui/use-toast"
+import { businessApi } from "@/app/services/api"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+
+interface Keyword {
+  name: string;
+  _id: string;
+}
+
+interface ApiResponse {
+  code: number;
+  status: boolean;
+  message: string;
+  data: {
+    keywords: Keyword[];
+  };
+}
 
 export default function KeywordsGrid() {
   const { formData, updateFormData } = useOnboarding()
   const [keywords, setKeywords] = useState<string[]>(formData.keywords || Array(9).fill(""))
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
+  const router = useRouter()
 
-  // Update form data when keywords change
-  useEffect(() => {
+  // Handle Next button click
+  const handleNext = async () => {
     // Filter out empty keywords
     const filteredKeywords = keywords.filter((keyword) => keyword.trim() !== "")
-    updateFormData({ keywords: filteredKeywords })
-  }, [keywords, updateFormData])
+    
+    if (filteredKeywords.length === 0) {
+      toast({
+        title: "Warning",
+        description: "Please enter at least one keyword",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      const token = localStorage.getItem("token")
+      const businessId = localStorage.getItem("businessId")
+      if (!token || !businessId) {
+        throw new Error("Token or Business ID not found")
+      }
+
+      const response = await businessApi.addBusinessKeywords(
+        filteredKeywords.map(name => ({ name })),
+        token,
+        businessId
+      ) as ApiResponse
+
+      // Update the keywords state with the returned data
+      if (response.data?.keywords) {
+        const newKeywords = response.data.keywords.map((k: Keyword) => k.name)
+        setKeywords(newKeywords)
+        updateFormData({ keywords: newKeywords })
+      }
+
+      toast({
+        title: "Success",
+        description: "Keywords saved successfully",
+      })
+      // Navigate to next step
+      router.push('/onboarding/step-4')
+    } catch (error) {
+      console.error("Error saving keywords:", error)
+      toast({
+        title: "Error",
+        description: "Failed to save keywords. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   // Handle input change
   const handleInputChange = (index: number, value: string) => {
@@ -52,6 +118,7 @@ export default function KeywordsGrid() {
               onKeyDown={(e) => handleKeyDown(index, e)}
               placeholder={index === 0 ? "Enter keyword" : ""}
               className="w-full"
+              disabled={isSubmitting}
             />
           ))}
         </div>
@@ -64,6 +131,16 @@ export default function KeywordsGrid() {
           understand their needs and suggest the most relevant service or product. For example: acne, wrinkles, stress,
           hair laser, massage, dark circle, vitamins, hair loss, facial.
         </p>
+      </div>
+
+      <div className="flex justify-end">
+        <Button 
+          onClick={handleNext} 
+          disabled={isSubmitting}
+          className="bg-primary text-white hover:bg-primary/90"
+        >
+          {isSubmitting ? "Saving..." : "Next"}
+        </Button>
       </div>
     </div>
   )

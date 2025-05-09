@@ -1,63 +1,128 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Image from "next/image"
-import { Info } from "lucide-react"
+import { Info, Eye, EyeOff } from "lucide-react"
 import loginImage from '../assets/images/login.png';
+import logo from '../assets/images/logo.png';
+import { businessApi, BusinessSignupData } from '../services/api';
+import { useRouter } from 'next/navigation';
 
 export default function CreateAccount() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     businessName: "",
     phoneNumber: "",
     businessEmail: "",
+    password: "",
     websiteUrl: "",
     instagram: "",
     contactName: "",
   })
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const validatePassword = (password: string) => {
+    if (password.length < 8) {
+      return "Password must be at least 8 characters long";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number";
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return "Password must contain at least one special character (!@#$%^&*()_+-=[]{};':\"\\|,.<>/?";
+    }
+    return null;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    
+    if (name === 'password') {
+      const error = validatePassword(value);
+      setPasswordError(error);
+    }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Form submitted:", formData)
+    
+    if (passwordError) {
+      setError("Please fix password validation errors");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const signupData: BusinessSignupData = {
+        email: formData.businessEmail,
+        password: formData.password,
+        name: formData.businessName,
+        contact_name: formData.contactName,
+        website_url: formData.websiteUrl || undefined,
+        instagram_url: formData.instagram || undefined,
+      };
+
+      const response = await businessApi.signup(signupData);
+      console.log("Signup successful:", response);
+      if (response?.data) {
+        localStorage.setItem('token', response?.data?.loginToken);
+        localStorage.setItem('businessId', response?.data?._id);
+      }
+      router.push('/onboarding/step-1');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during signup');
+      console.error("Signup error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
-      <div className="flex flex-col md:flex-row w-full max-w-6xl mx-auto p-4 md:p-8 items-stretch">
-        <div className="w-full md:w-1/2 pr-0 md:pr-8">
-          <div className="mb-6">
-            <div className="flex items-center mb-2">
-              <div className="h-6 w-6 mr-2">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="24" height="24" rx="6" fill="#000" />
-                  <path d="M12 6L18 12L12 18L6 12L12 6Z" fill="white" />
-                </svg>
-              </div>
-              <span className="text-sm font-medium">WellnexAI</span>
+    <div className="min-h-screen w-full bg-[#F5F5F5] flex justify-center">
+      <div className="flex flex-col-reverse md:flex-row w-full max-w-[900px] bg-white shadow-lg rounded-2xl mx-auto">
+        {/* Left: Form */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center px-6 md:px-8 py-8 h-full">
+          {/* Centered logo and headings */}
+          <div className="mb-8 ">
+            <div className="mb-4">
+              <Image src={logo} alt="WellnexAI Logo" width={100} height={200} />
             </div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">Create Account</h1>
+            <p className="text-gray-500 text-base mb-2 text-center">Start by telling us about your business.</p>
           </div>
-
-          <h1 className="text-3xl font-bold mb-2">Create Account</h1>
-          <p className="text-gray-600 mb-6">Lorem ipsum dolor sit amet adipiscing elit.</p>
-
+          {/* Left-aligned error and form */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
+              
               <input
                 type="text"
                 name="businessName"
                 placeholder="Business Name"
                 value={formData.businessName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
             </div>
-
             <div>
               <input
                 type="tel"
@@ -65,10 +130,10 @@ export default function CreateAccount() {
                 placeholder="Phone Number"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
             </div>
-
             <div className="relative">
               <input
                 type="email"
@@ -76,35 +141,34 @@ export default function CreateAccount() {
                 placeholder="Business Email"
                 value={formData.businessEmail}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base pr-10"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 <Info className="h-5 w-5 text-gray-400" />
               </div>
             </div>
-
+       
             <div>
               <input
                 type="url"
                 name="websiteUrl"
-                placeholder="Website URL"
+                placeholder="Website URL (Optional)"
                 value={formData.websiteUrl}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
             </div>
-
             <div>
               <input
                 type="text"
                 name="instagram"
-                placeholder="Instagram"
+                placeholder="Instagram (Optional)"
                 value={formData.instagram}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
             </div>
-
             <div>
               <input
                 type="text"
@@ -112,29 +176,52 @@ export default function CreateAccount() {
                 placeholder="Contact Name"
                 value={formData.contactName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
             </div>
 
-            <div className="pt-4">
-              <hr className="border-gray-200 mb-6" />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+              {passwordError && (
+                <p className="mt-1 text-xs text-red-600">{passwordError}</p>
+              )}
+            </div>
+            <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-indigo-200 hover:bg-indigo-300 text-indigo-800 font-medium rounded-md transition-colors"
+                disabled={isLoading}
+                className="w-full py-2 px-4 bg-[#F5F0FF] border border-[#B9A7E6] text-indigo-800 font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
               >
-                Create Account
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
             </div>
           </form>
         </div>
-
-        <div className="w-full md:w-[50%] flex items-stretch justify-center">
-          <div className="relative w-full max-w-[500px] h-full rounded-lg overflow-hidden">
+        {/* Right: Image */}
+        <div className="w-full md:w-1/2 flex items-stretch justify-center p-0 m-0">
+          <div className="relative w-full min-h-[300px] md:min-h-0 md:h-auto aspect-square md:aspect-auto overflow-hidden flex items-stretch justify-center p-0 m-0">
             <Image
               src={loginImage}
               alt="WellnexAI illustration"
               fill
-              className="object-contain"
+              className="object-cover h-full w-full"
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
             />

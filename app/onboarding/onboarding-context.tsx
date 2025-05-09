@@ -38,7 +38,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const totalSteps = 5
 
   const updateFormData = (data: Partial<FormData>) => {
-    setFormData((prev) => ({ ...prev, ...data }))
+    console.log('updateFormData called with:', data);
+    if (!data || typeof data !== 'object') {
+      console.error('updateFormData called with invalid data:', data);
+      return;
+    }
+    setFormData((prev) => ({ ...(prev || defaultFormData), ...data }))
   }
 
   const nextStep = () => {

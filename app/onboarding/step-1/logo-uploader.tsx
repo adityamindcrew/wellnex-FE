@@ -7,10 +7,39 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { ImageIcon } from "lucide-react"
 import { useOnboarding } from "../onboarding-context"
+import { businessApi } from '../../services/api'
+import { useRouter } from 'next/navigation';
 
 export default function LogoUploader() {
+  const router = useRouter();
   const { formData, updateFormData } = useOnboarding()
   const [error, setError] = useState<string | null>(null)
+
+  const uploadLogo = async (file: File) => {
+    const token = localStorage.getItem('token');
+    const businessId = localStorage.getItem('businessId');
+    console.log('kdvdfghghthtcccc',businessId);
+    
+    if (!token || !businessId) {
+      setError('No authentication token or business ID found. Please sign up or log in again.');
+      return;
+    }
+    try {
+      const data = await businessApi.uploadLogo(file, token, businessId);
+      // Construct full URL if needed
+      let logoUrl = '';
+      if (data.logoUrl) {
+        logoUrl = data.logoUrl.startsWith('http')
+          ? data.logoUrl
+          : `http://56.228.66.97:3000/${data.logoUrl.replace(/^\//, '')}`;
+      }
+      updateFormData({ logo: logoUrl });
+      router.push('/onboarding/step-2');
+
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while uploading the logo.');
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -24,16 +53,12 @@ export default function LogoUploader() {
       return
     }
 
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      updateFormData({ logo: event.target?.result as string })
-    }
-    reader.readAsDataURL(file)
+    uploadLogo(file);
   }
 
   return (
-    <div className="w-full space-y-4">
-      <p className="text-center text-sm font-medium">Upload Company Logo (.png format only)</p>
+    <div className="w-full space-y-4 font-[DM_Sans]">
+      <p className="text-center font-[DM_Sans] text-sm font-medium">Upload Company Logo (.png format only)</p>
 
       <div className="flex flex-col items-center">
         <div className="relative mb-4 h-32 w-32 overflow-hidden rounded-full bg-gray-100">
@@ -48,7 +73,7 @@ export default function LogoUploader() {
 
         <input type="file" accept=".png" id="logo-upload" className="hidden" onChange={handleFileChange} />
         <label htmlFor="logo-upload">
-          <Button variant="outline" className="cursor-pointer" asChild>
+          <Button variant="outline" className="cursor-pointer bg-[#987CF1] text-white border-none hover:bg-[#7a63c7]" asChild>
             <span>Upload Logo</span>
           </Button>
         </label>

@@ -14,8 +14,15 @@ export default function QuestionsInput() {
   useEffect(() => {
     // Filter out empty questions
     const filteredQuestions = questions.filter((question) => question.trim() !== "")
-    updateFormData({ questions: filteredQuestions })
-  }, [questions, updateFormData])
+    // Only update if the value actually changed
+    if (
+      !formData.questions ||
+      filteredQuestions.length !== formData.questions.length ||
+      filteredQuestions.some((q, i) => q !== formData.questions[i])
+    ) {
+      updateFormData({ questions: filteredQuestions })
+    }
+  }, [questions, formData.questions, updateFormData])
 
   // Handle input change
   const handleInputChange = (index: number, value: string) => {

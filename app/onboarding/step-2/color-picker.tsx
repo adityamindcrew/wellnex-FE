@@ -8,8 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PipetteIcon, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { businessApi } from '../../services/api'
+import { useRouter } from 'next/navigation';
 
 export default function ColorPicker() {
+  const router = useRouter();
   const { formData, updateFormData } = useOnboarding()
   const [selectedColor, setSelectedColor] = useState(formData.themeColor || "#9751F2")
   const [isPickerOpen, setIsPickerOpen] = useState(false)
@@ -26,6 +29,9 @@ export default function ColorPicker() {
   // Position of the selector in the gradient
   const [gradientPos, setGradientPos] = useState({ x: 0, y: 0 })
   const [huePos, setHuePos] = useState(0.7) // Initial hue position (purple)
+
+  // Add state for error
+  const [apiError, setApiError] = useState<string | null>(null)
 
   // Toggle color picker
   const togglePicker = () => {
@@ -51,8 +57,11 @@ export default function ColorPicker() {
     setG(rgb.g)
     setB(rgb.b)
 
-    updateFormData({ themeColor: selectedColor })
-  }, [selectedColor, updateFormData])
+    // Only update context, do not call API here
+    if (formData.themeColor !== selectedColor) {
+      updateFormData({ themeColor: selectedColor })
+    }
+  }, [selectedColor, updateFormData, formData.themeColor])
 
   // Handle manual hex input
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,6 +168,23 @@ export default function ColorPicker() {
     }
   }
 
+  // Call API only in handleSetThemeColor, not in useEffect or on color change
+  const handleSetThemeColor = async () => {
+    const token = localStorage.getItem('token')
+    const businessId = localStorage.getItem('businessId')
+    if (!token || !businessId) {
+      setApiError('No authentication token or business ID found. Please sign up or log in again.')
+      return
+    }
+    try {
+      await businessApi.setThemeColor(selectedColor, token, businessId)
+      setApiError(null)
+      router.push('/onboarding/step-2')
+    } catch (err) {
+      setApiError(err instanceof Error ? err.message : 'Failed to set theme color')
+    }
+  }  
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -178,7 +204,8 @@ export default function ColorPicker() {
           </Button>
         </div>
       </div>
-
+      {/* Show error if API fails */}
+      {apiError && <div className="text-red-500 text-sm">{apiError}</div>}
       {/* Color Picker - only shown when isPickerOpen is true */}
       {isPickerOpen && (
         <div className="relative mt-4 rounded-md border p-4">
@@ -273,6 +300,10 @@ export default function ColorPicker() {
           </div>
         </div>
       )}
+      {/* Add a button to save theme color */}
+      <Button type="button" className="mt-4" onClick={handleSetThemeColor}>
+        Save Theme Color
+      </Button>
     </div>
   )
 }
