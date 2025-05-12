@@ -9,6 +9,14 @@ const api = axios.create({
   },
 });
 
+const handleResponse = async (response: Response) => {
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Something went wrong');
+  }
+  return response.json();
+};
+
 export interface BusinessSignupData {
   email: string;
   password: string;
@@ -20,12 +28,38 @@ export interface BusinessSignupData {
 
 export const businessApi = {
   signup: async (data: BusinessSignupData) => {
-    try {
-      const response = await api.post('/business/signup', data);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await fetch(`${BASE_URL}/business/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+  sendVerificationEmail: async (token: string, businessId: string) => {
+    const response = await fetch(`${BASE_URL}/business/sendVerificationEmail`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ businessId }),
+    });
+    return handleResponse(response);
+  },
+  verifyEmailByLink: async (businessId: string, token: string) => {
+    const response = await fetch(`${BASE_URL}/business/verifyEmailByLink`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        verificationToken: token,
+        _id: businessId
+      })
+    });
+    return handleResponse(response);
   },
   uploadLogo: async (file: File, token: string, businessId: string) => {
     const formData = new FormData();

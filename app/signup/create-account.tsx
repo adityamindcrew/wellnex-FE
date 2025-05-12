@@ -81,6 +81,14 @@ export default function CreateAccount() {
       if (response?.data) {
         localStorage.setItem('token', response?.data?.loginToken);
         localStorage.setItem('businessId', response?.data?._id);
+        // Send verification email
+        try {
+          await businessApi.sendVerificationEmail(response.data.loginToken, response.data._id);
+          console.log("Verification email sent successfully");
+        } catch (emailErr) {
+          console.error("Error sending verification email:", emailErr);
+          // Continue with onboarding even if email fails
+        }
       }
       router.push('/onboarding/step-1');
     } catch (err) {
