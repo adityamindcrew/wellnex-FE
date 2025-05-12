@@ -29,7 +29,7 @@ export default function VerifyEmail({ params }: { params: Promise<{ businessId: 
         
         // Redirect to login page after 3 seconds
         setTimeout(() => {
-          router.push('/signin')
+          router.push('/dashboard')
         }, 3000)
       } catch (error) {
         setVerificationStatus('error')

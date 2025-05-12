@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Info, Eye, EyeOff } from "lucide-react"
 import loginImage from '../assets/images/login.png';
@@ -25,6 +25,13 @@ export default function CreateAccount() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   const onboardingStep = localStorage.getItem("onboardingStep");
+  //   if (onboardingStep && ["1","2","3","4"].includes(onboardingStep)) {
+  //     router.replace(`/onboarding/step-${onboardingStep}`);
+  //   }
+  // }, [router]);
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -78,18 +85,7 @@ export default function CreateAccount() {
 
       const response = await businessApi.signup(signupData);
       console.log("Signup successful:", response);
-      if (response?.data) {
-        localStorage.setItem('token', response?.data?.loginToken);
-        localStorage.setItem('businessId', response?.data?._id);
-        // Send verification email
-        try {
-          await businessApi.sendVerificationEmail(response.data.loginToken, response.data._id);
-          console.log("Verification email sent successfully");
-        } catch (emailErr) {
-          console.error("Error sending verification email:", emailErr);
-          // Continue with onboarding even if email fails
-        }
-      }
+   
       router.push('/onboarding/step-1');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during signup');

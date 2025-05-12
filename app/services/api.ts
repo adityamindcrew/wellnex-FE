@@ -136,6 +136,27 @@ export const businessApi = {
     }
     return data;
   },
+  setupChatbot: async (
+    businessId: string,
+    questions: string[],
+    token: string,
+    keywords: string[] = [],
+    services: string[] = []
+  ) => {
+    const response = await fetch(`${BASE_URL}/business/${businessId}/setup-chatbot`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        questions: questions.map(name => ({ name })),
+        keywords: keywords.map(name => ({ name })),
+        services: services.map(name => ({ name })),
+      }),
+    });
+    return handleResponse(response);
+  },
 };
 
 export default api; 

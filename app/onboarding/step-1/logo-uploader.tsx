@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { ImageIcon } from "lucide-react"
@@ -14,6 +13,15 @@ export default function LogoUploader() {
   const router = useRouter();
   const { formData, updateFormData } = useOnboarding()
   const [error, setError] = useState<string | null>(null)
+
+  // useEffect(() => {
+  //   const onboardingStep = localStorage.getItem("onboardingStep");
+  //   if (onboardingStep === "5") {
+  //     router.replace("/onboarding/step-5");
+  //   } else {
+  //     localStorage.setItem("onboardingStep", "1");
+  //   }
+  // }, [router]);
 
   const uploadLogo = async (file: File) => {
     const token = localStorage.getItem('token');

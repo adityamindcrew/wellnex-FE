@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,12 +23,25 @@ interface ApiResponse {
   };
 }
 
-export default function KeywordsGrid() {
+const KeywordsGrid = forwardRef((props, ref) => {
   const { formData, updateFormData } = useOnboarding()
   const [keywords, setKeywords] = useState<string[]>(formData.keywords || Array(9).fill(""))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+
+  // useEffect(() => {
+  //   const onboardingStep = localStorage.getItem("onboardingStep");
+  //   if (onboardingStep === "5") {
+  //     router.replace("/onboarding/step-5");
+  //   } else {
+  //     localStorage.setItem("onboardingStep", "3");
+  //   }
+  // }, [router]);
+
+  useImperativeHandle(ref, () => ({
+    handleNext,
+  }));
 
   // Handle Next button click
   const handleNext = async () => {
@@ -132,16 +144,8 @@ export default function KeywordsGrid() {
           hair laser, massage, dark circle, vitamins, hair loss, facial.
         </p>
       </div>
-
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleNext} 
-          disabled={isSubmitting}
-          className="bg-primary text-white hover:bg-primary/90"
-        >
-          {isSubmitting ? "Saving..." : "Next"}
-        </Button>
-      </div>
     </div>
   )
-}
+});
+
+export default KeywordsGrid;

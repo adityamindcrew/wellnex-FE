@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect, useRef } from "react"
+import React, { useImperativeHandle, forwardRef, useState, useEffect, useRef } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { businessApi } from '../../services/api'
 import { useRouter } from 'next/navigation';
 
-export default function ColorPicker() {
+const ColorPicker = forwardRef((props, ref) => {
   const router = useRouter();
   const { formData, updateFormData } = useOnboarding()
   const [selectedColor, setSelectedColor] = useState(formData.themeColor || "#9751F2")
@@ -170,6 +168,7 @@ export default function ColorPicker() {
 
   // Call API only in handleSetThemeColor, not in useEffect or on color change
   const handleSetThemeColor = async () => {
+    console.log("handleSetThemeColor called");
     const token = localStorage.getItem('token')
     const businessId = localStorage.getItem('businessId')
     if (!token || !businessId) {
@@ -179,11 +178,17 @@ export default function ColorPicker() {
     try {
       await businessApi.setThemeColor(selectedColor, token, businessId)
       setApiError(null)
-      router.push('/onboarding/step-2')
+      console.log("API success, navigating...");
+      router.push('/onboarding/step-3')
     } catch (err) {
       setApiError(err instanceof Error ? err.message : 'Failed to set theme color')
+      console.log("API error", err);
     }
-  }  
+  }
+
+  useImperativeHandle(ref, () => ({
+    handleSetThemeColor,
+  }));
 
   return (
     <div className="space-y-6">
@@ -300,10 +305,8 @@ export default function ColorPicker() {
           </div>
         </div>
       )}
-      {/* Add a button to save theme color */}
-      <Button type="button" className="mt-4" onClick={handleSetThemeColor}>
-        Save Theme Color
-      </Button>
     </div>
   )
-}
+});
+
+export default ColorPicker;

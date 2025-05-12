@@ -3,7 +3,7 @@ import Image from "next/image"
 import loginImage from '../assets/images/login.png';
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { businessApi } from "@/app/services/api"
 import logo from '../assets/images/logo.png';
 
@@ -14,6 +14,13 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    const onboardingStep = localStorage.getItem("onboardingStep");
+    if (onboardingStep && ["1","2","3","4"].includes(onboardingStep)) {
+      router.replace(`/onboarding/step-${onboardingStep}`);
+    }
+  }, [router]);
 
   // Email and password validation
   const validate = () => {
