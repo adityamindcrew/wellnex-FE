@@ -85,6 +85,14 @@ export default function CreateAccount() {
 
       const response = await businessApi.signup(signupData);
       console.log("Signup successful:", response);
+      
+      // Store businessId and token in localStorage
+      if (response.data && response.data._id && response.data.loginToken) {
+        localStorage.setItem('businessId', response.data._id);
+        localStorage.setItem('token', response.data.loginToken);
+      } else {
+        throw new Error('Invalid response format from server');
+      }
    
       router.push('/onboarding/step-1');
     } catch (err) {
@@ -211,7 +219,7 @@ export default function CreateAccount() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2 px-4 bg-[#F5F0FF] border border-[#B9A7E6] text-indigo-800 font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
+                className="w-full py-2 px-4 bg-[#F5F0FF] border border-[#000000] text-[#000000] font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>

@@ -65,7 +65,7 @@ export default function FormCard({
                   </Button>
                 )}
                 {showNext && (
-                  <Button onClick={handleNext} disabled={nextDisabled} className="bg-purple-500 hover:bg-purple-600">
+                  <Button onClick={handleNext} disabled={nextDisabled} className="bg-[#987CF1] hover:bg-[#987CF1]">
                     {nextLabel}
                   </Button>
                 )}

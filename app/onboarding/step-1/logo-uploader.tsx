@@ -26,14 +26,20 @@ export default function LogoUploader() {
   const uploadLogo = async (file: File) => {
     const token = localStorage.getItem('token');
     const businessId = localStorage.getItem('businessId');
-    console.log('kdvdfghghthtcccc',businessId);
+    
+    console.log('Token:', token);
+    console.log('BusinessId:', businessId);
     
     if (!token || !businessId) {
       setError('No authentication token or business ID found. Please sign up or log in again.');
       return;
     }
+
     try {
+      console.log('Uploading logo with:', { token, businessId });
       const data = await businessApi.uploadLogo(file, token, businessId);
+      console.log('Upload response:', data);
+      
       // Construct full URL if needed
       let logoUrl = '';
       if (data.logoUrl) {
@@ -45,6 +51,7 @@ export default function LogoUploader() {
       router.push('/onboarding/step-2');
 
     } catch (err: any) {
+      console.error('Upload error:', err);
       setError(err.message || 'An error occurred while uploading the logo.');
     }
   };

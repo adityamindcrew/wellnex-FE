@@ -123,7 +123,7 @@ export default function SignInPage() {
             </button>
           </form>
           <div className="flex flex-col items-center mt-2">
-            <Link href="#" className="text-gray-700 hover:text-gray-900 text-sm mb-2 underline">
+            <Link href="/forgot-password" className="text-gray-700 hover:text-gray-900 text-sm mb-2 underline">
               Forgot your password?
             </Link>
             <div className="text-sm text-gray-700">

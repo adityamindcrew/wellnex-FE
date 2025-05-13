@@ -65,11 +65,12 @@ export const businessApi = {
     const formData = new FormData();
     formData.append('logo', file);
     formData.append('businessId', businessId);
+    
     try {
       const response = await fetch('http://56.228.66.97:3000/business/uploadBusinessLogo', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: formData,
       });
@@ -138,24 +139,71 @@ export const businessApi = {
   },
   setupChatbot: async (
     businessId: string,
-    questions: string[],
-    token: string,
-    keywords: string[] = [],
-    services: string[] = []
+    questions: { name: string }[],
+    keywords: { name: string }[],
+    services: { name: string }[],
+    token: string
   ) => {
     const response = await fetch(`${BASE_URL}/business/${businessId}/setup-chatbot`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        businessId,
+        questions,
+        keywords,
+        services,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to setup chatbot");
+    }
+
+    return response.json();
+  },
+  forgotPassword: async (email: string) => {
+    console.log("Making forgot password request for email:", email);
+    try {
+      const response = await fetch(`${BASE_URL}/business/forgotPassword`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      console.log("Forgot password API response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send reset password email');
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in forgotPassword API:", error);
+      throw error;
+    }
+  },
+  resetPassword: async (email: string, password: string, token: string) => {
+    const response = await fetch(`${BASE_URL}/business/resetPassword`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        questions: questions.map(name => ({ name })),
-        keywords: keywords.map(name => ({ name })),
-        services: services.map(name => ({ name })),
-      }),
+      body: JSON.stringify({ email, password, token }),
     });
-    return handleResponse(response);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to reset password');
+    }
+
+    return response.json();
   },
 };
 

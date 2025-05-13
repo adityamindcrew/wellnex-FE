@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
         chatbot.
       </p>
 
-      <Button onClick={handleResendEmail} disabled={isResending} className="bg-purple-500 hover:bg-purple-600 px-8">
+      <Button onClick={handleResendEmail} disabled={isResending} className="bg-[#987CF1] hover:bg-[#987CF1] px-8">
         {isResending ? "Sending..." : "Resend Email"}
       </Button>
 

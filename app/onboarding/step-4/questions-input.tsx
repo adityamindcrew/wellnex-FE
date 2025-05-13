@@ -1,19 +1,22 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect, useImperativeHandle, forwardRef } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Input } from "@/components/ui/input"
 import { businessApi } from "@/app/services/api"
 import { useRouter } from "next/navigation"
 
-export default function QuestionsInput() {
+const QuestionsInput = forwardRef((props, ref) => {
   const { formData, updateFormData } = useOnboarding()
   const [questions, setQuestions] = useState<string[]>(formData.questions || Array(5).fill(""))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+
+  useImperativeHandle(ref, () => ({
+    handleSave,
+  }));
 
   // useEffect(() => {
   //   const onboardingStep = localStorage.getItem("onboardingStep")
@@ -62,21 +65,32 @@ export default function QuestionsInput() {
     setError(null)
     setIsSubmitting(true)
     try {
-      const token = localStorage.getItem("token")
       const businessId = localStorage.getItem("businessId")
-      if (!token || !businessId) throw new Error("Missing token or businessId")
-      // Prepare keywords and services as string arrays if available in formData
-      const keywords = (formData.keywords || []).map((k: any) => typeof k === 'string' ? k : k.name || "");
-      const services = Array.isArray((formData as any).services) ? (formData as any).services.map((s: any) => typeof s === 'string' ? s : s.name || "") : [];
+      const token = localStorage.getItem("token")
+      
+      if (!businessId) throw new Error("Missing businessId")
+      if (!token) throw new Error("Missing authentication token")
+
+      // Format questions, keywords and services as objects with name property
+      const formattedQuestions = questions
+        .filter(q => q.trim() !== "")
+        .map(q => ({ name: q }));
+
+      const keywords = (formData.keywords || [])
+        .map((k: any) => ({ name: typeof k === 'string' ? k : k.name || "" }));
+
+      const services = Array.isArray((formData as any).services) 
+        ? (formData as any).services.map((s: any) => ({ name: typeof s === 'string' ? s : s.name || "" }))
+        : [];
+
       await businessApi.setupChatbot(
         businessId,
-        questions.filter(q => q.trim() !== ""),
-        token,
+        formattedQuestions,
         keywords,
-        services
+        services,
+        token
       );
-      // Call email verification API after chatbot setup
-      await businessApi.sendVerificationEmail(token, businessId);
+
       router.push("/onboarding/step-5");
     } catch (err: any) {
       setError(err.message || "Failed to save questions");
@@ -106,13 +120,8 @@ export default function QuestionsInput() {
         <p className="mt-2">What's your main skin concern? What kind of treatment are you looking for?</p>
       </div>
       {error && <div className="text-red-500 text-sm">{error}</div>}
-      <button
-        onClick={handleSave}
-        disabled={isSubmitting}
-        className="px-6 py-2 bg-[#987CF1] text-white rounded-lg font-semibold shadow hover:bg-[#7a63c7] transition-colors"
-      >
-        {isSubmitting ? "Saving..." : "Next"}
-      </button>
     </div>
   )
-}
+});
+
+export default QuestionsInput;
