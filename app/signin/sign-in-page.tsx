@@ -75,20 +75,20 @@ export default function SignInPage() {
             <p className="text-gray-500 text-base mb-2 text-center">Your Business. Your AI. Welcome back!</p>
           </div>
           <form className="space-y-4 mb-4" onSubmit={handleSubmit}>
-            <div>
-              <input
-                type="email"
-                placeholder="Email"
+          <div>
+            <input
+              type="email"
+              placeholder="Email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D6C3FF]"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-              /> 
-            </div>
+            />
+          </div>
             <div className="relative">
-              <input
+            <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+              placeholder="Password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D6C3FF] pr-10"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -112,39 +112,39 @@ export default function SignInPage() {
                   </svg>
                 )}
               </button>
-            </div>
+          </div>
             {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#D6C3FF] hover:bg-[#bba3e6] text-black font-medium rounded-md transition-colors disabled:opacity-60 mt-2"
-              disabled={loading}
-            >
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-[rgba(152,124,241,0.5)] border border-[#000000] text-[#000000] font-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
+            disabled={loading}
+          >
               {loading ? "Logging in..." : "Log in"}
-            </button>
-          </form>
+          </button>
+        </form>
           <div className="flex flex-col items-center mt-2">
             <Link href="/forgot-password" className="text-gray-700 hover:text-gray-900 text-sm mb-2 underline">
-              Forgot your password?
-            </Link>
-            <div className="text-sm text-gray-700">
-              Don&apos;t have an account?{" "}
+            Forgot your password?
+          </Link>
+          <div className="text-sm text-gray-700">
+            Don&apos;t have an account?{" "}
               <Link href="/signup" className="text-gray-900 font-medium underline">
-                Sign Up
-              </Link>
-            </div>
+              Sign Up
+            </Link>
           </div>
         </div>
+      </div>
         {/* Right: Image */}
         <div className="hidden md:flex w-1/2 items-center justify-center bg-[#F8F8FA]">
           <div className="relative w-full h-full min-h-[400px] min-w-[300px] max-w-[500px] rounded-r-2xl overflow-hidden shadow-lg flex items-center justify-center">
-            <Image
-              src={loginImage}
-              alt="WellnexAI illustration"
-              fill
+          <Image
+            src={loginImage}
+            alt="WellnexAI illustration"
+            fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+          />
           </div>
         </div>
       </div>

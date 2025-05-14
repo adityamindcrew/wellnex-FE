@@ -160,7 +160,7 @@ export default function CreateAccount() {
                 <Info className="h-5 w-5 text-gray-400" />
               </div>
             </div>
-       
+
             <div>
               <input
                 type="url"
@@ -219,7 +219,7 @@ export default function CreateAccount() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2 px-4 bg-[#F5F0FF] border border-[#000000] text-[#000000] font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
+                className="w-full py-2 px-4 bg-[rgba(152,124,241,0.5)] border border-[#000000] text-[#000000] font-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
