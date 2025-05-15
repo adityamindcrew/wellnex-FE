@@ -1,7 +1,33 @@
 import Link from "next/link"
 import { Home } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useCallback } from "react"
 
 export default function Sidebar() {
+  const router = useRouter()
+
+  const handleLogout = useCallback(async () => {
+    const token = localStorage.getItem("token")
+    console.log("Token:", token)
+    try {
+      await fetch(`http://56.228.66.97:3000/business/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+    } catch (err) {
+      // Optionally handle error
+    }
+    // Clear localStorage and cookies
+    localStorage.removeItem("token")
+    localStorage.removeItem("businessId")
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    router.push("/signin")
+  }, [router])
+
   return (
     <div className="flex w-[193px] flex-col border-r border-gray-200 bg-white">
       <div className="flex h-16 items-center px-4">
@@ -29,6 +55,9 @@ export default function Sidebar() {
           <span>Dashboard</span>
         </Link>
       </div>
+      <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100">
+        Logout
+      </button>
     </div>
   )
 }
