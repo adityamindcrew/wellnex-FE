@@ -12,13 +12,14 @@ import { useRouter } from 'next/navigation';
 const ColorPicker = forwardRef((props, ref) => {
   const router = useRouter();
   const { formData, updateFormData } = useOnboarding()
-  const [selectedColor, setSelectedColor] = useState(formData.themeColor || "#9751F2")
+  const [selectedColor, setSelectedColor] = useState("")
   const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // RGB values
-  const [r, setR] = useState(151)
-  const [g, setG] = useState(81)
-  const [b, setB] = useState(242)
+  const [r, setR] = useState(0)
+  const [g, setG] = useState(0)
+  const [b, setB] = useState(0)
 
   // Refs for the color areas
   const gradientRef = useRef<HTMLDivElement>(null)
@@ -26,10 +27,7 @@ const ColorPicker = forwardRef((props, ref) => {
 
   // Position of the selector in the gradient
   const [gradientPos, setGradientPos] = useState({ x: 0, y: 0 })
-  const [huePos, setHuePos] = useState(0.7) // Initial hue position (purple)
-
-  // Add state for error
-  const [apiError, setApiError] = useState<string | null>(null)
+  const [huePos, setHuePos] = useState(0)
 
   // Toggle color picker
   const togglePicker = () => {
@@ -38,6 +36,8 @@ const ColorPicker = forwardRef((props, ref) => {
 
   // Update RGB and HEX when color changes
   useEffect(() => {
+    if (!selectedColor) return;
+
     // Convert hex to rgb
     const hexToRgb = (hex: string) => {
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -57,7 +57,7 @@ const ColorPicker = forwardRef((props, ref) => {
 
     // Only update context, do not call API here
     if (formData.themeColor !== selectedColor) {
-    updateFormData({ themeColor: selectedColor })
+      updateFormData({ themeColor: selectedColor })
     }
   }, [selectedColor, updateFormData, formData.themeColor])
 
@@ -66,6 +66,7 @@ const ColorPicker = forwardRef((props, ref) => {
     const value = e.target.value.startsWith("#") ? e.target.value : `#${e.target.value}`
     if (value.match(/^#([0-9A-F]{3}){1,2}$/i) || value === "#") {
       setSelectedColor(value)
+      setError(null)
     }
   }
 
@@ -81,6 +82,7 @@ const ColorPicker = forwardRef((props, ref) => {
     // Update hex color
     const hex = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`
     setSelectedColor(hex)
+    setError(null)
   }
 
   // Handle click on the gradient
@@ -98,6 +100,7 @@ const ColorPicker = forwardRef((props, ref) => {
 
     // Calculate color based on position and current hue
     updateColorFromPositions(Math.max(0, Math.min(1, x)), Math.max(0, Math.min(1, y)), huePos)
+    setError(null)
   }
 
   // Handle click on the hue slider
@@ -111,6 +114,7 @@ const ColorPicker = forwardRef((props, ref) => {
 
     // Update color based on new hue and current gradient position
     updateColorFromPositions(gradientPos.x, gradientPos.y, Math.max(0, Math.min(1, x)))
+    setError(null)
   }
 
   // Calculate color from positions
@@ -168,21 +172,23 @@ const ColorPicker = forwardRef((props, ref) => {
 
   // Call API only in handleSetThemeColor, not in useEffect or on color change
   const handleSetThemeColor = async () => {
-    console.log("handleSetThemeColor called");
+    if (!selectedColor) {
+      setError("Please select a color before proceeding");
+      return;
+    }
+
     const token = localStorage.getItem('token')
     const businessId = localStorage.getItem('businessId')
     if (!token || !businessId) {
-      setApiError('No authentication token or business ID found. Please sign up or log in again.')
+      setError('No authentication token or business ID found. Please sign up or log in again.')
       return
     }
     try {
       await businessApi.setThemeColor(selectedColor, token, businessId)
-      setApiError(null)
-      console.log("API success, navigating...");
+      setError(null)
       router.push('/onboarding/step-3')
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Failed to set theme color')
-      console.log("API error", err);
+      setError(err instanceof Error ? err.message : 'Failed to set theme color')
     }
   }
 
@@ -195,8 +201,8 @@ const ColorPicker = forwardRef((props, ref) => {
       <div className="space-y-2">
         <Label htmlFor="theme-color">Select The Theme</Label>
         <div className="flex items-center gap-2">
-          <div className="h-10 w-10 shrink-0 rounded-md border" style={{ backgroundColor: selectedColor }} />
-          <Input id="theme-color" type="text" value={selectedColor} onChange={handleHexChange} className="flex-1" />
+          <div className="h-10 w-10 shrink-0 rounded-md border" style={{ backgroundColor: selectedColor || '#ffffff' }} />
+          <Input id="theme-color" type="text" value={selectedColor} onChange={handleHexChange} className="flex-1" placeholder="#000000" />
           <Button
             type="button"
             variant="outline"
@@ -209,8 +215,7 @@ const ColorPicker = forwardRef((props, ref) => {
           </Button>
         </div>
       </div>
-      {/* Show error if API fails */}
-      {apiError && <div className="text-red-500 text-sm">{apiError}</div>}
+      {error && <div className="text-red-500 text-sm">{error}</div>}
       {/* Color Picker - only shown when isPickerOpen is true */}
       {isPickerOpen && (
         <div className="relative mt-4 rounded-md border p-4">
@@ -231,7 +236,7 @@ const ColorPicker = forwardRef((props, ref) => {
               style={{
                 left: `${gradientPos.x * 100}%`,
                 top: `${gradientPos.y * 100}%`,
-                backgroundColor: selectedColor,
+                backgroundColor: selectedColor || '#ffffff',
               }}
             />
           </div>
@@ -267,7 +272,7 @@ const ColorPicker = forwardRef((props, ref) => {
           <div className="mt-4 flex gap-2">
             <div className="flex-1 text-center">
               <div className="text-xs font-medium">HEX</div>
-              <Input value={selectedColor.replace("#", "")} onChange={handleHexChange} className="mt-1 text-center" />
+              <Input value={selectedColor.replace("#", "")} onChange={handleHexChange} className="mt-1 text-center" placeholder="000000" />
             </div>
             <div className="flex-1 text-center">
               <div className="text-xs font-medium">R</div>

@@ -16,8 +16,8 @@ export default function FeatureCard({ image, title, description, learnMoreLink }
         <h3 className="text-lg font-semibold mb-2">{title}</h3>
         <p className="text-sm text-gray-600 mb-4">{description}</p>
         <Button variant="link" className="p-0 h-auto text-sm text-black font-medium text-left" asChild>
-          <a href={learnMoreLink}>Learn More →</a>
-        </Button>
+            <a href={learnMoreLink}>Learn More →</a>
+          </Button>
       </div>
       {/* Image Section */}
       <div className="flex items-center justify-center md:w-1/2 p-6">

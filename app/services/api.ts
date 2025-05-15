@@ -44,7 +44,10 @@ export const businessApi = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ businessId }),
+      body: JSON.stringify({ 
+        businessId,
+        verificationUrl: `${window.location.origin}/verifyEmail/${businessId}`
+      }),
     });
     return handleResponse(response);
   },
@@ -204,6 +207,29 @@ export const businessApi = {
     }
 
     return response.json();
+  },
+  checkVerificationStatus: async (businessId: string, token: string) => {
+    try {
+      const response = await fetch(`${BASE_URL}/business/verify-status`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ businessId }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to check verification status');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error checking verification status:', error);
+      throw error;
+    }
   },
 };
 

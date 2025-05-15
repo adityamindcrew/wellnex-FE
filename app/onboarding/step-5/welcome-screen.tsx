@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Button } from "@/components/ui/button"
+import { businessApi } from "@/app/services/api"
 
 export default function WelcomeScreen() {
   const { formData } = useOnboarding()
@@ -14,10 +15,20 @@ export default function WelcomeScreen() {
     setResendStatus("idle")
 
     try {
-      // Simulate API call to resend verification email
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const token = localStorage.getItem("token")
+      const businessId = localStorage.getItem("businessId")
+      
+      if (!token || !businessId) {
+        throw new Error("Missing token or businessId")
+      }
+
+      // Call sendVerificationEmail API
+      const response = await businessApi.sendVerificationEmail(token, businessId)
+      console.log("Verification email response:", response)
+      
       setResendStatus("success")
     } catch (error) {
+      console.error("Error sending verification email:", error)
       setResendStatus("error")
     } finally {
       setIsResending(false)

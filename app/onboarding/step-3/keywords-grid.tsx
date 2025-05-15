@@ -4,7 +4,6 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from "rea
 import { useOnboarding } from "../onboarding-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/ui/use-toast"
 import { businessApi } from "@/app/services/api"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
@@ -27,7 +26,7 @@ const KeywordsGrid = forwardRef((props, ref) => {
   const { formData, updateFormData } = useOnboarding()
   const [keywords, setKeywords] = useState<string[]>(formData.keywords || Array(9).fill(""))
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   // useEffect(() => {
@@ -49,20 +48,18 @@ const KeywordsGrid = forwardRef((props, ref) => {
     const filteredKeywords = keywords.filter((keyword) => keyword.trim() !== "")
     
     if (filteredKeywords.length === 0) {
-      toast({
-        title: "Warning",
-        description: "Please enter at least one keyword",
-        variant: "destructive",
-      })
+      setError("Please enter at least one keyword")
       return
     }
 
     try {
       setIsSubmitting(true)
+      setError(null)
       const token = localStorage.getItem("token")
       const businessId = localStorage.getItem("businessId")
       if (!token || !businessId) {
-        throw new Error("Token or Business ID not found")
+        setError("Token or Business ID not found")
+        return
       }
 
       const response = await businessApi.addBusinessKeywords(
@@ -78,19 +75,11 @@ const KeywordsGrid = forwardRef((props, ref) => {
         updateFormData({ keywords: newKeywords })
       }
 
-      toast({
-        title: "Success",
-        description: "Keywords saved successfully",
-      })
       // Navigate to next step
       router.push('/onboarding/step-4')
     } catch (error) {
       console.error("Error saving keywords:", error)
-      toast({
-        title: "Error",
-        description: "Failed to save keywords. Please try again.",
-        variant: "destructive",
-      })
+      setError("Failed to save keywords. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -101,6 +90,7 @@ const KeywordsGrid = forwardRef((props, ref) => {
     const newKeywords = [...keywords]
     newKeywords[index] = value
     setKeywords(newKeywords)
+    setError(null) // Clear error when user makes changes
   }
 
   // Handle key press (for Enter key navigation)
@@ -144,6 +134,8 @@ const KeywordsGrid = forwardRef((props, ref) => {
           hair laser, massage, dark circle, vitamins, hair loss, facial.
         </p>
       </div>
+
+      {error && <div className="text-red-500 text-sm text-center">{error}</div>}
     </div>
   )
 });

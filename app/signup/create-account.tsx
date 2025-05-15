@@ -64,14 +64,8 @@ export default function CreateAccount() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (passwordError) {
-      setError("Please fix password validation errors");
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
       const signupData: BusinessSignupData = {
@@ -86,15 +80,15 @@ export default function CreateAccount() {
       const response = await businessApi.signup(signupData);
       console.log("Signup successful:", response);
       
-      // Store businessId and token in localStorage
       if (response.data && response.data._id && response.data.loginToken) {
         localStorage.setItem('businessId', response.data._id);
         localStorage.setItem('token', response.data.loginToken);
+        // Set onboarding token in cookies
+        document.cookie = `onboardingToken=${response.data.loginToken}; path=/`;
+        router.push('/onboarding/step-1');
       } else {
         throw new Error('Invalid response format from server');
       }
-   
-      router.push('/onboarding/step-1');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during signup');
       console.error("Signup error:", err);

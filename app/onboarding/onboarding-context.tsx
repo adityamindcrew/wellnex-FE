@@ -1,92 +1,85 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode, useEffect } from "react"
-import { useRouter, usePathname } from "next/navigation"
+import React, { createContext, useContext, useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 
-type FormData = {
-  logo: string | null
-  themeColor: string
-  keywords: string[]
-  questions: string[]
-  email: string
+interface OnboardingFormData {
+  businessName?: string
+  logo?: string
+  themeColor?: string
+  keywords?: string[]
+  questions?: string[]
+  services?: string[]
+  isVerified?: boolean
 }
 
-type OnboardingContextType = {
-  currentStep: number
-  formData: FormData
-  updateFormData: (data: Partial<FormData>) => void
+interface OnboardingContextType {
+  formData: OnboardingFormData
+  updateFormData: (data: Partial<OnboardingFormData>) => void
   nextStep: () => void
   prevStep: () => void
-  goToStep: (step: number) => void
-}
-
-const defaultFormData: FormData = {
-  logo: null,
-  themeColor: "#9751F2", // Default purple color
-  keywords: [],
-  questions: [],
-  email: "",
+  currentStep: number
+  isVerified: boolean
+  setIsVerified: (verified: boolean) => void
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined)
 
-export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<FormData>(defaultFormData)
+export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const pathname = usePathname();
+  const [currentStep, setCurrentStep] = useState(1)
+  const [formData, setFormData] = useState<OnboardingFormData>({})
+  const [isVerified, setIsVerified] = useState(false)
 
+  // Check verification status on mount
   useEffect(() => {
-    // Extract step number from URL, e.g., /onboarding/step-3
-    const match = pathname.match(/step-(\d+)/);
-    if (match) {
-      setCurrentStep(Number(match[1]));
-    }
-  }, [pathname]);
+    const verified = localStorage.getItem('isVerified') === 'true'
+    setIsVerified(verified)
+  }, [])
 
-  const totalSteps = 5
-
-  const updateFormData = (data: Partial<FormData>) => {
-    console.log('updateFormData called with:', data);
-    if (!data || typeof data !== 'object') {
-      console.error('updateFormData called with invalid data:', data);
-      return;
+  // Prevent access to other steps when on verification screen
+  useEffect(() => {
+    const onboardingStep = localStorage.getItem("onboardingStep")
+    if (onboardingStep === "5" && !isVerified) {
+      // If on step 5 and not verified, prevent access to other steps
+      const currentPath = window.location.pathname
+      if (currentPath !== '/onboarding/step-5') {
+        router.replace('/onboarding/step-5')
+      }
     }
-    setFormData((prev) => ({ ...(prev || defaultFormData), ...data }))
+  }, [isVerified, router])
+
+  const updateFormData = (data: Partial<OnboardingFormData>) => {
+    setFormData((prev) => ({ ...prev, ...data }))
   }
 
   const nextStep = () => {
-    if (currentStep < totalSteps) {
-      const nextStepNumber = currentStep + 1
-      setCurrentStep(nextStepNumber)
-      router.push(`/onboarding/step-${nextStepNumber}`)
-    }
+    const nextStepNumber = currentStep + 1
+    setCurrentStep(nextStepNumber)
+    localStorage.setItem("onboardingStep", nextStepNumber.toString())
+    router.push(`/onboarding/step-${nextStepNumber}`)
   }
 
   const prevStep = () => {
-    if (currentStep > 1) {
-      const prevStepNumber = currentStep - 1
-      setCurrentStep(prevStepNumber)
-      router.push(`/onboarding/step-${prevStepNumber}`)
-    }
-  }
-
-  const goToStep = (step: number) => {
-    if (step >= 1 && step <= totalSteps) {
-      setCurrentStep(step)
-      router.push(`/onboarding/step-${step}`)
-    }
+    const prevStepNumber = currentStep - 1
+    setCurrentStep(prevStepNumber)
+    localStorage.setItem("onboardingStep", prevStepNumber.toString())
+    router.push(`/onboarding/step-${prevStepNumber}`)
   }
 
   return (
     <OnboardingContext.Provider
       value={{
-        currentStep,
         formData,
         updateFormData,
         nextStep,
         prevStep,
-        goToStep,
+        currentStep,
+        isVerified,
+        setIsVerified: (verified: boolean) => {
+          setIsVerified(verified)
+          localStorage.setItem('isVerified', verified.toString())
+        }
       }}
     >
       {children}

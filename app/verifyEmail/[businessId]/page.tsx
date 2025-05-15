@@ -5,32 +5,44 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import logo from '../../assets/images/logo.png'
 import { businessApi } from '../../services/api'
-import { use } from 'react'
 
-export default function VerifyEmail({ params }: { params: Promise<{ businessId: string }> }) {
+export default function VerifyEmail({ params }: { params: { businessId: string } }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('Verifying your email...')
-  const { businessId } = use(params)
+  const { businessId } = params
 
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const token = searchParams.get('token');
+        // Get token from URL hash if present
+        const hash = window.location.hash
+        let token = searchParams.get('token')
+        
+        if (!token && hash) {
+          const hashParams = new URLSearchParams(hash.split('?')[1])
+          token = hashParams.get('token')
+        }
+        
         if (!token) {
           throw new Error('No verification token found')
         }
 
-        await businessApi.verifyEmailByLink(businessId, token);
-
-        setVerificationStatus('success')
-        setMessage('Email verified successfully! Redirecting to login...')
+        console.log('Verifying email with token:', token)
+        const response = await businessApi.verifyEmailByLink(businessId, token);
         
-        // Redirect to login page after 3 seconds
-        setTimeout(() => {
-          router.push('/dashboard')
-        }, 3000)
+        if (response.status) {
+          setVerificationStatus('success')
+          setMessage('Email verified successfully! Redirecting to login...')
+          
+          // Redirect to login page after 3 seconds
+          setTimeout(() => {
+            router.push('/signin')
+          }, 3000)
+        } else {
+          throw new Error(response.message || 'Verification failed')
+        }
       } catch (error) {
         setVerificationStatus('error')
         setMessage(error instanceof Error ? error.message : 'Verification failed')

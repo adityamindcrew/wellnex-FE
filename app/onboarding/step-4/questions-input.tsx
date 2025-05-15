@@ -37,7 +37,7 @@ const QuestionsInput = forwardRef((props, ref) => {
       filteredQuestions.length !== formData.questions.length ||
       filteredQuestions.some((q, i) => q !== formData.questions[i])
     ) {
-    updateFormData({ questions: filteredQuestions })
+      updateFormData({ questions: filteredQuestions })
     }
   }, [questions, formData.questions, updateFormData])
 
@@ -46,6 +46,7 @@ const QuestionsInput = forwardRef((props, ref) => {
     const newQuestions = [...questions]
     newQuestions[index] = value
     setQuestions(newQuestions)
+    setError(null) // Clear error when user makes changes
   }
 
   // Handle key press (for Enter key navigation)
@@ -62,19 +63,30 @@ const QuestionsInput = forwardRef((props, ref) => {
   }
 
   const handleSave = async () => {
+    // Check if at least one question is entered
+    const filteredQuestions = questions.filter(q => q.trim() !== "");
+    if (filteredQuestions.length === 0) {
+      setError("Please enter at least one question");
+      return;
+    }
+
     setError(null)
     setIsSubmitting(true)
     try {
       const businessId = localStorage.getItem("businessId")
       const token = localStorage.getItem("token")
       
-      if (!businessId) throw new Error("Missing businessId")
-      if (!token) throw new Error("Missing authentication token")
+      if (!businessId) {
+        setError("Business ID not found. Please try again.");
+        return;
+      }
+      if (!token) {
+        setError("Authentication token not found. Please try again.");
+        return;
+      }
 
       // Format questions, keywords and services as objects with name property
-      const formattedQuestions = questions
-        .filter(q => q.trim() !== "")
-        .map(q => ({ name: q }));
+      const formattedQuestions = filteredQuestions.map(q => ({ name: q }));
 
       const keywords = (formData.keywords || [])
         .map((k: any) => ({ name: typeof k === 'string' ? k : k.name || "" }));
@@ -83,17 +95,25 @@ const QuestionsInput = forwardRef((props, ref) => {
         ? (formData as any).services.map((s: any) => ({ name: typeof s === 'string' ? s : s.name || "" }))
         : [];
 
-      await businessApi.setupChatbot(
+      // First call SetupChatbot
+      console.log("Setting up chatbot...")
+      const setupResponse = await businessApi.setupChatbot(
         businessId,
         formattedQuestions,
         keywords,
         services,
         token
       );
+      console.log("SetupChatbot response:", setupResponse)
+
+      // After successful setup, send verification email
+      console.log("Sending verification email...")
+      const verificationResponse = await businessApi.sendVerificationEmail(token, businessId)
+      console.log("Verification email response:", verificationResponse)
 
       router.push("/onboarding/step-5");
     } catch (err: any) {
-      setError(err.message || "Failed to save questions");
+      setError(err.message || "Failed to save questions. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -111,6 +131,7 @@ const QuestionsInput = forwardRef((props, ref) => {
             onKeyDown={(e) => handleKeyDown(index, e)}
             placeholder={index === 0 ? "Enter a question your chatbot should ask" : ""}
             className="w-full"
+            disabled={isSubmitting}
           />
         ))}
       </div>
@@ -119,7 +140,7 @@ const QuestionsInput = forwardRef((props, ref) => {
         <p className="font-medium">Example</p>
         <p className="mt-2">What's your main skin concern? What kind of treatment are you looking for?</p>
       </div>
-      {error && <div className="text-red-500 text-sm">{error}</div>}
+      {error && <div className="text-red-500 text-sm text-center">{error}</div>}
     </div>
   )
 });

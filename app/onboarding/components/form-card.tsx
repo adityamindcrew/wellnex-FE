@@ -32,6 +32,17 @@ export default function FormCard({
   const { currentStep, nextStep, prevStep } = useOnboarding()
   const totalSteps = 5;
 
+  // Get the correct step number from the URL
+  const getCurrentStepNumber = () => {
+    const path = window.location.pathname;
+    if (path.includes('step-1')) return 1;
+    if (path.includes('step-2')) return 2;
+    if (path.includes('step-3')) return 3;
+    if (path.includes('step-4')) return 4;
+    if (path.includes('step-5')) return 5;
+    return currentStep;
+  };
+
   const handleNext = () => {
     if (onNext) {
       onNext()
@@ -53,7 +64,7 @@ export default function FormCard({
 
           {(showNext || showCancel || showBack) && (
             <div className="flex w-full items-center justify-between pt-8">
-              <div className="text-sm text-muted-foreground">Step {currentStep}/{totalSteps}</div>
+              <div className="text-sm text-muted-foreground">Step {getCurrentStepNumber()}/{totalSteps}</div>
               <div className="flex space-x-2">
                 {showCancel && (
                   <Button variant="outline" onClick={() => window.history.back()}>
