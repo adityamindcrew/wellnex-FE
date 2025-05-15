@@ -1,17 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Info, Eye, EyeOff } from "lucide-react"
 import { businessApi } from "../services/api"
 import logo from '../assets/images/logo.png'
 
-export default function ForgotPassword() {
+function ForgotPasswordContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
-  
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -45,7 +45,7 @@ export default function ForgotPassword() {
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Form submitted with email:", email)
-    
+
     if (!email) {
       setError("Please enter your email address")
       return
@@ -59,7 +59,7 @@ export default function ForgotPassword() {
       console.log("Calling forgotPassword API...")
       const response = await businessApi.forgotPassword(email)
       console.log("API Response:", response)
-      
+
       if (response.status) {
         setSuccess(true)
         setResetToken(response.data.resetPasswordToken)
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!password || !confirmPassword) {
       setError("Please fill in all fields")
       return
@@ -102,7 +102,7 @@ export default function ForgotPassword() {
       console.log("Calling resetPassword API...")
       const response = await businessApi.resetPassword(email, password, resetToken || "")
       console.log("API Response:", response)
-      
+
       if (response.status) {
         setSuccess(true)
         setTimeout(() => {
@@ -128,7 +128,7 @@ export default function ForgotPassword() {
           </div>
           <h1 className="text-3xl font-bold mb-2 text-center">Forgot Password</h1>
           <p className="text-gray-500 text-base mb-2 text-center">
-            {step === 1 
+            {step === 1
               ? "Enter your email address and we'll send you a link to reset your password."
               : "Enter your new password below."}
           </p>
@@ -142,7 +142,7 @@ export default function ForgotPassword() {
 
         {success && (
           <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md text-sm">
-            {step === 1 
+            {step === 1
               ? "Reset password link has been sent to your email."
               : "Password has been reset successfully. Redirecting to login..."}
           </div>
@@ -227,5 +227,13 @@ export default function ForgotPassword() {
         </button>
       </div>
     </div>
+  )
+}
+
+export default function ForgotPassword() {
+  return (
+    <Suspense>
+      <ForgotPasswordContent />
+    </Suspense>
   )
 } 

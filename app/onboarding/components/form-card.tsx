@@ -34,13 +34,15 @@ export default function FormCard({
 
   // Get the correct step number from the URL
   const getCurrentStepNumber = () => {
-    const path = window.location.pathname;
-    if (path.includes('step-1')) return 1;
-    if (path.includes('step-2')) return 2;
-    if (path.includes('step-3')) return 3;
-    if (path.includes('step-4')) return 4;
-    if (path.includes('step-5')) return 5;
-    return currentStep;
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      if (path.includes('step-1')) return 1;
+      if (path.includes('step-2')) return 2;
+      if (path.includes('step-3')) return 3;
+      if (path.includes('step-4')) return 4;
+      if (path.includes('step-5')) return 5;
+      return currentStep;
+    }
   };
 
   const handleNext = () => {
@@ -67,7 +69,11 @@ export default function FormCard({
               <div className="text-sm text-muted-foreground">Step {getCurrentStepNumber()}/{totalSteps}</div>
               <div className="flex space-x-2">
                 {showCancel && (
-                  <Button variant="outline" onClick={() => window.history.back()}>
+                  <Button variant="outline" onClick={() => {
+                    if (typeof window !== "undefined") {
+                      window.history.back()
+                    }
+                  }}>
                     Cancel
                   </Button>
                 )}

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { CreditCard, Check } from "lucide-react"
+import { Suspense } from "react"
 
 export default function VerifyEmail() {
   const router = useRouter()
@@ -9,6 +10,7 @@ export default function VerifyEmail() {
   
 
   return (
+    <Suspense>
     <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
       <div className="flex flex-col items-center space-y-6">
         {/* Credit Card Icon */}
@@ -25,5 +27,6 @@ export default function VerifyEmail() {
       
       </div>
     </div>
+    </Suspense>
   )
 }

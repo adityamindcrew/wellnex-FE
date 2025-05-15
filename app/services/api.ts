@@ -46,7 +46,6 @@ export const businessApi = {
       },
       body: JSON.stringify({ 
         businessId,
-        verificationUrl: `${window.location.origin}/verifyEmail/${businessId}`
       }),
     });
     return handleResponse(response);

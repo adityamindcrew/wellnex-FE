@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams, useParams } from 'next/navigation'
 import Image from 'next/image'
 import logo from '../../assets/images/logo.png'
 import { businessApi } from '../../services/api'
 
-export default function VerifyEmail({ params }: { params: { businessId: string } }) {
+function VerifyEmailContent({ params }: { params: { businessId: string } }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading')
@@ -16,32 +16,34 @@ export default function VerifyEmail({ params }: { params: { businessId: string }
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        // Get token from URL hash if present
-        const hash = window.location.hash
-        let token = searchParams.get('token')
-        
-        if (!token && hash) {
-          const hashParams = new URLSearchParams(hash.split('?')[1])
-          token = hashParams.get('token')
-        }
-        
-        if (!token) {
-          throw new Error('No verification token found')
-        }
+        if (typeof window !== "undefined") {
+          // Get token from URL hash if present
+          const hash = window.location.hash
+          let token = searchParams.get('token')
 
-        console.log('Verifying email with token:', token)
-        const response = await businessApi.verifyEmailByLink(businessId, token);
-        
-        if (response.status) {
-          setVerificationStatus('success')
-          setMessage('Email verified successfully! Redirecting to login...')
-          
-          // Redirect to login page after 3 seconds
-          setTimeout(() => {
-            router.push('/signin')
-          }, 3000)
-        } else {
-          throw new Error(response.message || 'Verification failed')
+          if (!token && hash) {
+            const hashParams = new URLSearchParams(hash.split('?')[1])
+            token = hashParams.get('token')
+          }
+
+          if (!token) {
+            throw new Error('No verification token found')
+          }
+
+          console.log('Verifying email with token:', token)
+          const response = await businessApi.verifyEmailByLink(businessId, token);
+
+          if (response.status) {
+            setVerificationStatus('success')
+            setMessage('Email verified successfully! Redirecting to login...')
+
+            // Redirect to login page after 3 seconds
+            setTimeout(() => {
+              router.push('/signin')
+            }, 3000)
+          } else {
+            throw new Error(response.message || 'Verification failed')
+          }
         }
       } catch (error) {
         setVerificationStatus('error')
@@ -59,12 +61,12 @@ export default function VerifyEmail({ params }: { params: { businessId: string }
           <div className="mb-8">
             <Image src={logo} alt="WellnexAI Logo" width={100} height={200} />
           </div>
-          
+
           <div className="text-center">
             {verificationStatus === 'loading' && (
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#987CF1] mx-auto mb-4"></div>
             )}
-            
+
             {verificationStatus === 'success' && (
               <div className="text-green-500 mb-4">
                 <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +74,7 @@ export default function VerifyEmail({ params }: { params: { businessId: string }
                 </svg>
               </div>
             )}
-            
+
             {verificationStatus === 'error' && (
               <div className="text-red-500 mb-4">
                 <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,15 +82,15 @@ export default function VerifyEmail({ params }: { params: { businessId: string }
                 </svg>
               </div>
             )}
-            
+
             <h1 className="text-2xl font-bold mb-4">
               {verificationStatus === 'loading' && 'Verifying Email'}
               {verificationStatus === 'success' && 'Email Verified'}
               {verificationStatus === 'error' && 'Verification Failed'}
             </h1>
-            
+
             <p className="text-gray-600 mb-6">{message}</p>
-            
+
             {verificationStatus === 'error' && (
               <button
                 onClick={() => router.push('/signin')}
@@ -101,5 +103,12 @@ export default function VerifyEmail({ params }: { params: { businessId: string }
         </div>
       </div>
     </div>
+  )
+}
+export default function VerifyEmail({ params }: { params: { businessId: string } }) {
+  return (
+    <Suspense>
+      <VerifyEmailContent params={params} />
+    </Suspense>
   )
 } 

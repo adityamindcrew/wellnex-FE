@@ -8,7 +8,7 @@ import { PipetteIcon, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { businessApi } from '../../services/api'
 import { useRouter } from 'next/navigation';
-
+import { Suspense } from "react"
 const ColorPicker = forwardRef((props, ref) => {
   const router = useRouter();
   const { formData, updateFormData } = useOnboarding()
@@ -197,6 +197,7 @@ const ColorPicker = forwardRef((props, ref) => {
   }));
 
   return (
+    <Suspense>
     <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="theme-color">Select The Theme</Label>
@@ -311,6 +312,7 @@ const ColorPicker = forwardRef((props, ref) => {
         </div>
       )}
     </div>
+    </Suspense>
   )
 });
 

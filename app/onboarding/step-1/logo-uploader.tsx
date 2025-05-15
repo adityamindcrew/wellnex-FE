@@ -7,6 +7,7 @@ import Image from "next/image"
 import { ImageIcon } from "lucide-react"
 import { useOnboarding } from "../onboarding-context"
 import { businessApi } from '../../services/api'
+import { Suspense } from "react"
 
 interface LogoUploaderProps {
   onFileSelect: (file: File | null) => void;
@@ -63,6 +64,7 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
   }
 
   return (
+    <Suspense>
     <div className="w-full space-y-4 font-[DM_Sans]">
       <p className="text-center font-[DM_Sans] text-sm font-medium">Upload Company Logo (.png format only)</p>
 
@@ -95,6 +97,7 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
         {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
       </div>
     </div>
+    </Suspense>
   )
 }
 

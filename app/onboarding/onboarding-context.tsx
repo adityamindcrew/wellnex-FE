@@ -39,12 +39,14 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   // Prevent access to other steps when on verification screen
   useEffect(() => {
-    const onboardingStep = localStorage.getItem("onboardingStep")
-    if (onboardingStep === "5" && !isVerified) {
-      // If on step 5 and not verified, prevent access to other steps
-      const currentPath = window.location.pathname
-      if (currentPath !== '/onboarding/step-5') {
-        router.replace('/onboarding/step-5')
+    if (typeof window !== "undefined") {
+      const onboardingStep = localStorage.getItem("onboardingStep")
+      if (onboardingStep === "5" && !isVerified) {
+        // If on step 5 and not verified, prevent access to other steps
+        const currentPath = window.location.pathname
+        if (currentPath !== '/onboarding/step-5') {
+          router.replace('/onboarding/step-5')
+        }
       }
     }
   }, [isVerified, router])

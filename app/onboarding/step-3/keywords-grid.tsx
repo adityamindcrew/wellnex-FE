@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { businessApi } from "@/app/services/api"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { Suspense } from "react"
 
 interface Keyword {
   name: string;
@@ -107,6 +108,7 @@ const KeywordsGrid = forwardRef((props, ref) => {
   }
 
   return (
+    <Suspense>
     <div className="space-y-6">
       <div>
         <Label htmlFor="keyword-0">Keywords</Label>
@@ -137,6 +139,7 @@ const KeywordsGrid = forwardRef((props, ref) => {
 
       {error && <div className="text-red-500 text-sm text-center">{error}</div>}
     </div>
+    </Suspense>
   )
 });
 

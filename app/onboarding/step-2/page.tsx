@@ -1,5 +1,6 @@
 "use client"
-import { useEffect, useRef } from "react";
+
+import React, { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import FormCard from "../components/form-card"
 import ColorPicker from "./color-picker"

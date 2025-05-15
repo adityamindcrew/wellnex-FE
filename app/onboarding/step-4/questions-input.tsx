@@ -1,13 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useImperativeHandle, forwardRef } from "react"
+import { useState, useEffect, useImperativeHandle, forwardRef, Suspense } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Input } from "@/components/ui/input"
 import { businessApi } from "@/app/services/api"
 import { useRouter } from "next/navigation"
 
-const QuestionsInput = forwardRef((props, ref) => {
+const QuestionsInputInner = forwardRef((props, ref) => {
   const { formData, updateFormData } = useOnboarding()
   const [questions, setQuestions] = useState<string[]>(formData.questions || Array(5).fill(""))
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -34,8 +34,8 @@ const QuestionsInput = forwardRef((props, ref) => {
     // Only update if the value actually changed
     if (
       !formData.questions ||
-      filteredQuestions.length !== formData.questions.length ||
-      filteredQuestions.some((q, i) => q !== formData.questions[i])
+      filteredQuestions.length !== (formData.questions?.length ?? 0) ||
+      filteredQuestions.some((q, i) => q !== (formData.questions?.[i] ?? ""))
     ) {
       updateFormData({ questions: filteredQuestions })
     }
@@ -145,4 +145,10 @@ const QuestionsInput = forwardRef((props, ref) => {
   )
 });
 
-export default QuestionsInput;
+const QuestionsInput = (props: any, ref: any) => (
+  <Suspense>
+    <QuestionsInputInner {...props} ref={ref} />
+  </Suspense>
+);
+
+export default forwardRef(QuestionsInput);

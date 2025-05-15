@@ -3,7 +3,7 @@
 import FormCard from "../components/form-card"
 import LogoUploader from "./logo-uploader"
 import { useOnboarding } from "../onboarding-context"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 
 export default function LogoUploadPage() {
   const { nextStep, updateFormData } = useOnboarding()
@@ -27,6 +27,7 @@ export default function LogoUploadPage() {
   }
 
   return (
+    
     <FormCard
       title="Now, let's upload your logo."
       description="Your logo will appear on your AI chatbot to match your brand and create a trusted experience for your customers."
@@ -35,5 +36,6 @@ export default function LogoUploadPage() {
       <LogoUploader onFileSelect={setSelectedFile} />
       {error && <p className="mt-2 text-sm text-red-500 text-center">{error}</p>}
     </FormCard>
+
   )
 }
