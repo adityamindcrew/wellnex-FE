@@ -1,7 +1,7 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
-import { useRouter } from "next/navigation"
+import { createContext, useContext, useState, type ReactNode, useEffect } from "react"
+import { useRouter, usePathname } from "next/navigation"
 
 type FormData = {
   logo: string | null
@@ -34,6 +34,15 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>(defaultFormData)
   const router = useRouter()
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Extract step number from URL, e.g., /onboarding/step-3
+    const match = pathname.match(/step-(\d+)/);
+    if (match) {
+      setCurrentStep(Number(match[1]));
+    }
+  }, [pathname]);
 
   const totalSteps = 5
 

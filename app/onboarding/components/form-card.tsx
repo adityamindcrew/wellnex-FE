@@ -30,6 +30,7 @@ export default function FormCard({
   onNext,
 }: FormCardProps) {
   const { currentStep, nextStep, prevStep } = useOnboarding()
+  const totalSteps = 5;
 
   const handleNext = () => {
     if (onNext) {
@@ -52,7 +53,7 @@ export default function FormCard({
 
           {(showNext || showCancel || showBack) && (
             <div className="flex w-full items-center justify-between pt-8">
-              <div className="text-sm text-muted-foreground">Step {currentStep}/5</div>
+              <div className="text-sm text-muted-foreground">Step {currentStep}/{totalSteps}</div>
               <div className="flex space-x-2">
                 {showCancel && (
                   <Button variant="outline" onClick={() => window.history.back()}>

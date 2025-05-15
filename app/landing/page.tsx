@@ -75,10 +75,10 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-xs text-gray-700 max-w-[180px]">
-                {step === 1 && "AI-powered consultation to understand your unique needs and goals"}
-                {step === 2 && "Personalized wellness plans created just for you"}
-                {step === 3 && "Real-time tracking and adjustments to optimize results"}
-                {step === 4 && "24/7 support and guidance throughout your wellness journey"}
+                {step === 1 && "Sign up & personalize your chatbot (Choose your branding, questions, and services)"}
+                {step === 2 && "Pay securely via stripe (199/month - charged in your local currency)"}
+                {step === 3 && "Get your unique embed code (Ready to copy & paste into your website)"}
+                {step === 4 && "Start collecting new clients leads 24/7 (Let AI handle engagement while you focus on results)"}
               </p>
             </div>
           ))}
@@ -134,14 +134,14 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FeatureCard
               image={robot.src}
-              title="24/7 Leads Generation"
-              description="Our AI assistants work around the clock, capturing and nurturing leads even when you're not available."
+              title="Launch Your AI Concierge in Just Minutes"
+              description="Your AI chatbot works like a 24/7 receptionist, capturing client details even after hours when your team is busy."
               learnMoreLink="#"
             />
             <FeatureCard
               image={featureAI.src}
-              title="Launch Your AI Assistant"
-              description="Set up your personal AI assistant to handle routine tasks and improve your productivity."
+              title="24/7 Leads Generation"
+              description="Even when your business is closed, the chatbot is live and helping clients share their concerns, request services, and leave contact info for follow-up."
               learnMoreLink="#"
             />
           </div>
