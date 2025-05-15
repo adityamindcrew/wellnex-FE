@@ -8,9 +8,11 @@ import loginImage from '../assets/images/login.png';
 import logo from '../assets/images/logo.png';
 import { businessApi, BusinessSignupData } from '../services/api';
 import { useRouter } from 'next/navigation';
+import Link from "next/link"
 
 export default function CreateAccount() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     businessName: "",
     phoneNumber: "",
@@ -26,12 +28,15 @@ export default function CreateAccount() {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   const onboardingStep = localStorage.getItem("onboardingStep");
-  //   if (onboardingStep && ["1","2","3","4"].includes(onboardingStep)) {
-  //     router.replace(`/onboarding/step-${onboardingStep}`);
-  //   }
-  // }, [router]);
+  useEffect(() => {
+    setMounted(true);
+    const onboardingStep = localStorage.getItem("onboardingStep");
+    if (onboardingStep && ["1","2","3","4"].includes(onboardingStep)) {
+      router.replace(`/onboarding/step-${onboardingStep}`);
+    }
+  }, [router]);
+
+  if (!mounted) return null;
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -83,7 +88,7 @@ export default function CreateAccount() {
       if (response.data && response.data._id && response.data.loginToken) {
         localStorage.setItem('businessId', response.data._id);
         localStorage.setItem('token', response.data.loginToken);
-        // Set onboarding token in cookies
+        localStorage.setItem('onboardingStep', '1');
         document.cookie = `onboardingToken=${response.data.loginToken}; path=/`;
         router.push('/onboarding/step-1');
       } else {
@@ -195,19 +200,19 @@ export default function CreateAccount() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base pr-10"
+                className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 inset-y-0 flex items-center justify-center h-12 w-12 text-gray-400 hover:text-gray-600"
                 tabIndex={-1}
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
               </button>
-              {passwordError && (
-                <p className="mt-1 text-xs text-red-600">{passwordError}</p>
-              )}
+              <p className="mt-1 text-xs text-red-600 min-h-[18px]">
+                {passwordError || "\u00A0"}
+              </p>
             </div>
             <div className="pt-2">
               <button
@@ -218,7 +223,15 @@ export default function CreateAccount() {
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
             </div>
+
+
           </form>
+          <div className="text-sm text-gray-700 mt-4 text-center">
+              Do have an account?{" "}
+              <Link href="/signin" className="text-gray-900 font-medium underline">
+                Sign In
+              </Link>
+            </div>
         </div>
         {/* Right: Image */}
         <div className="w-full md:w-1/2 flex items-stretch justify-center p-0 m-0">

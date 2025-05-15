@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { businessApi } from "@/app/services/api"
 import logo from '../assets/images/logo.png';
+import { EyeOff, Eye } from "lucide-react"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -111,17 +112,7 @@ export default function SignInPage() {
                 tabIndex={-1}
                 onClick={() => setShowPassword(v => !v)}
               >
-                {showPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.014 6 9.75 6 1.772 0 3.487-.37 5.02-1.057M21.75 12c-.512-.888-1.18-1.747-1.98-2.577m-3.27-2.568A9.956 9.956 0 0 0 12 6c-3.736 0-7.667 2.39-9.75 6a10.477 10.477 0 0 0 1.73 3.777m3.27 2.568A9.956 9.956 0 0 0 12 18c3.736 0 7.667-2.39 9.75-6a10.477 10.477 0 0 0-1.73-3.777m-3.27-2.568A9.956 9.956 0 0 0 12 6c-3.736 0-7.667 2.39-9.75 6a10.477 10.477 0 0 0 1.73 3.777" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18M4.98 4.98A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.014 6 9.75 6 1.772 0 3.487-.37 5.02-1.057M21.75 12c-.512-.888-1.18-1.747-1.98-2.577m-3.27-2.568A9.956 9.956 0 0 0 12 6c-3.736 0-7.667 2.39-9.75 6a10.477 10.477 0 0 0 1.73 3.777m3.27 2.568A9.956 9.956 0 0 0 12 18c3.736 0 7.667-2.39 9.75-6a10.477 10.477 0 0 0-1.73-3.777" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                  </svg>
-                )}
+                {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
               </button>
             </div>
             {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
@@ -157,6 +148,7 @@ export default function SignInPage() {
               priority
             />
           </div>
+          
         </div>
       </div>
     </div>
