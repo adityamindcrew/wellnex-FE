@@ -52,31 +52,21 @@ export default function SignInPage() {
     setLoading(true)
     try {
       const data = await businessApi.signin(email, password)
-      console.log("Full API Response:", data)
-      console.log("Token in response:", data?.token)
-      console.log("Business ID in response:", data?.business?._id)
-
-      if (data) {
-        // Set token in localStorage
-        localStorage.setItem("token", data.token)
-
-        // Set token in cookie for middleware
-        document.cookie = `token=${data.token}; path=/; max-age=2592000` // 30 days
-        document.cookie = `authorization=Bearer ${data.token}; path=/; max-age=2592000` // 30 days
-
-        if (data.business?._id) {
-          localStorage.setItem("businessId", data.business._id)
+      // Set loginToken as token and _id as businessId
+      const token = data.data?.loginToken;
+      const businessId = data.data?._id;
+      if (token) {
+        localStorage.setItem("token", token);
+        document.cookie = `token=${token}; path=/; max-age=2592000`;
+        document.cookie = `authorization=Bearer ${token}; path=/; max-age=2592000`;
+        if (businessId) {
+          localStorage.setItem("businessId", businessId);
         }
-        if (typeof window !== "undefined") {
-          // Force a hard navigation to dashboard
-          window.location.href = "/dashboard"
-        }
+        window.location.href = "/dashboard";
       } else {
-        console.error("API Response missing token:", data)
-        throw new Error("No token received from server")
+        setError("No token received from server");
       }
     } catch (err) {
-      console.error("Sign in error:", err)
       setError((err as Error).message || "Something went wrong. Please try again.")
     } finally {
       setLoading(false)
