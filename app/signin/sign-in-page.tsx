@@ -76,9 +76,22 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8F8FA]">
-      <div className="flex w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden min-h-[500px]">
-        {/* Left: Form */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center px-8 py-12 md:px-12">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden min-h-[500px]">
+        {/* Image: show on all screens, on top for mobile, no rounded corners, margin top on mobile */}
+        <div className="w-full md:w-1/2 flex items-center justify-center bg-[#F8F8FA] order-1 md:order-2 mt-6 md:mt-0">
+          <div className="relative w-full h-40 md:h-full min-h-[200px] min-w-[200px] max-w-[500px] overflow-hidden shadow-lg flex items-center justify-center">
+            <Image
+              src={loginImage}
+              alt="WellnexAI illustration"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
+          </div>
+        </div>
+        {/* Form */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center px-8 py-12 md:px-12 order-2 md:order-1">
           <div className="mb-10">
             <div className="mb-4">
               <Image src={logo} alt="WellnexAI Logo" width={100} height={200} />
@@ -135,20 +148,6 @@ export default function SignInPage() {
               </Link>
             </div>
           </div>
-        </div>
-        {/* Right: Image */}
-        <div className="hidden md:flex w-1/2 items-center justify-center bg-[#F8F8FA]">
-          <div className="relative w-full h-full min-h-[400px] min-w-[300px] max-w-[500px] rounded-r-2xl overflow-hidden shadow-lg flex items-center justify-center">
-            <Image
-              src={loginImage}
-              alt="WellnexAI illustration"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-          </div>
-          
         </div>
       </div>
     </div>

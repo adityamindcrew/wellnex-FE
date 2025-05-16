@@ -91,7 +91,7 @@ export default function BusinessKeywords() {
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white">
-      <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-4 gap-4">
         <h2 className="text-xl font-semibold">Business Keywords</h2>
         <div className="flex items-center gap-2">
           <div className="rounded-full bg-black px-3 py-1 text-xs text-white">9 Keywords</div>
@@ -101,8 +101,8 @@ export default function BusinessKeywords() {
           </button>
         </div>
       </div>
-      <div className="px-6 py-2">
-        <div className="flex items-center justify-between border-b border-gray-100 py-3 text-sm text-gray-500">
+      <div className="px-4 sm:px-6 py-2">
+        <div className="hidden sm:flex items-center justify-between border-b border-gray-100 py-3 text-sm text-gray-500">
           <div className="flex items-center gap-2">
             <div className="w-6"></div>
             <div className="flex items-center gap-1 font-medium">
@@ -117,7 +117,7 @@ export default function BusinessKeywords() {
           </div>
         </div>
         {keywords.map((keyword) => (
-          <div key={keyword.id} className="flex items-center justify-between border-b border-gray-100 py-3 text-sm">
+          <div key={keyword.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 py-3 text-sm gap-2 sm:gap-0">
             <div className="flex items-center gap-2">
               <div className="flex h-6 w-6 items-center justify-center">
                 <input
@@ -127,9 +127,9 @@ export default function BusinessKeywords() {
                   className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
               </div>
-              <div>{keyword.text}</div>
+              <div className="flex-1">{keyword.text}</div>
             </div>
-            <div className="flex items-center gap-20">
+            <div className="flex items-center justify-between sm:gap-20">
               <div className="w-32 text-gray-500">{keyword.lastEdited}</div>
               <div className="w-20">
                 {keyword.active && (

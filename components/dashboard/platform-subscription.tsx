@@ -2,8 +2,8 @@ export default function PlatformSubscription() {
   return (
     <div>
       <h2 className="mb-4 text-xl font-semibold">Platform Subscription</h2>
-      <div className="flex gap-6">
-        <div className="w-[400px] rounded-lg border border-gray-200 bg-white p-6">
+      <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center">
+        <div className="w-full lg:w-[400px] rounded-lg border border-gray-200 bg-white p-6">
           <div className="space-y-4">
             <div className="flex justify-between">
               <div className="text-sm font-medium text-gray-500">Subscription Status</div>
@@ -29,8 +29,8 @@ export default function PlatformSubscription() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 w-full max-w-xs mx-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -44,7 +44,7 @@ export default function PlatformSubscription() {
               <div className="text-sm font-medium">Change Logo (.png )</div>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex gap-1">
               <div className="h-12 w-12 rounded-full bg-purple-300"></div>
               <div className="h-12 w-12 rounded-full bg-purple-800"></div>
@@ -53,7 +53,7 @@ export default function PlatformSubscription() {
               <div className="text-sm font-medium">Change Color Theme</div>
             </div>
           </div>
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-2 pt-2 justify-center">
             <button className="rounded-md bg-black px-4 py-2 text-sm text-white">Reset Theme</button>
             <button className="rounded-md bg-black px-4 py-2 text-sm text-white">Save Changes</button>
           </div>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import logo from '../assets/images/logo.png';
 import AI from '../assets/images/AI.png';
 import Relume from '../assets/images/Relume.png';
-import Mobile from '../assets/images/Mobile.png';
+import Mobile from '../assets/images/mobile.png';
 import ContactForm from "@/components/contact-form";
 import FeatureCard from "@/components/feature-card";
 import Footer from "@/components/footer";

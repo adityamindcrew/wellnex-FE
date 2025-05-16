@@ -2,8 +2,8 @@ import Link from "next/link"
 // import { Instagram, Linkedin } from "lucide-react"
 import Image from "next/image"
 import logo from '../app/assets/images/logo.png'
-import Instagram from '../app/assets/images/instagram.png';
-import linkedIn from '../app/assets/images/linkedin.png';
+import Instagram from '../app/assets/images/Instagram.png';
+import linkedIn from '../app/assets/images/linkedIn.png';
 
 export default function Footer() {
   return (
