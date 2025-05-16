@@ -37,7 +37,7 @@ const QuestionsInputInner = forwardRef((props, ref) => {
       filteredQuestions.length !== (formData.questions?.length ?? 0) ||
       filteredQuestions.some((q, i) => q !== (formData.questions?.[i] ?? ""))
     ) {
-      updateFormData({ questions: filteredQuestions })
+    updateFormData({ questions: filteredQuestions })
     }
   }, [questions, formData.questions, updateFormData])
 

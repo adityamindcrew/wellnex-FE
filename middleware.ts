@@ -2,11 +2,16 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/signin', '/signup', '/landing', '/about', '/help', '/verifyEmail', '/forgot-password']
+const publicRoutes = ['/landing','/signin', '/signup',  '/about', '/help', '/verifyEmail', '/forgot-password']
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
   const { pathname } = url
+
+  // Redirect /lading to /landing (typo fix)
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL('/landing', request.url));
+  }
 
   // Handle verification URL redirect
   if (pathname === '/signin' && url.hash.includes('verifyEmail')) {
@@ -24,7 +29,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Check if the route is public
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
+  const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
 
   // Get the tokens from cookies and headers
   const authCookie = request.cookies.get('authorization')?.value
