@@ -1,10 +1,18 @@
 "use client"
 
 import type React from "react"
-
+import { usePathname, useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useOnboarding } from "../onboarding-context"
+
+const steps = [
+  "/onboarding/step-1",
+  "/onboarding/step-2",
+  "/onboarding/step-3",
+  "/onboarding/step-4",
+  "/onboarding/step-5"
+];
 
 interface FormCardProps {
   title: string
@@ -29,29 +37,26 @@ export default function FormCard({
   nextDisabled = false,
   onNext,
 }: FormCardProps) {
-  const { currentStep, nextStep, prevStep } = useOnboarding()
-  const totalSteps = 5;
-
-  // Get the correct step number from the URL
-  const getCurrentStepNumber = () => {
-    if (typeof window !== "undefined") {
-      const path = window.location.pathname;
-      if (path.includes('step-1')) return 1;
-      if (path.includes('step-2')) return 2;
-      if (path.includes('step-3')) return 3;
-      if (path.includes('step-4')) return 4;
-      if (path.includes('step-5')) return 5;
-      return currentStep;
-    }
-  };
+  const pathname = usePathname();
+  const router = useRouter();
+  const totalSteps = steps.length;
+  const currentStepIndex = steps.findIndex((step) => pathname.startsWith(step));
 
   const handleNext = () => {
     if (onNext) {
-      onNext()
-    } else {
-      nextStep()
+      onNext();
+    } else if (currentStepIndex < steps.length - 1) {
+      router.push(steps[currentStepIndex + 1]);
     }
-  }
+  };
+
+  const handleBack = () => {
+    if (currentStepIndex > 0) {
+      router.push(steps[currentStepIndex - 1]);
+    }
+  };
+
+  const getCurrentStepNumber = () => currentStepIndex + 1;
 
   return (
     <Card className="w-full max-w-2xl">
@@ -78,7 +83,7 @@ export default function FormCard({
                   </Button>
                 )}
                 {showBack && (
-                  <Button variant="outline" onClick={prevStep}>
+                  <Button variant="outline" onClick={handleBack}>
                     Back
                   </Button>
                 )}

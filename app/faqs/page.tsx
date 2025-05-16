@@ -116,7 +116,7 @@ export default function FaqsPage() {
           </div>
         </div>
         <div className="hidden md:flex items-center space-x-6">
-          <a href="/" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/' ? 'border-b-2 border-black' : ''}`}>Home</a>
+          <a href="/landing" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/landing' ? 'border-b-2 border-black' : ''}`}>Home</a>
           <a
             href="/about"
             className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname.startsWith('/about') ? 'border-b-2 border-black' : ''}`}
@@ -124,13 +124,13 @@ export default function FaqsPage() {
             About
           </a>
           <a href="/help" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/help' ? 'border-b-2 border-black' : ''}`}>Help</a>
+          <a href="/faqs" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/faqs' ? 'border-b-2 border-black' : ''}`}>FAQs</a>
         </div>
         <div className="flex items-center space-x-3">
           <a href="/signin" className=" text-black bg-white rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-50 transition">Log In</a>
           <a href="/signup" className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium ml-2">Join Now</a>
         </div>
       </nav>
-
       {/* FAQ Accordion Section */}
       <section className="max-w-2xl mx-auto w-full mt-12 mb-16">
         <h1 className="text-3xl font-bold mb-8 text-center">FAQs</h1>
