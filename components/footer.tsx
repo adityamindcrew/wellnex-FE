@@ -30,19 +30,19 @@ export default function Footer() {
             <div className="space-y-1">
               <h3 className="text-sm font-semibold">Contact:</h3>
               {/* <p className="text-sm text-gray-600">1800 123 456</p> */}
-              <p className="text-sm text-gray-600">Text 24/7 (toll-free) via Whatsapp : +447466055304
+              <p className="text-sm text-[#000000]">Text 24/7 (toll-free) via Whatsapp : +447466055304
               support@wellnexai.com</p>
             </div>
 
             {/* Social Icons */}
             <div className="flex space-x-4">
-              <Link href="https://www.instagram.com/wellnexai/" className="text-gray-600 hover:text-gray-900">
+              <Link href="https://www.instagram.com/wellnexai/" className="text-[#000000] hover:text-[#000000">
            
                 <Image src={Instagram} alt="Instagram" width={20} height={20} />
            
                 <span className="sr-only">Instagram</span>
               </Link>
-              <Link href="https://www.linkedin.com/company/wellnexai/" className="text-gray-600 hover:text-gray-900">
+              <Link href="https://www.linkedin.com/company/wellnexai/" className="text-[#000000] hover:text-[#000000]">
               <Image src={linkedIn} alt="Instagram" width={20} height={20} />
 
                 <span className="sr-only">LinkedIn</span>
@@ -62,7 +62,7 @@ export default function Footer() {
                 { name: "Careers", href: "" },
               ].map((item) => (
                 <div key={item.name}>
-                  <Link href={item.href} className="block text-gray-600 hover:text-gray-900">
+                  <Link href={item.href} className="block text-[#000000] hover:text-[#000000]">
                     {item.name}
                   </Link>
                 </div>
@@ -72,13 +72,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-xs text-gray-500 mb-4 md:mb-0">WellnexAI is a trading name for Sarawane AI Ltd.</p>
+        <div className="pt-6 border-t text-[#000000] flex flex-col md:flex-row justify-between items-center">
+          <p className="text-xs text-[#000000] mb-4 md:mb-0">WellnexAI is a trading name for Sarawane AI Ltd.</p>
           <div className="flex space-x-4">
-            <Link href="/policy-page" className="text-xs text-gray-500 hover:text-gray-700">
+            <Link href="/policy-page" className="text-xs text-[#000000] hover:text-text-[#000000]">
               Privacy Policy
             </Link>
-            <Link href="" className="text-xs text-gray-500 hover:text-gray-700">
+            <Link href="" className="text-xs text-[#000000] hover:text-[#000000]">
               Terms of Service
             </Link>
           </div>

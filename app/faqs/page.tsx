@@ -7,6 +7,7 @@ import interaction from '../assets/images/interaction.png';
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { usePathname } from "next/navigation";
+import Header from "@/components/ui/header";
 
 
 export default function FaqsPage() {
@@ -109,28 +110,7 @@ export default function FaqsPage() {
   return (
     <main className="min-h-screen bg-white flex flex-col">
      
-     <nav className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100">
-        <div className="flex items-center">
-          <div className="h-7 w-28 relative">
-            <Image src={logo} alt="WellnexAI Logo" width={100} height={100} />
-          </div>
-        </div>
-        <div className="hidden md:flex items-center space-x-6">
-          <a href="/landing" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/landing' ? 'border-b-2 border-black' : ''}`}>Home</a>
-          <a
-            href="/about"
-            className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname.startsWith('/about') ? 'border-b-2 border-black' : ''}`}
-          >
-            About
-          </a>
-          <a href="/help" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/help' ? 'border-b-2 border-black' : ''}`}>Help</a>
-          <a href="/faqs" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/faqs' ? 'border-b-2 border-black' : ''}`}>FAQs</a>
-        </div>
-        <div className="flex items-center space-x-3">
-          <a href="/signin" className=" text-black bg-white rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-50 transition">Log In</a>
-          <a href="/signup" className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium ml-2">Join Now</a>
-        </div>
-      </nav>
+    <Header/>
       {/* FAQ Accordion Section */}
       <section className="max-w-2xl mx-auto w-full mt-12 mb-16">
         <h1 className="text-3xl font-bold mb-8 text-center">FAQs</h1>
@@ -138,15 +118,15 @@ export default function FaqsPage() {
           {faqs.map((faq, idx) => (
             <div key={idx}>
               <button
-                className="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none hover:bg-gray-50 transition"
+                className="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none hover:text-[#000000] transition"
                 onClick={() => handleToggle(idx)}
                 aria-expanded={openIndex === idx}
                 aria-controls={`faq-answer-${idx}`}
               >
-                <span className="font-semibold text-lg text-gray-900 flex items-center">
+                <span className="font-semibold text-lg text-[#000000] flex items-center">
                   <span className="mr-2">{faq.question}</span>
                 </span>
-                <span className="ml-4 text-gray-400">
+                <span className="ml-4 text-[#000000]">
                   {openIndex === idx ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                 </span>
               </button>
@@ -154,13 +134,13 @@ export default function FaqsPage() {
                 typeof faq.answer === 'string' && faq.answer.trim().startsWith('<div') ? (
                   <div
                     id={`faq-answer-${idx}`}
-                    className="px-6 pb-6 text-gray-700 text-base animate-fade-in"
+                    className="px-6 pb-6 text-[#000000] text-base animate-fade-in"
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 ) : (
                   <div
                     id={`faq-answer-${idx}`}
-                    className="px-6 pb-6 text-gray-700 text-base animate-fade-in"
+                    className="px-6 pb-6 text-[#000000] text-base animate-fade-in"
                   >
                     {faq.answer}
                   </div>

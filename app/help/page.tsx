@@ -13,46 +13,26 @@ import robot from '../assets/images/robot.png';
 import featureAI from '../assets/images/featureAI.png';
 
 import { usePathname } from "next/navigation";
+import Header from "@/components/ui/header";
 export default function HelpPage() {
 
     const pathname = usePathname();
   return (
     <main className="min-h-screen bg-white">
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100">
-        <div className="flex items-center">
-          <div className="h-7 w-28 relative">
-            <Image src={logo} alt="WellnexAI Logo" width={100} height={100} />
-          </div>
-        </div>
-        <div className="hidden md:flex items-center space-x-6">
-          <a href="/landing" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/landing' ? 'border-b-2 border-black' : ''}`}>Home</a>
-          <a
-            href="/about"
-            className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname.startsWith('/about') ? 'border-b-2 border-black' : ''}`}
-          >
-            About
-          </a>
-          <a href="/help" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/help' ? 'border-b-2 border-black' : ''}`}>Help</a>
-          <a href="/faqs" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/faqs' ? 'border-b-2 border-black' : ''}`}>FAQs</a>
-        </div>
-        <div className="flex items-center space-x-3">
-          <a href="/signin" className=" text-black bg-white rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-50 transition">Log In</a>
-          <a href="/signup" className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium ml-2">Join Now</a>
-        </div>
-      </nav>
+ <Header/>
 
       {/* Help Content */}
       <section className="flex flex-col max-w-3xl mx-auto bg-white rounded-xl shadow-sm mt-12 p-8">
         <h1 className="text-3xl font-bold mb-4 text-center">How to Install the WellnexAI Chatbot on Your Website</h1>
-        <p className="text-[#475569] text-center mb-8">Once you've customized your chatbot, installing it on your site is simple. Follow the instructions below based on the platform you're using.</p>
+        <p className="text-[#000000] text-center mb-8">Once you've customized your chatbot, installing it on your site is simple. Follow the instructions below based on the platform you're using.</p>
 
         <h2 className="text-lg font-semibold mb-2">1. Step 1: Copy Your Unique Embed Code</h2>
         <pre className="bg-gray-100 rounded p-4 text-sm mb-4 overflow-x-auto"><code>{`<script src="https://embed.wellnexai.com/chatbot.js?bot=YOURID"></script>`}</code></pre>
-        <p className="mb-4 text-[#475569]">Copy the entire line above.</p>
+        <p className="mb-4 text-[#000000]">Copy the entire line above.</p>
 
         <h2 className="text-lg font-semibold mb-2">2. Clear your cache and refresh</h2>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Sometimes, browser or site caching can delay updates.</li>
           <li>Try viewing your browser cache or open your site in an incognito/private window.</li>
           <li>If using a site builder with a "Publish" button, make sure you've clicked it after adding the code.</li>
@@ -60,7 +40,7 @@ export default function HelpPage() {
 
         <h2 className="text-lg font-semibold mb-2">3. Platform-Specific Instructions</h2>
         <h3 className="font-medium mt-4 mb-1">Squarespace</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Go to your Squarespace dashboard.</li>
           <li>Go to Settings &gt; Advanced &gt; Code Injection.</li>
           <li>Scroll to the Footer section.</li>
@@ -69,7 +49,7 @@ export default function HelpPage() {
           <li>Your chatbot will now appear on every page.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">WordPress</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Open a page (using Elementor or where you want to place the chatbot).</li>
           <li>Drag the HTML widget to the bottom of the page.</li>
           <li>Paste the code into the widget.</li>
@@ -81,7 +61,7 @@ export default function HelpPage() {
           <li>Save and publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Wix</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Go to your Wix site dashboard.</li>
           <li>Click Settings &gt; Custom Code.</li>
           <li>Click + Add Custom Code.</li>
@@ -91,7 +71,7 @@ export default function HelpPage() {
           <li>Save and publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Shopify</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>From your admin panel, go to Online Store &gt; Themes.</li>
           <li>Click Actions &gt; Edit code.</li>
           <li>Open the theme.liquid file.</li>
@@ -99,7 +79,7 @@ export default function HelpPage() {
           <li>Save and publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Webflow</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Open your Webflow project dashboard.</li>
           <li>Click Pages, then the page (or root) you want to add your desired page.</li>
           <li>Scroll to the Footer (body) tag field.</li>
@@ -107,7 +87,7 @@ export default function HelpPage() {
           <li>Click Save, then Publish your changes.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">GoDaddy Website Builder</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>In your website editor, click Edit Site.</li>
           <li>Navigate to Settings &gt; Site-wide Code.</li>
           <li>Place the embed code in the Footer section.</li>
@@ -115,14 +95,14 @@ export default function HelpPage() {
           <li>Click Publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Duda</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Open your site editor and click Settings &gt; Head HTML.</li>
           <li>Scroll to the Body End tag.</li>
           <li>Paste your embed code.</li>
           <li>Click Save and Publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">ClickFunnels</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Open the desired funnel page.</li>
           <li>Click Settings &gt; Tracking Code.</li>
           <li>Scroll to Footer.</li>
@@ -130,14 +110,14 @@ export default function HelpPage() {
           <li>Save the page.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Kajabi</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Go to Settings &gt; Site Details &gt; Page Scripts.</li>
           <li>Paste the embed code in the Footer section.</li>
           <li>Click Save.</li>
           <li>Your chatbot is now installed on all pages.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Bubble</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Option A – Site-wide installation</li>
           <li>Open your Bubble app editor.</li>
           <li>Go to Settings &gt; SEO / Metadata.</li>
@@ -151,7 +131,7 @@ export default function HelpPage() {
           <li>Click Preview or Deploy.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Framer</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Open your Framer project.</li>
           <li>In the editor, click + Add Element &gt; Embed.</li>
           <li>Paste your embed code.</li>
@@ -159,32 +139,32 @@ export default function HelpPage() {
           <li>Click Publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Card</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>In the editor, click + Add Element &gt; Embed.</li>
           <li>Select Code and paste the embed code.</li>
           <li>Place the element at the bottom of your page.</li>
           <li>Click Publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Tilda</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Go to Site Settings &gt; More &gt; Custom Code.</li>
           <li>Scroll to before &lt;/body&gt;.</li>
           <li>Paste your embed code.</li>
           <li>Click Save &amp; Publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Webnode</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>Navigate to your website dashboard.</li>
           <li>Go to Settings &gt; Website Settings &gt; HTML Footer.</li>
           <li>Paste the embed code.</li>
           <li>Click Save and Publish.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Need Help?</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li>If your website platform isn't listed or you'd like assistance, feel free to reach out to us anytime at support@wellnexai.com.</li>
         </ul>
         <h3 className="font-medium mt-4 mb-1">Why isn't the chatbot showing up on my website? What should I do?</h3>
-        <ul className="list-disc pl-6 mb-4 text-[#475569]">
+        <ul className="list-disc pl-6 mb-4 text-[#000000]">
           <li><strong>1) Check that the embed code is placed correctly</strong>
             <ul className="list-disc pl-6">
               <li>Make sure the code was pasted just before the closing &lt;/body&gt; tag of your website's HTML.</li>

@@ -55,7 +55,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         transform transition-transform duration-200 ease-in-out
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <Sidebar />
+      <Sidebar />
       </div>
 
       {/* Main content */}
