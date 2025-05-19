@@ -16,12 +16,10 @@ export default function AboutPage() {
     <main className="min-h-screen bg-white flex flex-col">
      
   <Header/>
-
-     
       <section className="flex flex-col md:flex-row max-w-5xl mx-auto bg-white rounded-xl shadow-sm mt-12 p-8 gap-8">
-    
         <div className="flex-1 flex flex-col justify-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-4">About WellnexAI</h1>
+          <h4 className="text-sm md:text-sm mt-3 font-semibold mb-4">WellnexAI was born out of a simple belief: </h4>
           <p className="text-[#475569] text-base md:text-md mb-3">
             beauty, wellness, and health businesses deserve smarter, easier ways to grow, without the stress of constant marketing or tech complexity. We empower clinics, spas, salons, gyms, and wellness brands to deliver personalized consultation 24/7 using intelligent, no-code AI chatbots that speaks their client's language – literally.
           </p>
@@ -34,18 +32,17 @@ export default function AboutPage() {
         </div>
 
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full max-w-xs h-72 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-            <Image src={interaction} alt="Robot" fill className="object-cover" />
+          <div className="w-full max-w-xs h-96  rounded-lg flex items-center justify-center relative overflow-hidden">
+            <Image src={interaction} alt="Robot" fill className="object-contain" />
           </div>
         </div>
       </section>
 
 
       <section className="flex flex-col md:flex-row max-w-5xl mx-auto bg-white rounded-xl shadow-sm mt-8 p-8 gap-8">
-      
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full max-w-xs h-72 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-            <Image src={founder} alt="Founder" fill className="object-cover" />
+          <div className="w-full max-w-xs h-96 rounded-lg flex items-center justify-center relative overflow-hidden">
+            <Image src={founder} alt="Founder" fill className="object-contain" />
           </div>
         </div>
         {/* Right: Founder Text */}

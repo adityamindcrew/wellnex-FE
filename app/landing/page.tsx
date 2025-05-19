@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
       {/* Navbar */}
-   <Header />
+      <Header />
 
       {/* Hero Section */}
       <section className="relative w-full h-[320px] md:h-[600px]">
@@ -54,10 +54,10 @@ export default function Home() {
         </div>
       </section>
 
-  
-      <section className="py-8 md:py-16 px-4">
+
+     <section className="py-8 md:py-16 px-4">
         <h2 className="text-xl md:text-2xl font-bold text-center mb-8 md:mb-12">How it works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {[1, 2, 3, 4].map((step, idx) => (
             <div key={step} className="bg-gray-100 p-4 rounded-lg flex flex-col items-center text-center">
               <div className="w-12 h-12  flex items-center justify-center ">
@@ -74,23 +74,23 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </section>
+      </section> 
 
-    
-      <section className="py-8 md:py-16 px-4 bg-white">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">Why Choose WellnexAI?</h2>
-        <p className="text-center text-base md:text-xl text-[#000000] ">Smart. Simple. Tailored for You.</p>
 
-        <div className="flex flex-col md:flex-row max-w-4xl mx-auto w-full">
-          <div className="relative w-full max-w-xs md:w-[380px] h-64 md:h-[500px] flex-shrink-0 flex items-center justify-center mb-8 md:mb-0 mx-auto">
-            <div className="absolute w-full h-full flex items-center justify-center">
-              <Image src={Mobile} alt="Mobile App" height={1500}  width={1000}/>
-            </div>
+      <section className="py-4 md:py-8 px-4 bg-white">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-1 md:mb-4">Why Choose WellnexAI?</h2>
+        <p className="text-center text-base md:text-xl text-[#000000] mb-4">Smart. Simple. Tailored for You.</p>
+        <div className="flex flex-col md:flex-row max-w-4xl mx-auto w-full items-center">
+          <div className="relative w-full max-w-lg md:w-[420px] h-96 md:h-[520px] flex-shrink-0 flex items-center justify-center mb-4 md:mb-0 mx-auto">
+            <Image src={Mobile} alt="Mobile App" className="object-contain" />
           </div>
-          <div className="md:ml-10 max-w-md flex-1 flex flex-col justify-center h-auto md:h-[500px]">
-            <p className="text-sm md:text-md text-[#000000] mb-4">
+          {/* <div className="hidden md:block h-[320px] w-px bg-blue-600 mx-8" /> */}
+          <div className="hidden md:block h-[320px] w-[0.8px] bg-blue-600 mx-8" />
+          <div className="md:ml-8 max-w-md flex-1 flex flex-col justify-center h-auto md:h-[400px]">
+            <p className="text-sm md:text-md text-[#000000] mb-2 text-justify">
               Wellnex AI revolutionizes the beauty and wellness industry by offering customizable AI-powered chatbots tailored for beauty clinics, spas, dermatologists, salons, and wellness businesses and products. Our platform enables you to modernize your client engagement effortlessly. With a simple setup, you can capture leads 24/7 and increase bookings without the need for additional marketing or staff.
             </p>
+
           </div>
         </div>
       </section>
@@ -114,18 +114,20 @@ export default function Home() {
         <div className="container px-4 md:px-6 mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">Our Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FeatureCard
-              image={robot.src}
-              title="Launch Your AI Concierge in Just Minutes"
-              description="Your AI chatbot works like a 24/7 receptionist, capturing client details even after hours when your team is busy."
-              learnMoreLink="#"
-            />
-            <FeatureCard
-              image={featureAI.src}
-              title="24/7 Leads Generation"
-              description="Even when your business is closed, the chatbot is live and helping clients share their concerns, request services, and leave contact info for follow-up."
-              learnMoreLink="#"
-            />
+            <div className="h-full flex flex-col p-6">
+              <FeatureCard
+                image={robot.src}
+                title="Launch Your AI Concierge in Just Minutes"
+                description="Your AI chatbot works like a 24/7 receptionist, capturing client details even after hours when your team is busy."
+              />
+            </div>
+            <div className="h-full flex flex-col p-6">
+              <FeatureCard
+                image={featureAI.src}
+                title="24/7 Leads Generation"
+                description="Even when your business is closed, the chatbot is live and helping clients share their concerns, request services, and leave contact info for follow-up."
+              />
+            </div>
           </div>
         </div>
       </section>

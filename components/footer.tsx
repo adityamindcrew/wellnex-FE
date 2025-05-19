@@ -30,8 +30,17 @@ export default function Footer() {
             <div className="space-y-1">
               <h3 className="text-sm font-semibold">Contact:</h3>
               {/* <p className="text-sm text-gray-600">1800 123 456</p> */}
-              <p className="text-sm text-[#000000]">Text 24/7 (toll-free) via Whatsapp : +447466055304
-              support@wellnexai.com</p>
+              <p className="text-sm text-[#000000]">
+                Text 24/7 (toll-free) via Whatsapp : 
+                <a href="https://wa.me/447466055304" className="underline ml-1" target="_blank" rel="noopener noreferrer">
+                  +447466055304
+                </a>
+              </p>
+              <p className="text-sm text-[#000000]">
+                <a href="mailto:support@wellnexai.com" className="underline">
+                  support@wellnexai.com
+                </a>
+              </p>
             </div>
 
             {/* Social Icons */}
@@ -51,8 +60,8 @@ export default function Footer() {
           </div>
 
           {/* Right Column - Navigation */}
-          <div className="flex justify-end">
-            <nav className="space-y-2">
+          <div className="flex justify-start md:justify-end">
+            <nav className="space-y-2 text-left md:text-right">
               {[
                 { name: "Home", href: "/" },
                 { name: "About", href: "/about" },

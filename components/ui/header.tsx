@@ -32,7 +32,7 @@ export default function Header() {
           </a>
           <a href="/help" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/help' ? 'border-b-2 border-black' : ''}`}>Help</a>
           <a href="/faqs" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/faqs' ? 'border-b-2 border-black' : ''}`}>FAQs</a>
-          <a href="/signin" className="ml-8 text-black bg-white rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-50 transition">Log In</a>
+          <a href="/signin" className="text-md font-medium text-[#000000] hover:text-[#000000] pb-2">Log In</a>
           <a href="/signup" className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium ml-2">Join Now</a>
         </div>
         <button className="md:hidden ml-auto" onClick={toggleMenu}>

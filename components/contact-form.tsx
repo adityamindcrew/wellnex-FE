@@ -84,7 +84,11 @@ export default function ContactForm() {
         </div>
 
         <div className="pt-2">
-          <Button type="submit" className="w-full">
+          <Button
+            type="button"
+            className="w-full"
+            onClick={() => alert("Under development")}
+          >
             Submit
           </Button>
         </div>
