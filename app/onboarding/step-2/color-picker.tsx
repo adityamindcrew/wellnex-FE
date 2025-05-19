@@ -29,6 +29,23 @@ const ColorPicker = forwardRef((props, ref) => {
   const [gradientPos, setGradientPos] = useState({ x: 0, y: 0 })
   const [huePos, setHuePos] = useState(0)
 
+  // On mount, load color from localStorage
+  useEffect(() => {
+    const savedColor = localStorage.getItem('themeColor');
+    if (savedColor) {
+      setSelectedColor(savedColor);
+      updateFormData({ themeColor: savedColor });
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  // Save color to localStorage whenever it changes
+  useEffect(() => {
+    if (selectedColor) {
+      localStorage.setItem('themeColor', selectedColor);
+    }
+  }, [selectedColor]);
+
   // Toggle color picker
   const togglePicker = () => {
     setIsPickerOpen(!isPickerOpen)

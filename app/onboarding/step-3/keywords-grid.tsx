@@ -53,6 +53,31 @@ const KeywordsGrid = forwardRef((props, ref) => {
     setKeywords([...uniqueKeywords, ...Array(9 - uniqueKeywords.length).fill("")])
   }, [formData.keywords])
 
+  // On mount, load keywords from localStorage if available
+  useEffect(() => {
+    const savedKeywords = localStorage.getItem('keywords');
+    if (savedKeywords) {
+      try {
+        const parsed = JSON.parse(savedKeywords);
+        if (Array.isArray(parsed)) {
+          setKeywords([...parsed.filter((k) => k.trim() !== ""), ...Array(9 - parsed.filter((k) => k.trim() !== "").length).fill("")]);
+          updateFormData({ keywords: parsed });
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  // Save keywords to localStorage whenever they change
+  useEffect(() => {
+    if (keywords && Array.isArray(keywords)) {
+      const filtered = keywords.filter((k) => k.trim() !== "");
+      localStorage.setItem('keywords', JSON.stringify(filtered));
+    }
+  }, [keywords]);
+
   // Handle Next button click
   const handleNext = async () => {
     // Filter out empty and duplicate keywords
@@ -98,6 +123,7 @@ const KeywordsGrid = forwardRef((props, ref) => {
     newKeywords[index] = value
     setKeywords(newKeywords)
     setError(null) // Clear error when user makes changes
+    // No need to update localStorage here, useEffect will handle it
   }
 
   // Handle key press (for Enter key navigation)

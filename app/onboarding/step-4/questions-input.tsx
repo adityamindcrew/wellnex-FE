@@ -28,18 +28,50 @@ const QuestionsInputInner = forwardRef((props, ref) => {
   // }, [router])
 
   // Update form data when questions change
+  // useEffect(() => {
+  //   // Filter out empty questions
+  //   const filteredQuestions = questions.filter((question) => question.trim() !== "")
+  //   // Only update if the value actually changed
+  //   if (
+  //     !formData.questions ||
+  //     filteredQuestions.length !== (formData.questions?.length ?? 0) ||
+  //     filteredQuestions.some((q, i) => q !== (formData.questions?.[i] ?? ""))
+  //   ) {
+  //   updateFormData({ questions: filteredQuestions })
+  //   }
+  // }, [questions, formData.questions, updateFormData])
+
   useEffect(() => {
-    // Filter out empty questions
-    const filteredQuestions = questions.filter((question) => question.trim() !== "")
+    const filteredQuestions = questions.filter((question) => question.trim() !== "");
+  
     // Only update if the value actually changed
     if (
       !formData.questions ||
       filteredQuestions.length !== (formData.questions?.length ?? 0) ||
       filteredQuestions.some((q, i) => q !== (formData.questions?.[i] ?? ""))
     ) {
-    updateFormData({ questions: filteredQuestions })
+      updateFormData({ questions: filteredQuestions });
     }
-  }, [questions, formData.questions, updateFormData])
+  
+    // Save to localStorage
+    localStorage.setItem("questions", JSON.stringify(questions));
+  }, [questions, formData.questions, updateFormData]);
+  
+
+  useEffect(() => {
+    const storedQuestions = localStorage.getItem("questions");
+    if (storedQuestions) {
+      try {
+        const parsed = JSON.parse(storedQuestions);
+        if (Array.isArray(parsed)) {
+          setQuestions(parsed);
+        }
+      } catch (e) {
+        console.error("Failed to parse questions from localStorage:", e);
+      }
+    }
+  }, []);
+  
 
   // Handle input change
   const handleInputChange = (index: number, value: string) => {

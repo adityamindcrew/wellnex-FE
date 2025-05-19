@@ -43,10 +43,16 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-b border-gray-100">
           <div className="px-4 py-3 space-y-3">
-            <a href="/landing" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/landing' ? 'border-b-2 border-black' : ''}`}>Home</a>
-            <a href="/about" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname.startsWith('/about') ? 'border-b-2 border-black' : ''}`}>About</a>
-            <a href="/help" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/help' ? 'border-b-2 border-black' : ''}`}>Help</a>
-            <a href="/faqs" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/faqs' ? 'border-b-2 border-black' : ''}`}>FAQs</a>
+            <a href="/landing" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/landing' ? 'border-b-2 border-black w-fit' : ''}`}>Home</a>
+            <a href="/about" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname.startsWith('/about') ? 'border-b-2 border-black w-fit' : ''}`}>About</a>
+            <a href="/help" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/help' ? 'border-b-2 border-black w-fit' : ''}`}>Help</a>
+            <a href="/faqs" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/faqs' ? 'border-b-2 border-black w-fit' : ''}`}>FAQs</a>
+          </div>
+          <div className="px-4 py-3 border-t border-gray-100">
+            <div className="flex items-center justify-between space-x-2">
+              <a href="/signin" className="text-md font-medium text-[#000000] hover:text-[#000000] flex-1 text-center">Log In</a>
+              <a href="/signup" className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium flex-1 text-center">Join Now</a>
+            </div>
           </div>
         </div>
       )}
