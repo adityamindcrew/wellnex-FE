@@ -25,7 +25,12 @@ interface ApiResponse {
 
 const KeywordsGrid = forwardRef((props, ref) => {
   const { formData, updateFormData } = useOnboarding()
-  const [keywords, setKeywords] = useState<string[]>(formData.keywords || Array(9).fill(""))
+  const keywordsFromContext = Array.isArray(formData.keywords) ? formData.keywords : [];
+  const [keywords, setKeywords] = useState<string[]>(
+    keywordsFromContext.length > 0
+      ? [...keywordsFromContext.filter((k) => k.trim() !== ""), ...Array(9 - keywordsFromContext.filter((k) => k.trim() !== "").length).fill("")]
+      : Array(9).fill("")
+  );
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -43,16 +48,19 @@ const KeywordsGrid = forwardRef((props, ref) => {
     handleNext,
   }));
 
+  useEffect(() => {
+    const uniqueKeywords = Array.from(new Set(keywordsFromContext.filter((k) => k.trim() !== "")))
+    setKeywords([...uniqueKeywords, ...Array(9 - uniqueKeywords.length).fill("")])
+  }, [formData.keywords])
+
   // Handle Next button click
   const handleNext = async () => {
-    // Filter out empty keywords
-    const filteredKeywords = keywords.filter((keyword) => keyword.trim() !== "")
-    
+    // Filter out empty and duplicate keywords
+    const filteredKeywords = Array.from(new Set(keywords.filter((k) => k.trim() !== "")))
     if (filteredKeywords.length === 0) {
       setError("Please enter at least one keyword")
       return
     }
-
     try {
       setIsSubmitting(true)
       setError(null)
@@ -62,20 +70,18 @@ const KeywordsGrid = forwardRef((props, ref) => {
         setError("Token or Business ID not found")
         return
       }
-
       const response = await businessApi.addBusinessKeywords(
         filteredKeywords.map(name => ({ name })),
         token,
         businessId
       ) as ApiResponse
-
       // Update the keywords state with the returned data
       if (response.data?.keywords) {
         const newKeywords = response.data.keywords.map((k: Keyword) => k.name)
-        setKeywords(newKeywords)
-        updateFormData({ keywords: newKeywords })
+        updateFormData({ keywords: Array.from(new Set(newKeywords.filter((k) => k.trim() !== ""))) })
+      } else {
+        updateFormData({ keywords: filteredKeywords })
       }
-
       // Navigate to next step
       router.push('/onboarding/step-4')
     } catch (error) {

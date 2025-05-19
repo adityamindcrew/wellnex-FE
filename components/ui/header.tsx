@@ -16,13 +16,13 @@ export default function Header() {
 
   return (
     <header>
-      <nav className="flex items-center justify-between px-4 md:px-6 py-3 bg-white border-b border-gray-100">
+      <nav className="flex items-center px-4 md:px-6 py-3 bg-white border-b border-gray-100">
         <div className="flex items-center">
           <div className="h-7 w-28 relative">
-            <Image src={logo} alt="WellnexAI Logo" width={100} height={100} />
+            <Image src={logo} alt="WellnexAI Logo" width={200} height={200} />
           </div>
         </div>
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center ml-auto space-x-6">
           <a href="/landing" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/landing' ? 'border-b-2 border-black' : ''}`}>Home</a>
           <a
             href="/about"
@@ -32,12 +32,10 @@ export default function Header() {
           </a>
           <a href="/help" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/help' ? 'border-b-2 border-black' : ''}`}>Help</a>
           <a href="/faqs" className={`text-md font-medium text-[#000000] hover:text-[#000000] pb-2 ${pathname === '/faqs' ? 'border-b-2 border-black' : ''}`}>FAQs</a>
-        </div>
-        <div className="flex items-center space-x-3">
-          <a href="/signin" className=" text-black bg-white rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-50 transition">Log In</a>
+          <a href="/signin" className="ml-8 text-black bg-white rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-50 transition">Log In</a>
           <a href="/signup" className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium ml-2">Join Now</a>
         </div>
-        <button className="md:hidden" onClick={toggleMenu}>
+        <button className="md:hidden ml-auto" onClick={toggleMenu}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
@@ -49,7 +47,6 @@ export default function Header() {
             <a href="/about" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname.startsWith('/about') ? 'border-b-2 border-black' : ''}`}>About</a>
             <a href="/help" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/help' ? 'border-b-2 border-black' : ''}`}>Help</a>
             <a href="/faqs" className={`block text-md font-medium text-[#000000] hover:text-[#000000] ${pathname === '/faqs' ? 'border-b-2 border-black' : ''}`}>FAQs</a>
-       
           </div>
         </div>
       )}

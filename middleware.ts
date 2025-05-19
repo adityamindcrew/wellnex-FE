@@ -2,11 +2,24 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/landing','/faqs','/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password']
+const publicRoutes = ['/landing','/faqs','/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout']
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
   const { pathname } = url
+
+  // Handle logout
+  if (pathname === '/logout') {
+    const response = NextResponse.redirect(new URL('/signup', request.url))
+    // Clear all relevant cookies
+    response.cookies.delete('onboardingToken')
+    response.cookies.delete('currentOnboardingStep')
+    response.cookies.delete('token')
+    response.cookies.delete('authorization')
+    // Add script to clear localStorage
+    response.headers.set('Clear-Site-Data', '"localStorage"')
+    return response
+  }
 
   // Redirect /lading to /landing (typo fix)
   if (pathname === '/') {
@@ -49,6 +62,10 @@ export function middleware(request: NextRequest) {
 
   // Prevent going back to signup if onboarding has started
   if (pathname === '/signup' && onboardingToken) {
+    // If there's a current step, redirect to that step
+    if (currentOnboardingStep) {
+      return NextResponse.redirect(new URL(`/onboarding/step-${currentOnboardingStep}`, request.url))
+    }
     return NextResponse.redirect(new URL('/onboarding/step-1', request.url))
   }
 
@@ -59,6 +76,18 @@ export function middleware(request: NextRequest) {
 
   // Special case for onboarding: allow if onboardingToken exists
   if (pathname.startsWith('/onboarding') && onboardingToken) {
+    // Store current step in a long-lasting cookie
+    if (pathname.match(/\/onboarding\/step-\d+/)) {
+      const step = pathname.split('/').pop()?.replace('step-', '')
+      if (step) {
+        const response = NextResponse.next()
+        response.cookies.set('currentOnboardingStep', step, {
+          maxAge: 30 * 24 * 60 * 60, // 30 days
+          path: '/',
+        })
+        return response
+      }
+    }
     return NextResponse.next()
   }
 

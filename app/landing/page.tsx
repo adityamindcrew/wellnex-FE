@@ -16,6 +16,12 @@ import { usePathname } from "next/navigation";
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
 import Header from "@/components/ui/header";
+import Step1Img from "../../app/assets/images/add.png";
+import Step2Img from "../../app/assets/images/payment.png";
+import Step3Img from "../../app/assets/images/code.png";
+import Step4Img from "../../app/assets/images/customer.png";
+
+const stepImages = [Step1Img, Step2Img, Step3Img, Step4Img];
 
 export default function Home() {
   const pathname = usePathname();
@@ -48,15 +54,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works Section */}
+  
       <section className="py-8 md:py-16 px-4">
         <h2 className="text-xl md:text-2xl font-bold text-center mb-8 md:mb-12">How it works</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {[1, 2, 3, 4].map((step) => (
+          {[1, 2, 3, 4].map((step, idx) => (
             <div key={step} className="bg-gray-100 p-4 rounded-lg flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 border border-gray-200">
+              <div className="w-12 h-12  flex items-center justify-center ">
                 <div className="w-6 h-6 relative">
-                  <Image src={Relume} alt={`Step ${step}`} fill className="object-contain" />
+                  <Image src={stepImages[idx]} alt={`Step ${step}`} fill className="object-contain" />
                 </div>
               </div>
               <p className="text-xs text-[#000000] max-w-[180px]">
@@ -70,7 +76,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Choose WellnexAI Section */}
+    
       <section className="py-8 md:py-16 px-4 bg-white">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">Why Choose WellnexAI?</h2>
         <p className="text-center text-base md:text-xl text-[#000000] ">Smart. Simple. Tailored for You.</p>
@@ -78,7 +84,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row max-w-4xl mx-auto w-full">
           <div className="relative w-full max-w-xs md:w-[380px] h-64 md:h-[500px] flex-shrink-0 flex items-center justify-center mb-8 md:mb-0 mx-auto">
             <div className="absolute w-full h-full flex items-center justify-center">
-              <Image src={Mobile} alt="Mobile App" fill className="object-contain" />
+              <Image src={Mobile} alt="Mobile App" height={1500}  width={1000}/>
             </div>
           </div>
           <div className="md:ml-10 max-w-md flex-1 flex flex-col justify-center h-auto md:h-[500px]">

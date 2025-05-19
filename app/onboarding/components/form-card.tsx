@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useOnboarding } from "../onboarding-context"
+import LogoutButton from "@/components/ui/logout-button"
 
 const steps = [
   "/onboarding/step-1",
@@ -46,7 +47,8 @@ export default function FormCard({
     if (onNext) {
       onNext();
     } else if (currentStepIndex < steps.length - 1) {
-      router.push(steps[currentStepIndex + 1]);
+      const nextStep = currentStepIndex + 1;
+      router.push(steps[nextStep]);
     }
   };
 
@@ -59,10 +61,13 @@ export default function FormCard({
   const getCurrentStepNumber = () => currentStepIndex + 1;
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-2xl mx-auto">
       <CardContent className="pt-6">
-        <div className="flex flex-col space-y-6 px-4 py-8">
-          <div className="space-y-2 text-center">
+        <div className="flex flex-col space-y-6 px-4 py-8 relative">
+          <div className="absolute right-4 top-4">
+            <LogoutButton />
+          </div>
+          <div className="space-y-2 text-center mt-6">
             <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
             {description && <p className="text-muted-foreground">{description}</p>}
           </div>
