@@ -105,7 +105,7 @@ const KeywordsGrid = forwardRef((props, ref) => {
         const newKeywords = response.data.keywords.map((k: Keyword) => k.name)
         updateFormData({ keywords: Array.from(new Set(newKeywords.filter((k) => k.trim() !== ""))) })
       } else {
-        updateFormData({ keywords: filteredKeywords })
+    updateFormData({ keywords: filteredKeywords })
       }
       // Navigate to next step
       router.push('/onboarding/step-4')

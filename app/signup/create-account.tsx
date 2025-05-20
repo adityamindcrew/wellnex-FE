@@ -234,14 +234,14 @@ export default function CreateAccount() {
             </div>
         </div>
         {/* Right: Image */}
-        <div className="w-full md:w-1/2 flex items-stretch justify-center p-0 m-0">
-          <div className="relative w-full min-h-[300px] md:min-h-0 md:h-auto aspect-square md:aspect-auto overflow-hidden flex items-stretch justify-center p-0 m-0">
+        <div className="w-full md:w-1/2 flex items-stretch justify-center p-0 m-0 mt-16 mb-16">
+          <div className="relative w-full min-h-[300px] md:min-h-0 md:h-auto aspect-square md:aspect-auto overflow-hidden flex items-center justify-center p-0 m-0">
             <Image
               src={loginImage}
               alt="WellnexAI illustration"
               fill
-              className="object-cover h-full w-full"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              className="m-auto h-full w-full"
+              sizes="(max-width: 768px ,max-height: 768px) 100vw, 50vw"
               priority
             />
           </div>

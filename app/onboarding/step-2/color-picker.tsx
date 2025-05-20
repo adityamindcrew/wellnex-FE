@@ -74,7 +74,7 @@ const ColorPicker = forwardRef((props, ref) => {
 
     // Only update context, do not call API here
     if (formData.themeColor !== selectedColor) {
-      updateFormData({ themeColor: selectedColor })
+    updateFormData({ themeColor: selectedColor })
     }
   }, [selectedColor, updateFormData, formData.themeColor])
 

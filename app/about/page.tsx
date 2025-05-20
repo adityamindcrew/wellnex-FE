@@ -57,7 +57,7 @@ export default function AboutPage() {
           <p className="text-[#475569] text-base md:text-md mb-3">
             We're on a mission to democratize intelligent chatbots so that small and mid-sized businesses can compete, connect, and thrive in a digital world. Together, we're redefining what's possible for every beauty, health, and wellness entrepreneur—and making innovation accessible to all.
           </p>
-          <div className="mt-4 text-sm text-gray-500">Saba Sadiqzai, Founder of WellnexAI</div>
+          <div className="mt-4 text-sm text-gray-500">Sara Soltanzadeh, Founder of WellnexAI</div>
         </div>
       </section>
 

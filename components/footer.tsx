@@ -82,7 +82,7 @@ export default function Footer() {
 
         {/* Bottom Section */}
         <div className="pt-6 border-t text-[#000000] flex flex-col md:flex-row justify-between items-center">
-          <p className="text-xs text-[#000000] mb-4 md:mb-0">WellnexAI is a trading name for Sarawane AI Ltd.</p>
+          <p className="text-xs text-[#000000] mb-4 md:mb-0">WellnexAI is a trading name for SARAVERSE AI LTD.</p>
           <div className="flex space-x-4">
             <Link href="/policy-page" className="text-xs text-[#000000] hover:text-text-[#000000]">
               Privacy Policy

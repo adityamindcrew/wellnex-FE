@@ -12,7 +12,7 @@ export default function Sidebar() {
     const token = localStorage.getItem("token")
     console.log("Token:", token)
     try {
-      await fetch(`http://56.228.66.97:3000/business/logout`, {
+      await fetch(`https://wellnexai.com/api/business/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
