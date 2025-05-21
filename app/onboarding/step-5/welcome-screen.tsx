@@ -4,6 +4,10 @@ import { useState } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Button } from "@/components/ui/button"
 import { businessApi } from "@/app/services/api"
+import Lottie from "lottie-react";
+import robotAnimation from "../../../public/robot.json";
+
+
 
 export default function WelcomeScreen() {
   const { formData } = useOnboarding()
@@ -37,6 +41,10 @@ export default function WelcomeScreen() {
 
   return (
     <div className="flex flex-col items-center space-y-8 py-8">
+<div className="w-36">
+  <Lottie animationData={robotAnimation} loop={true} />
+</div>
+
       <p className="text-center text-lg">
         Your account is almost ready. Please verify your email to unlock your dashboard and start building your AI
         chatbot.

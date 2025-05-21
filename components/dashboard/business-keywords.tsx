@@ -124,7 +124,7 @@ export default function BusinessKeywords() {
                   type="checkbox"
                   checked={keyword.checked}
                   onChange={() => toggleCheck(keyword.id)}
-                  className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  className="h-4 w-4 rounded border-gray-300 accent-[#987CF1] focus:ring-[#987CF1]"
                 />
               </div>
               <div className="flex-1">{keyword.text}</div>

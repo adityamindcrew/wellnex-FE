@@ -96,7 +96,7 @@ export default function BusinessQuestions() {
                   type="checkbox"
                   checked={question.checked}
                   onChange={() => toggleCheck(question.id)}
-                  className="h-4 w-4 rounded border-gray-300 text-[#7F56D9] focus:ring-[#7F56D9]"
+                  className="h-4 w-4 rounded border-gray-300 accent-[#987CF1] focus:ring-[#987CF1]"
                 />
               </div>
               <div className="flex-1">{question.text}</div>
