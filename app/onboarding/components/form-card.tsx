@@ -43,18 +43,27 @@ export default function FormCard({
   const totalSteps = steps.length;
   const currentStepIndex = steps.findIndex((step) => pathname.startsWith(step));
 
-  const handleNext = () => {
-    if (onNext) {
-      onNext();
-    } else if (currentStepIndex < steps.length - 1) {
-      const nextStep = currentStepIndex + 1;
-      router.push(steps[nextStep]);
+  const handleNext = async () => {
+    try {
+      // First execute any data saving logic and wait for it to complete
+      if (onNext) {
+        await onNext();
+      }
+      
+      // Only navigate to next step after data is saved
+      const nextStepIndex = currentStepIndex + 1;
+      if (nextStepIndex < steps.length) {
+        router.replace(steps[nextStepIndex]);
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+      // Don't navigate if there's an error
     }
   };
 
   const handleBack = () => {
     if (currentStepIndex > 0) {
-      router.push(steps[currentStepIndex - 1]);
+      router.replace(steps[currentStepIndex - 1]);
     }
   };
 
@@ -93,7 +102,11 @@ export default function FormCard({
                   </Button>
                 )}
                 {showNext && (
-                  <Button onClick={handleNext} disabled={nextDisabled} className="bg-[#987CF1] hover:bg-[#987CF1]">
+                  <Button 
+                    onClick={() => handleNext()} 
+                    disabled={nextDisabled} 
+                    className="bg-[#987CF1] hover:bg-[#987CF1]"
+                  >
                     {nextLabel}
                   </Button>
                 )}

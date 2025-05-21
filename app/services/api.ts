@@ -78,7 +78,17 @@ export const businessApi = {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Failed to upload logo');
-      return data;
+      
+      // Format the logo URL to match the required format
+      let logoUrl = data.logoUrl;
+      if (logoUrl) {
+        // If the URL doesn't start with https://wellnexai.com, add it
+        if (!logoUrl.startsWith('https://wellnexai.com')) {
+          logoUrl = `https://wellnexai.com${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`;
+        }
+      }
+      
+      return { ...data, logoUrl };
     } catch (err) {
       throw err;
     }
