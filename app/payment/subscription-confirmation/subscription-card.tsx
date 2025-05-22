@@ -13,41 +13,42 @@ export default function SubscriptionCard() {
 
   return (
     <div className="w-full max-w-md rounded-md border border-gray-200 bg-white p-8 shadow-sm">
-      <div className="flex flex-col items-center space-y-6">
+      <div className="flex flex-col i space-y-6">
         <div className="text-[#9747FF]">
-          <CreditCard className="h-6 w-6" />
+          <CreditCard/>
         </div>
 
-        <div className="space-y-2 text-center">
-          <h1 className="text-xl font-semibold text-black">WellnexAI Pro Subscription</h1>
-          <p className="text-sm text-gray-600">
-            Secure your AI chatbot in just one step - your subscription begins today.
+        <div className="space-y-2">
+          <h1 className="text-xl font-bold text-[#181D27]">WellnexAI Pro Subscription</h1>
+          <p className="text-sm text-[#535862]">
+          Secure your AI chatbot in just one step - your subscription begins today.
           </p>
         </div>
 
         <div className="w-full rounded-md bg-[#F4EEFF] p-4">
           <div className="flex items-center justify-between">
-            <div className="font-medium">Plan $199/month</div>
+            <span className="text-[#7F56D9]"><span className="text-[#53389E]">Plan</span> $199/month
+            </span>
             <Check className="h-5 w-5 text-[#9747FF]" />
           </div>
           <ul className="mt-3 space-y-2 text-sm">
             <li className="flex items-start">
-              <span className="mr-2 text-[#9747FF]">•</span>
-              <span>
-                <span className="text-[#9747FF]">AI-powered chatbot</span> tailored for wellness businesses.
+              <span className="mr-2 text-[#7F56D9]">•</span>
+              
+                <span className="text-[#7F56D9]">AI-powered chatbot tailored for wellness businesses.
               </span>
             </li>
             <li className="flex items-start">
-              <span className="mr-2 text-[#9747FF]">•</span>
-              <span>
-                <span className="text-[#9747FF]">Seamless integration</span> with your existing website.
+              <span className="mr-2 text-[#7F56D9]">•</span>
+            
+                <span className="text-[#7F56D9]">Seamless integration with your existing website.
               </span>
             </li>
             <li className="flex items-start">
-              <span className="mr-2 text-[#9747FF]">•</span>
-              <span>
-                <span className="text-[#9747FF]">24/7 customer support</span>.
-              </span>
+              <span className="mr-2 text-[#7F56D9]">•</span>
+
+                <span className="text-[#7F56D9]">24/7 customer support</span>.
+             
             </li>
           </ul>
         </div>

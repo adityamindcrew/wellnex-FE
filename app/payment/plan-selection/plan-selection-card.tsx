@@ -20,8 +20,8 @@ export default function PlanSelectionCard() {
 
         {/* Heading and Subheading */}
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-gray-900">WellnexAI Pro Subscription</h1>
-          <p className="text-gray-600">Secure your AI chatbot in just one step - your subscription begins today.</p>
+          <h1 className="text-2xl font-semibold text-[#181D27]">WellnexAI Pro Subscription</h1>
+          <p className="text-[#535862]">Secure your AI chatbot in just one step - your subscription begins today.</p>
         </div>
 
         {/* Plan Details Box */}

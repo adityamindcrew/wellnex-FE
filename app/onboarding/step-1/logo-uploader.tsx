@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { ImageIcon } from "lucide-react"
@@ -30,14 +30,10 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
     try {
       const data = await businessApi.uploadLogo(file, token, businessId);
       
-      // Construct full URL if needed
-      let logoUrl = '';
+      // Use the formatted URL from the API response
       if (data.logoUrl) {
-        logoUrl = data.logoUrl.startsWith('http')
-          ? data.logoUrl
-          : `http://56.228.66.97:3000/${data.logoUrl.replace(/^\//, '')}`;
+        updateFormData({ logo: data.logoUrl });
       }
-      updateFormData({ logo: logoUrl });
     } catch (err: any) {
       console.error('Upload error:', err);
       setError(err.message || 'An error occurred while uploading the logo.');
@@ -57,11 +53,34 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
       return
     }
 
-    // Create preview URL
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    onFileSelect(file);
+    // Create preview URL and store in local storage
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string
+      setPreviewUrl(base64String)
+      localStorage.setItem('logoPreview', base64String)
+      onFileSelect(file)
+    }
+    reader.readAsDataURL(file)
   }
+
+  // Load preview from local storage on mount
+  useEffect(() => {
+    const savedPreview = localStorage.getItem('logoPreview')
+    if (savedPreview) {
+      setPreviewUrl(savedPreview)
+      // Convert base64 to File object
+      fetch(savedPreview)
+        .then(res => res.blob())
+        .then(blob => {
+          const file = new File([blob], 'logo.png', { type: 'image/png' })
+          onFileSelect(file)
+        })
+        .catch(err => {
+          console.error('Error converting base64 to file:', err)
+        })
+    }
+  }, [onFileSelect])
 
   return (
     <Suspense>
@@ -111,13 +130,5 @@ LogoUploader.uploadLogo = async (file: File) => {
   }
 
   const data = await businessApi.uploadLogo(file, token, businessId);
-  
-  let logoUrl = '';
-  if (data.logoUrl) {
-    logoUrl = data.logoUrl.startsWith('http')
-      ? data.logoUrl
-      : `http://56.228.66.97:3000/${data.logoUrl.replace(/^\//, '')}`;
-  }
-  
-  return logoUrl;
+  return data.logoUrl;
 };
