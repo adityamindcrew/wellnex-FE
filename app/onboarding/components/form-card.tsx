@@ -46,7 +46,7 @@ export default function FormCard({
   const handleNext = async () => {
     try {
       // First execute any data saving logic and wait for it to complete
-      if (onNext) {
+    if (onNext) {
         await onNext();
       }
       

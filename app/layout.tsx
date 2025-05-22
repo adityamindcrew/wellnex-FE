@@ -6,7 +6,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "WellnexAI Dashboard",
+  title: "WellnexAI",
   description: "AI-powered chatbot for wellness businesses",
 }
 
@@ -17,6 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logo.png" sizes="any" />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   )

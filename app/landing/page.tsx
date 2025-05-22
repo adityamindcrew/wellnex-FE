@@ -134,14 +134,14 @@ export default function Home() {
 
       {/* Contact Section */}
       <section className="w-full py-8 md:py-24 bg-white">
-        <div className="container px-4 md:px-6 mx-auto">
+        <div className="container px-1 md:px-1 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="relative w-full h-64 md:h-[500px]">
+            <div className="relative w-full h-64 md:h-[520px]">
               <Image
                 src={Map}
                 alt="World map with London highlighted"
                 fill
-                className="object-cover rounded-lg"
+                // className="rounded-lg"
               />
             </div>
             <ContactForm />
