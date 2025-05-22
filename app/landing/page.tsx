@@ -61,13 +61,18 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {[1, 2, 3, 4].map((step, idx) => (
             <div key={step} className="bg-gray-100 p-4 rounded-lg flex flex-col items-center text-center">
-              <div className="w-12 h-12  flex items-center justify-center ">
-                <div className="w-6 h-6 relative">
-                  <Image src={stepImages[idx]} alt={`Step ${step}`} fill className="object-contain" />
+              <div className="w-12 h-12 flex items-center justify-center mb-4">
+                <div className="w-8 h-8 relative">
+                  <Image 
+                    src={stepImages[idx]} 
+                    alt={`Step ${step}`} 
+                    fill 
+                    className="object-contain" 
+                  />
                 </div>
               </div>
               <p className="text-xs text-[#000000] max-w-[178px]">
-                {step === 1 && <><strong>Sign up & personalize your chatbot</strong> (Choose your branding, questions, and services)</>}
+                {step === 1 && <><strong>Sign up & personalize your <br/> chatbot</strong> (Choose your branding, questions, and services)</>}
                 {step === 2 && <><strong>"Pay securely via stripe</strong> (199/month - charged in your local currency)</>}
                 {step === 3 && <><strong>"Get your unique embed code </strong>(Ready to copy & paste into your website)</>}
                 {step === 4 &&<><strong> "Start collecting new clients leads 24/7 </strong>(Let AI handle engagement while you focus on results)</>}
@@ -85,7 +90,7 @@ export default function Home() {
           <div className="relative w-full max-w-lg md:w-[420px] h-96 md:h-[520px] flex-shrink-0 flex items-center justify-center mb-4 md:mb-0 mx-auto">
             <Image src={Mobile} alt="Mobile App" className="object-contain" />
           </div>
-          <div className="hidden md:block h-[320px] w-[0.8px] bg-blue-600 mx-8" />
+          <div className="hidden md:block h-[320px] w-[2px] bg-blue-500 mx-8" />
           <div className="md:ml-8 max-w-xl flex-1 flex flex-col justify-center h-auto md:h-[400px]">
             <p className="text-sm md:text-md text-[#000000] mb-2 text-justify">
               Wellnex AI revolutionizes the beauty and wellness industry by offering customizable AI-powered chatbots tailored for beauty clinics, spas, dermatologists, salons, and wellness businesses and products. Our platform enables you to modernize your client engagement effortlessly. With a simple setup, you can capture leads 24/7 and increase bookings without the need for additional marketing or staff.
@@ -134,7 +139,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section className="w-full py-8 md:py-24 bg-white">
+      <section className="w-full py-8 md:py-24 bg-white p">
         <div className="container px-1 md:px-1 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="relative w-full h-64 md:h-[520px]">

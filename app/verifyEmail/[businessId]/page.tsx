@@ -39,7 +39,7 @@ function VerifyEmailContent({ params }: { params: { businessId: string } }) {
 
             // Redirect to login page after 3 seconds
             setTimeout(() => {
-              router.push('/signin')
+              router.push('/payment/planSelection')
             }, 3000)
           } else {
             throw new Error(response.message || 'Verification failed')
@@ -96,7 +96,7 @@ function VerifyEmailContent({ params }: { params: { businessId: string } }) {
                 onClick={() => router.push('/signin')}
                 className="px-6 py-2 bg-[#987CF1] text-white rounded-lg hover:bg-[#7a63c7] transition-colors"
               >
-                Go to Login
+                Go to plan selection
               </button>
             )}
           </div>

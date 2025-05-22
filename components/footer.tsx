@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import logo from '../app/assets/images/logo.png'
 import Instagram from '../app/assets/images/Instagram.png';
-import linkedIn from '../app/assets/images/linkedIn.png';
+import linkedIn from '../app/assets/images/LinkedIn.png';
 
 export default function Footer() {
   return (
@@ -47,12 +47,12 @@ export default function Footer() {
             <div className="flex space-x-4">
               <Link href="https://www.instagram.com/wellnexai/" className="text-[#000000] hover:text-[#000000">
            
-                <Image src={Instagram} alt="Instagram" width={20} height={20} />
+                <Image src={Instagram} alt="Instagram" width={25} height={25} />
            
                 <span className="sr-only">Instagram</span>
               </Link>
               <Link href="https://www.linkedin.com/company/wellnexai/" className="text-[#000000] hover:text-[#000000]">
-              <Image src={linkedIn} alt="Instagram" width={20} height={20} />
+              <Image src={linkedIn} alt="LinkedIn" width={24} height={24} />
 
                 <span className="sr-only">LinkedIn</span>
               </Link>

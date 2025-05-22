@@ -56,7 +56,7 @@ const SubscriptionForm = ({ priceId }: { priceId: string }) => {
         const fetchInitialData = async () => {
             try {
                 // Fetch existing subscription
-                const subscriptionResponse = await fetch('http://localhost:3000/subscription/status', {
+                const subscriptionResponse = await fetch('https://wellnexai.com/api/subscription/status', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -68,7 +68,7 @@ const SubscriptionForm = ({ priceId }: { priceId: string }) => {
                 }
 
                 // Fetch saved cards
-                const cardsResponse = await fetch('http://localhost:3000/subscription/cards', {
+                const cardsResponse = await fetch('https://wellnexai.com/api/subscription/cards', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -144,7 +144,7 @@ const SubscriptionForm = ({ priceId }: { priceId: string }) => {
                 paymentMethodId = paymentMethod.id;
             }
 
-            const response = await fetch('http://localhost:3000/subscription/create', {
+            const response = await fetch('https://wellnexai.com/api/subscription/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const SubscriptionForm = ({ priceId }: { priceId: string }) => {
             }
 
             // Refresh saved cards list
-            const cardsResponse = await fetch('http://localhost:3000/subscription/cards', {
+            const cardsResponse = await fetch('https://wellnexai.com/api/subscription/cards', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -203,7 +203,7 @@ const SubscriptionForm = ({ priceId }: { priceId: string }) => {
 
     const confirmRemoveCard = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/subscription/cards/${cardToRemove}`, {
+            const response = await fetch(`https://wellnexai.com/api/subscription/cards/${cardToRemove}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -215,7 +215,7 @@ const SubscriptionForm = ({ priceId }: { priceId: string }) => {
             }
 
             // Refresh saved cards list
-            const cardsResponse = await fetch('http://localhost:3000/subscription/cards', {
+            const cardsResponse = await fetch('https://wellnexai.com/api/subscription/cards', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

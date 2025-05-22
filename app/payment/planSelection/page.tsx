@@ -1,4 +1,4 @@
-import PlanSelectionCard from "./plan-selection-card"
+import PlanSelectionCard from "./planSelection"
 
 export default function PlanSelectionPage() {
   return (

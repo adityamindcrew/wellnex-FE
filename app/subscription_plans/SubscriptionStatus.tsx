@@ -25,10 +25,12 @@ const SubscriptionStatus = ({ subscriptionId }: { subscriptionId: string }) => {
 
     const pollSubscriptionStatus = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/subscription/status`, {
+            const token = localStorage.getItem('token')
+            const response = await fetch(`https://wellnexai.com/api/subscription/status`, {
                 headers: {
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ3ZWxsbmV4dXNlcnMiLCJzdWIiOnsiX2lkIjoiNjgxYzQxZjlkZmMzYTFiYzBjMTU2NTJlIiwiZmlyc3ROYW1lIjoiQUJDRCBDb21wYW55IiwiZW1haWwiOiJhYmMxQG1haWxpbmF0b3IuY29tIiwicm9sZXMiOiJidXNpbmVzcyIsImNyZWF0ZWRBdCI6IjIwMjUtMDUtMDhUMDU6MzI6NDEuODUxWiIsInVwZGF0ZWRBdCI6IjIwMjUtMDUtMjBUMDY6MDk6MDcuMDgxWiJ9LCJpYXQiOjE3NDc4MDgwNzA5MzgsImV4cCI6MTc1MDQwMDA3MDkzOH0.Zg1eVHB5mXq_M5MdTgHpIc9fRpIYaKLZUjGz-GdrVyQ'
-                }
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                  }
             });
 
             if (!response.ok) {

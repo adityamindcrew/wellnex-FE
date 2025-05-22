@@ -31,7 +31,7 @@ export default function HelpPage() {
           Once you've customized your chatbot, installing it on your site is simple. Follow the instructions below based on the platform you're using.
         </span>
         <div className="max-w-2xl mx-auto mt-4">
-          <h2 className="text-lg font-semibold mb-2 mt-20">📝 Step 1: Copy Your Unique Embed Code</h2>
+          <h2 className="text-lg font-semibold mb-2 mt-20">🔧 Step 1: Copy Your Unique Embed Code</h2>
           <span className="block text-[#000000] mb-3">
             You'll receive a code like this:
           </span>
@@ -58,23 +58,23 @@ export default function HelpPage() {
           </div>
 
           <h3 className="font-medium mt-4 mb-1">🔹 WordPress</h3>
-          <div>
+          {/* <div> */}
            <li>Option A: Using Elementor:</li>
             a. Open the page in Elementor where you want to place the chatbot. .<br />
             b. Drag the HTML widget to the bottom of the page<br />
             c. Paste the code into the widget. .<br />
-            d. Click Update. <br />
+            d. Click Update.
             <br />
             <li>Option B : Manual Theme Install:</li>
-            <br />
+            {/* <br /> */}
             a. Go to your WordPress Dashboard. .<br />
             b. Navigate to Appearance &gt Theme File Editor.<br />
             c. Select the footer.php file.<br />
             d. Paste the embed code just before the closing &lt;/body&gt; tag. .<br />
             e. Click Update File. <br />
-          </div>
+          {/* </div> */}
 
-          <h3 className="font-medium mt-4 mb-1">🔹Wix</h3>
+          <h3 className="font-medium mt-4 mb-1">🔹 Wix</h3>
           <ul className="list-disc pl-6 mb-4 text-[#000000]">
             <li>Go to your Wix site dashboard. .</li>
             <li>Click Settings &gt; Custom Code. </li>
@@ -148,19 +148,17 @@ export default function HelpPage() {
           <h3 className="font-medium mt-4 mb-1">🔹 Bubble</h3>
           <div>
             <li>Option A: Site-wide Installation :</li>
-            <li>Open your Bubble app.</li>
-            <li>Scroll to Script in the body (before &lt;/body&gt;).</li>
-            <li>Paste your embed code there.</li>
-            <li>Click Save.</li>
-            <li>Deploy or Preview to check chatbot visibility.</li>
-            <br />
+            <li className="ml-6">Open your Bubble app.</li>
+            <li className="ml-6">Scroll to Script in the body (before &lt;/body&gt;).</li>
+            <li className="ml-6">Paste your embed code there.</li>
+            <li className="ml-6">Click Save.</li>
+            <li className="ml-6">Deploy or Preview to check chatbot visibility.</li>
             <li>Option B - Specific Page Installation: </li>
-            <br />
-            <li>Open your desired page. </li>
-            <li>Drag the HTML element onto the canvas.</li>
-            <li>Paste the embed code inside the HTML element. </li>
-            <li>Place it near the bottom of the page. </li>
-            <li>Click Preview or Deploy.  </li>
+            <li className="ml-6">Open your desired page. </li>
+            <li className="ml-6">Drag the HTML element onto the canvas.</li>
+            <li className="ml-6">Paste the embed code inside the HTML element. </li>
+            <li className="ml-6">Place it near the bottom of the page. </li>
+            <li className="ml-6">Click Preview or Deploy.  </li>
           </div>
 
           <h3 className="font-medium mt-4 mb-1">🔹 Framer</h3>
@@ -196,8 +194,8 @@ export default function HelpPage() {
             <li><span style={{ color: '#2563eb' }}></span> Click Save and Publish.</li>
           </ul>
 
-          <h3 className="font-medium mt-4 mb-1">❓ Need Help?</h3>
-          <ul className="list-disc mb-4 text-[#000000]">
+          <h3 className="font-medium mt-4">❓ Need Help?</h3>
+          <ul className="list-disc text-[#000000]">
 
             <div className="list-disc">
               If your website platform isn't listed or you'd like assistance, feel free to reach out to us anytime at support@wellnexai.com. <br />
@@ -207,15 +205,13 @@ export default function HelpPage() {
           </ul>
 
           {/* FAQ Section - EXACT Figma Copy Below */}
-          <div className="mt-8">
-            <div className="font-bold mt-8 mb-2">💭 My chatbot isn't showing up on my website. What should I do?</div>
+          <div>
+            <div className="font-bold">💭 My chatbot isn't showing up on my website. What should I do?</div>
             <div>There are a few common reasons why your WellnexAI chatbot may not appear after installation.</div>
-
-            <div className="font-semibold mt-4">✅ 1. Check that the embed code is placed correctly</div>
-            <ul className="list-disc pl-6 mb-4 text-[#000000]">
+            <div className="font-semibold">✅ 1. Check that the embed code is placed correctly</div>
+            <ul className="list-disc pl-6 text-[#000000]">
               <li> Make sure the code was pasted just before the closing &lt;/body&gt; tag of your website's HTML.</li>
               <li>x If you're using a site builder (like Wix, Shopify, Webflow, etc.), double-check that you followed the correct steps for your platform.</li>
-
               <li>On WordPress, if you're using a theme editor, ensure you saved changes in footer.php.</li>
             </ul>
 
@@ -245,7 +241,7 @@ export default function HelpPage() {
               <li> 📩 <a href="mailto:support@wellnexai.com">support@wellnexai.com</a></li>
               <div>Include:
               </div>
-              <ul className="list-disc pl-6 mb-4 text-[#000000]">
+              <ul className="list-disc pl-6 text-[#000000]">
                 <li><span style={{ color: '#2563eb' }}></span>Your website URL.</li>
                 <li><span style={{ color: '#2563eb' }}></span>A screenshot of where the code is placed .</li>
                 <li><span style={{ color: '#2563eb' }}></span>The platform you're using (e.g., Squarespace, Shopify, etc.)</li>

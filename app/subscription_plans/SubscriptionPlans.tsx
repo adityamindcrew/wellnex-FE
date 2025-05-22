@@ -24,7 +24,7 @@ const SubscriptionPlans = () => {
 
     const fetchPlans = async () => {
         try {
-            const response = await fetch('http://localhost:3000/subscription/plans', {
+            const response = await fetch('https://wellnexai.com/api/subscription/plans', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
