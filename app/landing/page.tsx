@@ -39,17 +39,18 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-[320px] md:h-[600px]">
         <div className="absolute inset-0 z-0">
-          <Image src={AI} alt="Digital background" fill className="object-cover" priority quality={100} />
+          <Image src={AI} alt="Digital background" fill priority quality={100} />
         </div>
         {/* <div className="absolute inset-0 bg-[#0a2540]/70 z-10"></div> */}
         <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-3">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white max-w-3xl leading-tight">
-            Transform Your Beauty, Health & Wellness Business with AI
+          <h1 className="text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white max-w-3xl leading-tight mb-12">
+            Transform Your Beauty, Health & <br/>
+             Wellness Business with AI
           </h1>
           <div className="mt-6 md:mt-8">
-            <h2 className="text-base sm:text-xl lg:text-xl text-white max-w-3xl leading-tight">
+            <h3 className="text-base sm:text-xl lg:text-xl text-white max-w-3xl leading-tight">
               Capture leads 24/7, modernize your client engagement, and boost bookings effortlessly — no technical skills needed.
-            </h2>
+            </h3>
           </div>
         </div>
       </section>

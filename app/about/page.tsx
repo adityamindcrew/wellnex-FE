@@ -16,7 +16,7 @@ export default function AboutPage() {
     <main className="min-h-screen bg-white flex flex-col">
      
   <Header/>
-      <section className="flex flex-col md:flex-row max-w-5xl mx-auto bg-white rounded-xl shadow-sm mt-12 p-8 gap-8">
+      <section className="flex flex-col md:flex-row max-w-5xl mx-auto bg-white rounded-xl shadow-sm mt-12 p-4 gap-4">
         <div className="flex-1 flex flex-col justify-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-4">About WellnexAI</h1>
           <h4 className="text-sm md:text-sm mt-3 font-semibold mb-4">WellnexAI was born out of a simple belief: </h4>
