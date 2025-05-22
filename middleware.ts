@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/landing','/faqs','/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout']
+const publicRoutes = ['/landing','/faqs','/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout', '/subscription_plans']
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
@@ -20,6 +20,7 @@ export function middleware(request: NextRequest) {
     response.headers.set('Clear-Site-Data', '"localStorage"')
     return response
   }
+console.log(pathname);
 
   // Redirect /lading to /landing (typo fix)
   if (pathname === '/') {
