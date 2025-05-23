@@ -1,0 +1,186 @@
+"use client"
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  useStripe,
+  useElements,
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+} from "@stripe/react-stripe-js";
+import Image from "next/image";
+import CardImage from "../../assets/images/card.png";
+
+// Stripe publishable key from your .env.local
+const stripePromise = loadStripe('pk_test_51LuNV2E2Y7YLkjxVuaZ1F13llOwUjsRcrodK7nbLAxmqxcnKqjnWxlc83V53bnFdnWOSW07fvBQjEmKXp2ChPXNo004z40bvvz');
+
+function PaymentForm({ priceId }: { priceId: string }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+
+  const [cardName, setCardName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+ 
+  // Listen to Stripe Element changes for preview
+  const handleNumberChange = (e: any) => setCardNumber(e.complete ? e.value : "");
+  const handleExpiryChange = (e: any) => setExpiry(e.complete ? e.value : "");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    if (!stripe || !elements) {
+      setError("Stripe not loaded");
+      setLoading(false);
+      return;
+    }
+
+    const cardElement = elements.getElement(CardNumberElement);
+    if (!cardElement) {
+      setError("Card element not found");
+      setLoading(false);
+      return;
+    }
+
+    const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+      billing_details: { name: cardName },
+    });
+
+    if (pmError) {
+      setError(pmError.message || "Payment error");
+      setLoading(false);
+      return;
+    }
+
+    // Call your backend API
+    const response = await fetch("https://wellnexai.com/api/subscription/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        paymentMethodId: paymentMethod?.id,
+        priceId,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      setError(data.message || "Payment failed");
+      setLoading(false);
+      return;
+    }
+
+    router.push("/payment/success");
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg px-8 py-6 w-full max-w-[500px] flex flex-col items-center">
+      <Image
+        src={CardImage}
+        alt="Card Preview"
+        width={400}
+        height={140}
+        className="mb-6 rounded-xl shadow-md"
+      />
+      <div className="w-full">
+        <div className="mb-1 font-semibold text-[#181D27] text-lg">Payment</div>
+        <div className="mb-4 text-sm text-[#535862]">Card details.</div>
+        <div className="flex w-full gap-4 mb-3">
+          <div className="flex-[3]">
+            <label className="block text-sm font-medium text-[#414651] mb-1">Name on card</label>
+            <input
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              value={cardName}
+              onChange={e => setCardName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-[#414651] mb-1">Expiry</label>
+            <CardExpiryElement
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              onChange={handleExpiryChange}
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    lineHeight: "1.5",
+                    '::placeholder': { color: "#aab7c4" },
+                  },
+                  invalid: { color: "#9e2146" },
+                },
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex w-full gap-4 mb-1">
+          <div className="flex-[3]">
+            <label className="block text-sm font-medium text-[#414651] mb-1">Card number</label>
+            <CardNumberElement
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              onChange={handleNumberChange}
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    lineHeight: "2.2",
+                    '::placeholder': { color: "#aab7c4" },
+                  },
+                  invalid: { color: "#9e2146" },
+                },
+              }}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-[#414651] mb-1">CVV</label>
+            <CardCvcElement
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    lineHeight: "2.2",
+                    '::placeholder': { color: "#aab7c4" },
+                  },
+                  invalid: { color: "#9e2146" },
+                },
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      {error && <div className="text-red-500 mt-3 text-base w-full text-center">{error}</div>}
+      <div className="flex w-full mt-6 gap-3">
+        <button type="button" className="flex-1 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 text-base">Cancel</button>
+        <button type="submit" className="flex-1 py-2.5 rounded-md bg-black text-white font-semibold text-base" disabled={loading}>
+          {loading ? "Processing..." : "Confirm and Pay $199"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+export default function PaymentDetailsForm({ priceId }: { priceId: string }) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#F5F5F5]">
+      <Elements stripe={stripePromise}>
+        <PaymentForm priceId={priceId} />
+      </Elements>
+    </div>
+  );
+}

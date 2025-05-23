@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { CreditCard, Check, Feather} from "lucide-react"
 import feature from  "../../assets/images/Featured.png"
 import Image from "next/image"
@@ -24,6 +24,8 @@ export default function PlanSelectionCard() {
   const [plan, setPlan] = useState<Plan | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const priceId = searchParams.get("priceId")
 
   useEffect(() => {
     fetchPlan()
@@ -44,7 +46,7 @@ export default function PlanSelectionCard() {
       }
 
       const data = await response.json();
-      // Take the first plan from the array
+
       if (data && data.length > 0) {
         setPlan(data[0]);
       }
@@ -56,7 +58,10 @@ export default function PlanSelectionCard() {
   };
 
   const handleProceed = () => {
-    router.push("/payment/method-selection")
+    if (plan) {
+      localStorage.setItem("priceId", plan.id);
+      router.push("/payment/cardDetails");
+    }
   }
 
   if (loading) {
@@ -119,24 +124,24 @@ export default function PlanSelectionCard() {
             </div>
           </div>
           <ul className="mt-3 pl-6">
-            <li className="flex items-start">
-              <span className="mr-2 text-[#7F56D9]">•</span>
-              <div>
-                <span className="text-[#7F56D9]">AI-powered chatbot tailored for wellness businesses.</span>
-              </div>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2 text-[#7F56D9]">•</span>
-              <div>
-                <span className="text-[#7F56D9]">Seamless integration with your existing website.</span>
-              </div>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2 text-[#7F56D9]">•</span>
-              <div>
-                <span className="text-[#7F56D9]">24/7 customer support.</span>
-              </div>
-            </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-[#7F56D9]">•</span>
+                  <div>
+                    <span className="text-[#7F56D9]">AI-powered chatbot tailored for wellness businesses.</span>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-[#7F56D9]">•</span>
+                  <div>
+                    <span className="text-[#7F56D9]">Seamless integration with your existing website.</span>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-[#7F56D9]">•</span>
+                  <div>
+                    <span className="text-[#7F56D9]">24/7 customer support.</span>
+                  </div>
+                </li>
           </ul>
         </div>
 

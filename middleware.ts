@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/landing','/faqs','/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout',  '/admin/dashboard',  '/payment/planSelection','/subscription_plans']
+const publicRoutes = ['/landing','/faqs','/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout',  '/admin/dashboard',  '/payment/planSelection', '/payment/details','/payment/success','/payment/cardDetails', '/payment/methodSelection']
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
