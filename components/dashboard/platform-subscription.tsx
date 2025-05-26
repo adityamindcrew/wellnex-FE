@@ -1,4 +1,59 @@
+'use client'
+import { useState } from "react";
+
 export default function PlatformSubscription() {
+  const [error, setError] = useState<string | null>(null);
+  const [showSpecialOffer, setShowSpecialOffer] = useState(true);
+  const [message, setMessage] = useState<string | null>(null);
+  const handleCancelSubscription = async () => {
+    try {
+      const response = await fetch('https://wellnexai.com/api/subscription/cancel', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel subscription');
+      }
+
+      const data = await response.json();
+      if (data.hasSpecialOffer) {
+        setShowSpecialOffer(true);
+      } else {
+        setMessage('Your subscription has been cancelled');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleRenewSubscription = async () => {
+    try {
+      const response = await fetch('https://wellnexai.com/api/subscription/renew-after-special-offer', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to renew subscription');
+      }
+
+      setShowSpecialOffer(false);
+      setMessage('Your subscription has been renewed for one more month');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleConfirmCancel = () => {
+    setShowSpecialOffer(false);
+    setMessage('Your subscription has been cancelled');
+  };
+
   return (
     <div>
       <h2 className="mb-4 text-xl font-semibold">Platform Subscription</h2>
@@ -59,6 +114,126 @@ export default function PlatformSubscription() {
           </div>
         </div>
       </div>
+
+      {message && (
+        <div className="success-message">
+          {message}
+        </div>
+      )}
+
+      <button
+        className="cancel-button"
+        onClick={handleCancelSubscription}
+      >
+        Cancel Subscription
+      </button>
+      {showSpecialOffer && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Special Offer</h3>
+            <p>Would you like to continue your subscription for one more month at a special rate?</p>
+            <div className="modal-actions">
+              <button
+                className="modal-button cancel"
+                onClick={handleConfirmCancel}
+              >
+                No, Cancel
+              </button>
+              <button
+                className="modal-button confirm"
+                onClick={handleRenewSubscription}
+              >
+                Yes, Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+                .cancel-button {
+                    margin-top: 20px;
+                    padding: 10px 20px;
+                    background-color: #f44336;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.2s ease;
+                }
+
+                .cancel-button:hover {
+                    background-color: #d32f2f;
+                }
+
+                .success-message {
+                    color: #2e7d32;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border: 1px solid #2e7d32;
+                    border-radius: 4px;
+                    background-color: #f1f8e9;
+                }
+
+                .modal-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                }
+
+                .modal-content {
+                    background: white;
+                    padding: 24px;
+                    border-radius: 8px;
+                    max-width: 400px;
+                    width: 90%;
+                }
+
+                .modal-content h3 {
+                    margin: 0 0 16px 0;
+                    color: #333;
+                }
+
+                .modal-content p {
+                    margin: 0 0 24px 0;
+                    color: #666;
+                }
+
+                .modal-actions {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 12px;
+                }
+
+                .modal-button {
+                    padding: 8px 16px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background-color 0.2s ease;
+                }
+
+                .modal-button.cancel {
+                    background-color: #e0e0e0;
+                    color: #333;
+                }
+
+                .modal-button.confirm {
+                    background-color: #2196F3;
+                    color: white;
+                }
+
+                .modal-button:hover {
+                    opacity: 0.9;
+                }
+            `}</style>
     </div>
   )
 }

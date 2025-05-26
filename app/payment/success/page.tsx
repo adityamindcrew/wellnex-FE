@@ -1,4 +1,15 @@
+'use client'
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function SuccessPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 3000);
+  }, []);
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
