@@ -37,52 +37,65 @@ function PaymentForm({ priceId }: { priceId: string }) {
     setError(null);
     setLoading(true);
 
-    if (!stripe || !elements) {
-      setError("Stripe not loaded");
+    try {
+      if (!stripe || !elements) {
+        throw new Error("Stripe not loaded");
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Authentication required. Please login first.");
+      }
+
+      const cardElement = elements.getElement(CardNumberElement);
+      if (!cardElement) {
+        throw new Error("Card element not found");
+      }
+
+      const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
+        type: "card",
+        card: cardElement,
+        billing_details: { name: cardName },
+      });
+
+      if (pmError) {
+        throw new Error(pmError.message || "Payment error");
+      }
+
+      if (!paymentMethod?.id) {
+        throw new Error("Failed to create payment method");
+      }
+
+      // Call your backend API
+      const response = await fetch("https://wellnexai.com/api/subscription/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          paymentMethodId: paymentMethod.id,
+          priceId,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Payment failed");
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      router.push("/payment/success");
+    } catch (err) {
+      console.error("Subscription error:", err);
+      setError(err instanceof Error ? err.message : "Failed to create subscription");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const cardElement = elements.getElement(CardNumberElement);
-    if (!cardElement) {
-      setError("Card element not found");
-      setLoading(false);
-      return;
-    }
-
-    const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
-      billing_details: { name: cardName },
-    });
-
-    if (pmError) {
-      setError(pmError.message || "Payment error");
-      setLoading(false);
-      return;
-    }
-
-    // Call your backend API
-    const response = await fetch("https://wellnexai.com/api/subscription/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        paymentMethodId: paymentMethod?.id,
-        priceId,
-      }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      setError(data.message || "Payment failed");
-      setLoading(false);
-      return;
-    }
-
-    router.push("/payment/success");
   };
 
   return (
@@ -168,7 +181,7 @@ function PaymentForm({ priceId }: { priceId: string }) {
       <div className="flex w-full mt-6 gap-3">
         <button type="button" className="flex-1 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 text-base">Cancel</button>
         <button type="submit" className="flex-1 py-2.5 rounded-md bg-black text-white font-semibold text-base" disabled={loading}>
-          {loading ? "Processing..." : "Confirm and Pay $199"}
+          {loading ? "Processing..." : `Pay ${localStorage.getItem("planCurrency")} ${localStorage.getItem("planAmount")}`}
         </button>
       </div>
     </form>

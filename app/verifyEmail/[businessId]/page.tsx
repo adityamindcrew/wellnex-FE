@@ -48,7 +48,7 @@ function VerifyEmailContent({ params }: { params: { businessId: string } }) {
             setTimeout(() => {
               window.close()
               // Fallback to redirect if window.close() doesn't work
-              router.push('/payment/planSelection')
+              router.push('/payment/currencySelection')
             }, 1000)
           } else {
             throw new Error(response.message || 'Verification failed')

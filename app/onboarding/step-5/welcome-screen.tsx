@@ -71,7 +71,7 @@ export default function WelcomeScreen() {
         document.cookie = `token=${token}; path=/`
         document.cookie = `authorization=Bearer ${token}; path=/`
         
-        router.push('/payment/planSelection')
+        router.push('/payment/currencySelection')
       } else {
         setResendStatus("error")
         setStatusMessage("Please check your email and click the link to verify your account!!!")

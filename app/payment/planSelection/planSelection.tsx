@@ -60,6 +60,9 @@ export default function PlanSelectionCard() {
   const handleProceed = () => {
     if (plan) {
       localStorage.setItem("priceId", plan.id);
+      localStorage.setItem("planAmount", plan.amount.toString());
+      localStorage.setItem("planCurrency", plan.currency.toUpperCase());
+      localStorage.setItem("planInterval", plan.interval);
       router.push("/payment/cardDetails");
     }
   }
