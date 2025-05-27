@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -27,7 +27,14 @@ function PaymentForm({ priceId }: { priceId: string }) {
   const [expiry, setExpiry] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState("");
  
+  useEffect(() => {
+    const currency = localStorage.getItem("planCurrency");
+    const amount = localStorage.getItem("planAmount");
+    setPaymentAmount(`${currency} ${amount}`);
+  }, []);
+
   // Listen to Stripe Element changes for preview
   const handleNumberChange = (e: any) => setCardNumber(e.complete ? e.value : "");
   const handleExpiryChange = (e: any) => setExpiry(e.complete ? e.value : "");
@@ -179,9 +186,9 @@ function PaymentForm({ priceId }: { priceId: string }) {
       </div>
       {error && <div className="text-red-500 mt-3 text-base w-full text-center">{error}</div>}
       <div className="flex w-full mt-6 gap-3">
-        <button type="button" className="flex-1 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 text-base">Cancel</button>
+        {/* <button type="button" className="flex-1 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 text-base">Cancel</button> */}
         <button type="submit" className="flex-1 py-2.5 rounded-md bg-black text-white font-semibold text-base" disabled={loading}>
-          {loading ? "Processing..." : `Pay ${localStorage.getItem("planCurrency")} ${localStorage.getItem("planAmount")}`}
+          {loading ? "Processing..." : `Pay ${paymentAmount}`}
         </button>
       </div>
     </form>

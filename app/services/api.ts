@@ -152,11 +152,9 @@ export const businessApi = {
   setupChatbot: async (
     businessId: string,
     questions: { name: string }[],
-    keywords: { name: string }[],
-    services: { name: string }[],
     token: string
   ) => {
-    const response = await fetch(`${BASE_URL}/business/${businessId}/setup-chatbot`, {
+    const response = await fetch(`${BASE_URL}/business/add-business-questions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -165,8 +163,7 @@ export const businessApi = {
       body: JSON.stringify({
         businessId,
         questions,
-        keywords,
-        services,
+     
       }),
     });
 

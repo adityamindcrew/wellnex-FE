@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useOnboarding } from "../onboarding-context"
 import { Button } from "@/components/ui/button"
 import { businessApi } from "@/app/services/api"
@@ -17,6 +17,14 @@ export default function WelcomeScreen() {
   const [hasResendClicked, setHasResendClicked] = useState(false)
   const [hasCheckClicked, setHasCheckClicked] = useState(false)
   const router = useRouter()
+
+  // Reset states when component mounts
+  useEffect(() => {
+    setHasResendClicked(false)
+    setHasCheckClicked(false)
+    setResendStatus("idle")
+    setStatusMessage("")
+  }, [])
 
   const handleResendEmail = async () => {
     setIsResending(true)
@@ -36,9 +44,17 @@ export default function WelcomeScreen() {
       console.log("Verification email response:", response)
       
       setResendStatus("success")
+      // Reset the clicked state after 5 seconds
+      setTimeout(() => {
+        setHasResendClicked(false)
+      }, 100)
     } catch (error) {
       console.error("Error sending verification email:", error)
       setResendStatus("error")
+      // Reset the clicked state after 5 seconds
+      setTimeout(() => {
+        setHasResendClicked(false)
+      }, 100)
     } finally {
       setIsResending(false)
     }
@@ -75,10 +91,18 @@ export default function WelcomeScreen() {
       } else {
         setResendStatus("error")
         setStatusMessage("Please check your email and click the link to verify your account!!!")
+        // Reset the clicked state after 5 seconds
+        setTimeout(() => {
+          setHasCheckClicked(false)
+        }, 5000)
       }
     } catch (error) {
       console.error("Error checking email verification:", error)
       setResendStatus("error")
+      // Reset the clicked state after 5 seconds
+      setTimeout(() => {
+        setHasCheckClicked(false)
+      }, 5000)
     } finally {
       setIsChecking(false)
     }
@@ -98,7 +122,7 @@ export default function WelcomeScreen() {
       <div className="flex flex-row space-x-4">
         <Button 
           onClick={handleResendEmail} 
-          disabled={isResending || hasResendClicked} 
+          disabled={isResending} 
           className="bg-[#987CF1] hover:bg-[#987CF1] w-30"
         >
           {isResending ? "Sending..." : "Resend Email"}
@@ -106,7 +130,7 @@ export default function WelcomeScreen() {
 
         <Button 
           onClick={handleCheckVerification} 
-          disabled={isChecking || hasCheckClicked} 
+          disabled={isChecking} 
           className="bg-[#987CF1] hover:bg-[#987CF1] w-30"
         >
           {isChecking ? "Checking..." : "Next"}
@@ -116,6 +140,10 @@ export default function WelcomeScreen() {
       {resendStatus === "success" && <p className="text-sm text-green-600">Verification email has been resent!</p>}
 
       {resendStatus === "error" && <p className="text-sm text-red-600">{statusMessage || "Failed to resend email. Please try again."}</p>}
+
+      <a href="#" className="text-sm text-[#987CF1] underline hover:text-[#7F56D9]">
+        Need help: Installing your chatbot?
+      </a>
     </div>
   )
 }

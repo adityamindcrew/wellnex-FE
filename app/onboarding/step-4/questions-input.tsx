@@ -142,8 +142,6 @@ const QuestionsInputInner = forwardRef((props: QuestionsInputProps, ref) => {
       const setupResponse = await businessApi.setupChatbot(
         businessId,
         formattedQuestions,
-        keywords,
-        services,
         token
       );
       console.log("SetupChatbot response:", setupResponse)

@@ -22,6 +22,7 @@ function ForgotPasswordContent() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [resetToken, setResetToken] = useState<string | null>(token)
+  const [isPasswordReset, setIsPasswordReset] = useState(false)
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -97,6 +98,7 @@ function ForgotPasswordContent() {
     setIsLoading(true)
     setError(null)
     setSuccess(false)
+    setIsPasswordReset(false)
 
     try {
       console.log("Calling resetPassword API...")
@@ -105,6 +107,7 @@ function ForgotPasswordContent() {
 
       if (response.status) {
         setSuccess(true)
+        setIsPasswordReset(true)
         setTimeout(() => {
           router.push("/signin")
         }, 2000)
@@ -114,6 +117,8 @@ function ForgotPasswordContent() {
     } catch (err: any) {
       console.error("Error in reset password:", err)
       setError(err.message || "Failed to reset password")
+      setSuccess(false)
+      setIsPasswordReset(false)
     } finally {
       setIsLoading(false)
     }
@@ -140,11 +145,15 @@ function ForgotPasswordContent() {
           </div>
         )}
 
-        {success && (
+        {success && step === 1 && (
           <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md text-sm">
-            {step === 1
-              ? "Reset password link has been sent to your email."
-              : "Password has been reset successfully. Redirecting to login..."}
+            Reset password link has been sent to your email.
+          </div>
+        )}
+
+        {success && isPasswordReset && (
+          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md text-sm">
+            Password has been reset successfully. Redirecting to login...
           </div>
         )}
 
@@ -211,7 +220,6 @@ function ForgotPasswordContent() {
               type="submit"
               disabled={isLoading}
               className="w-full py-2 px-4 bg-[rgba(152,124,241,0.5)] border border-[#000000] text-[#000000] font-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
-
             >
               {isLoading ? "Resetting..." : "Reset Password"}
             </button>
