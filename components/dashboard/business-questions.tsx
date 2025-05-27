@@ -7,7 +7,7 @@ import { log } from "console"
 type Question = {
   id: string
   text: string
-  lastEdited: string
+  createdAt: string
   active: boolean
   checked: boolean
 }
@@ -44,26 +44,23 @@ export default function BusinessQuestions() {
           body: JSON.stringify({ businessId }),
         });
         if (response) {
-          console.log(response);
-          //lo const data = await response.json();
-          // setQuestions(data.questions || []);
-       
-          
+          const data = await response.json();
+          // Map API data to your Question type
+          const mappedQuestions = (data.data || []).map((q: any) => ({
+            id: q._id,
+            text: q.name,
+            createdAt: new Date(q.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }),
+            active: true,
+            checked: false,
+          }));
+          setQuestions(mappedQuestions);
         } else {
           throw new Error('Failed to fetch questions');
         }
-        const data = await response.json();
-        // Map API data to your Question type
-        const mappedQuestions = (data.data || []).map((q: any) => ({
-          id: q._id,
-          text: q.name,
-          lastEdited: '', // You can update this if you have a date
-          active: true,   // Set to true by default or use q.active if available
-          checked: false, // Set to false by default or use q.checked if available
-        }));
-        setQuestions(mappedQuestions);
-        console.log('mappedQuestions',mappedQuestions);
-        
       } catch (err: any) {
         setError(err.message || 'Failed to fetch questions');
       } finally {
@@ -195,7 +192,7 @@ export default function BusinessQuestions() {
             </div>
           </div>
           <div className="flex items-center gap-20">
-            <div className="w-32 font-medium">Last Edited</div>
+            <div className="w-32 font-medium">Created At</div>
             <div className="w-20 font-medium">Status</div>
             <div className="w-24"></div>
           </div>
@@ -225,7 +222,7 @@ export default function BusinessQuestions() {
                     disabled={isUpdating}
                     className="p-1 text-green-600 hover:bg-green-50 rounded-full"
                   >
-                      <Check size={18} /> 
+                    <Check size={18} />
                   </button>
                   <button
                     onClick={handleCancelEdit}
@@ -240,7 +237,7 @@ export default function BusinessQuestions() {
               )}
             </div>
             <div className="flex items-center justify-between sm:gap-20">
-              <div className="w-32 text-gray-500">{question.lastEdited}</div>
+              <div className="w-32 text-gray-500">{question.createdAt}</div>
               <div className="w-20">
                 {question.active && (
                   <div className="flex items-center gap-1">
@@ -250,9 +247,9 @@ export default function BusinessQuestions() {
                 )}
               </div>
               <div className="flex w-24 items-center justify-end gap-2">
-                <button className="rounded-full p-1 hover:bg-gray-100">
+                {/* <button className="rounded-full p-1 hover:bg-gray-100">
                   <Eye size={18} className="text-gray-500" />
-                </button>
+                </button> */}
                 <button 
                   onClick={() => handleEditClick(question)}
                   disabled={isUpdating}

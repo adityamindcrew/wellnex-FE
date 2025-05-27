@@ -7,7 +7,11 @@ import { Input } from "@/components/ui/input"
 import { businessApi } from "@/app/services/api"
 import { useRouter } from "next/navigation"
 
-const QuestionsInputInner = forwardRef((props, ref) => {
+interface QuestionsInputProps {
+  onQuestionsChange?: (hasData: boolean) => void;
+}
+
+const QuestionsInputInner = forwardRef((props: QuestionsInputProps, ref) => {
   const { formData, updateFormData } = useOnboarding()
   const [questions, setQuestions] = useState<string[]>(formData.questions || Array(5).fill(""))
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -65,12 +69,15 @@ const QuestionsInputInner = forwardRef((props, ref) => {
         const parsed = JSON.parse(storedQuestions);
         if (Array.isArray(parsed)) {
           setQuestions(parsed);
+          // Check if there are any non-empty questions
+          const hasData = parsed.some(q => q.trim() !== "")
+          props.onQuestionsChange?.(hasData)
         }
       } catch (e) {
         console.error("Failed to parse questions from localStorage:", e);
       }
     }
-  }, []);
+  }, [props.onQuestionsChange]);
   
 
   // Handle input change
@@ -79,6 +86,9 @@ const QuestionsInputInner = forwardRef((props, ref) => {
     newQuestions[index] = value
     setQuestions(newQuestions)
     setError(null) // Clear error when user makes changes
+    // Check if there are any non-empty questions
+    const hasData = newQuestions.some(q => q.trim() !== "")
+    props.onQuestionsChange?.(hasData)
   }
 
   // Handle key press (for Enter key navigation)
@@ -177,7 +187,7 @@ const QuestionsInputInner = forwardRef((props, ref) => {
   )
 });
 
-const QuestionsInput = (props: any, ref: any) => (
+const QuestionsInput = (props: QuestionsInputProps, ref: any) => (
   <Suspense>
     <QuestionsInputInner {...props} ref={ref} />
   </Suspense>

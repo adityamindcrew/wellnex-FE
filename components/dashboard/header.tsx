@@ -44,7 +44,7 @@ export default function Header() {
       <div className="flex items-center gap-2 md:gap-3">
         <div className="hidden md:block text-right">
           <div className="text-sm font-medium">{business?.name}</div>
- 
+    
         </div>
         <div className="h-8 w-8 md:h-10 md:w-10 overflow-hidden rounded-full bg-gray-200">
           <img

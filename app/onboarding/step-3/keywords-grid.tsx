@@ -23,7 +23,11 @@ interface ApiResponse {
   };
 }
 
-const KeywordsGrid = forwardRef((props, ref) => {
+interface KeywordsGridProps {
+  onKeywordsChange?: (hasData: boolean) => void;
+}
+
+const KeywordsGrid = forwardRef((props: KeywordsGridProps, ref) => {
   const { formData, updateFormData } = useOnboarding()
   const keywordsFromContext = Array.isArray(formData.keywords) ? formData.keywords : [];
   const [keywords, setKeywords] = useState<string[]>(
@@ -60,8 +64,10 @@ const KeywordsGrid = forwardRef((props, ref) => {
       try {
         const parsed = JSON.parse(savedKeywords);
         if (Array.isArray(parsed)) {
-          setKeywords([...parsed.filter((k) => k.trim() !== ""), ...Array(9 - parsed.filter((k) => k.trim() !== "").length).fill("")]);
+          const newKeywords = [...parsed.filter((k) => k.trim() !== ""), ...Array(9 - parsed.filter((k) => k.trim() !== "").length).fill("")];
+          setKeywords(newKeywords);
           updateFormData({ keywords: parsed });
+          props.onKeywordsChange?.(parsed.length > 0);
         }
       } catch (e) {
         // Ignore parse errors
@@ -123,7 +129,9 @@ const KeywordsGrid = forwardRef((props, ref) => {
     newKeywords[index] = value
     setKeywords(newKeywords)
     setError(null) // Clear error when user makes changes
-    // No need to update localStorage here, useEffect will handle it
+    // Check if there are any non-empty keywords
+    const hasData = newKeywords.some(k => k.trim() !== "")
+    props.onKeywordsChange?.(hasData)
   }
 
   // Handle key press (for Enter key navigation)

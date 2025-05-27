@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { businessApi } from '../../services/api'
 import { useRouter } from 'next/navigation';
 import { Suspense } from "react"
-const ColorPicker = forwardRef((props, ref) => {
+const ColorPicker = forwardRef((props: { onColorSelect?: () => void }, ref) => {
   const router = useRouter();
   const { formData, updateFormData } = useOnboarding()
   const [selectedColor, setSelectedColor] = useState("")
@@ -74,9 +74,10 @@ const ColorPicker = forwardRef((props, ref) => {
 
     // Only update context, do not call API here
     if (formData.themeColor !== selectedColor) {
-    updateFormData({ themeColor: selectedColor })
+      updateFormData({ themeColor: selectedColor })
+      props.onColorSelect?.()
     }
-  }, [selectedColor, updateFormData, formData.themeColor])
+  }, [selectedColor, updateFormData, formData.themeColor, props.onColorSelect])
 
   // Handle manual hex input
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {

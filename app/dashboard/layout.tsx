@@ -30,6 +30,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         console.error("Token verification failed:", error)
         // Clear invalid token
         localStorage.removeItem("token")
+        localStorage.clear()
         document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
         document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
         router.replace("/signin")

@@ -6,7 +6,7 @@ import { ChevronDown, Eye, Pencil, Trash2, Plus, Check, X } from "lucide-react"
 type Keyword = {
   id: string
   name: string
-  lastEdited: string
+  createdAt: string
   active: boolean
   checked: boolean
 }
@@ -57,10 +57,10 @@ export default function BusinessKeywords() {
       const transformedKeywords = keywordsData.map((keyword: any) => ({
         id: keyword._id,
         name: keyword.name,
-        lastEdited: new Date().toLocaleDateString('en-GB', {
-          day: 'numeric',
+        createdAt: new Date(keyword.createdAt).toLocaleDateString('en-US', {
+          year: 'numeric',
           month: 'short',
-          year: 'numeric'
+          day: 'numeric'
         }),
         active: true,
         checked: false
@@ -248,7 +248,7 @@ export default function BusinessKeywords() {
               </div>
             </div>
             <div className="flex items-center gap-20">
-              <div className="w-32 font-medium">Last Edited</div>
+              <div className="w-32 font-medium">Created At</div>
               <div className="w-20 font-medium">Status</div>
               <div className="w-24"></div>
             </div>
@@ -293,7 +293,7 @@ export default function BusinessKeywords() {
                 )}
               </div>
               <div className="flex items-center justify-between sm:gap-20">
-                <div className="w-32 text-gray-500">{keyword.lastEdited}</div>
+                <div className="w-32 text-gray-500">{keyword.createdAt}</div>
                 <div className="w-20">
                   {keyword.active && (
                     <div className="flex items-center gap-1">
@@ -303,9 +303,9 @@ export default function BusinessKeywords() {
                   )}
                 </div>
                 <div className="flex w-24 items-center justify-end gap-2">
-                  <button className="rounded-full p-1 hover:bg-gray-100">
+                  {/* <button className="rounded-full p-1 hover:bg-gray-100">
                     <Eye size={18} className="text-gray-500" />
-                  </button>
+                  </button> */}
                   <button 
                     onClick={() => handleEditClick(keyword)}
                     disabled={isUpdating}

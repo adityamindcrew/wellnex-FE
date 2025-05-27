@@ -25,6 +25,7 @@ interface FormCardProps {
   nextLabel?: string
   nextDisabled?: boolean
   onNext?: () => void
+  hasData?: boolean
 }
 
 export default function FormCard({
@@ -37,6 +38,7 @@ export default function FormCard({
   nextLabel = "Next",
   nextDisabled = false,
   onNext,
+  hasData = false,
 }: FormCardProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -46,14 +48,13 @@ export default function FormCard({
   const handleNext = async () => {
     try {
       // First execute any data saving logic and wait for it to complete
-    if (onNext) {
+      if (onNext) {
         await onNext();
-      }
-      
-      // Only navigate to next step after data is saved
-      const nextStepIndex = currentStepIndex + 1;
-      if (nextStepIndex < steps.length) {
-        router.replace(steps[nextStepIndex]);
+        // Only navigate if onNext completes successfully
+        const nextStepIndex = currentStepIndex + 1;
+        if (nextStepIndex < steps.length) {
+          router.replace(steps[nextStepIndex]);
+        }
       }
     } catch (error) {
       console.error('Error saving data:', error);
@@ -104,7 +105,7 @@ export default function FormCard({
                 {showNext && (
                   <Button 
                     onClick={() => handleNext()} 
-                    disabled={nextDisabled} 
+                    disabled={nextDisabled || !hasData} 
                     className="bg-[#987CF1] hover:bg-[#987CF1]"
                   >
                     {nextLabel}

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import FormCard from "../components/form-card"
 import ColorPicker from "./color-picker"
@@ -8,14 +8,15 @@ import ColorPicker from "./color-picker"
 export default function OnboardingStep2() {
   const router = useRouter();
   const colorPickerRef = useRef<{ handleSetThemeColor: () => void }>(null);
-  // useEffect(() => {
-  //   const onboardingStep = localStorage.getItem("onboardingStep");
-  //   if (onboardingStep === "5") {
-  //     router.replace("/onboarding/step-5");
-  //   } else {
-  //     localStorage.setItem("onboardingStep", "2");
-  //   }
-  // }, [router]);
+  const [hasColor, setHasColor] = useState(false);
+
+  // Check for existing color in localStorage
+  useEffect(() => {
+    const savedColor = localStorage.getItem('themeColor');
+    if (savedColor) {
+      setHasColor(true);
+    }
+  }, []);
 
   return (
     <FormCard
@@ -23,8 +24,9 @@ export default function OnboardingStep2() {
       description="This will set the visual appearance of your chatbot to match your website and brand."
       showBack={true}
       onNext={() => colorPickerRef.current?.handleSetThemeColor()}
+      hasData={hasColor}
     >
-      <ColorPicker ref={colorPickerRef} />
+      <ColorPicker ref={colorPickerRef} onColorSelect={() => setHasColor(true)} />
     </FormCard>
   )
 }

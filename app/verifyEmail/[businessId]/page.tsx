@@ -35,12 +35,21 @@ function VerifyEmailContent({ params }: { params: { businessId: string } }) {
 
           if (response.status) {
             setVerificationStatus('success')
-            setMessage('Email verified successfully! Redirecting to login...')
+            setMessage('Email verified successfully! Closing window...')
 
-            // Redirect to login page after 3 seconds
+            // Set the token in localStorage and cookies
+            if (response.token) {
+              localStorage.setItem('token', response.token)
+              document.cookie = `token=${response.token}; path=/`
+              document.cookie = `authorization=Bearer ${response.token}; path=/`
+            }
+
+            // Close window after 1 second
             setTimeout(() => {
+              window.close()
+              // Fallback to redirect if window.close() doesn't work
               router.push('/payment/planSelection')
-            }, 3000)
+            }, 1000)
           } else {
             throw new Error(response.message || 'Verification failed')
           }
