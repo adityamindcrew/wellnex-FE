@@ -22,14 +22,19 @@ export default function Sidebar() {
     } catch (err) {
       // Optionally handle error
     }
-    // Clear localStorage and cookies
+    
+    // Clear all localStorage items
+    localStorage.clear();
     localStorage.removeItem("token")
     localStorage.removeItem("businessId")
-    localStorage.clear()
+    localStorage.removeItem("onboardingStep")
+
     document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
     document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
     document.cookie = "onboardingToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-    router.push("/signin")
+    
+    // Force a page reload to ensure all state is cleared
+    window.location.href = "/signin"
   }, [router])
 
   return (

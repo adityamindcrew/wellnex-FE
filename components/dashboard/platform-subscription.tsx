@@ -5,12 +5,151 @@ import Image from "next/image";
 import { ImageIcon, ChevronDown, ChevronUp, PipetteIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardNumberElement, useStripe, useElements, CardExpiryElement, CardCvcElement } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe('pk_test_51LuNV2E2Y7YLkjxVuaZ1F13llOwUjsRcrodK7nbLAxmqxcnKqjnWxlc83V53bnFdnWOSW07fvBQjEmKXp2ChPXNo004z40bvvz');
+
+function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paymentMethodId: string) => void }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [cardName, setCardName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState("");
+
+  // useEffect(() => {
+  //   // const currency = localStorage.getItem("planCurrency");
+  //   // const amount = localStorage.getItem("planAmount");
+  //   setPaymentAmount(`${currency} ${amount}`);
+  // }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      if (!stripe || !elements) {
+        throw new Error("Stripe not loaded");
+      }
+
+      const cardElement = elements.getElement(CardNumberElement);
+      if (!cardElement) {
+        throw new Error("Card element not found");
+      }
+
+      const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
+        type: "card",
+        card: cardElement,
+        billing_details: { name: cardName },
+      });
+
+      if (pmError) {
+        throw new Error(pmError.message || "Payment error");
+      }
+
+      if (!paymentMethod?.id) {
+        throw new Error("Failed to create payment method");
+      }
+
+      onPaymentMethodCreated(paymentMethod.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create payment method");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg px-8 py-6 w-full max-w-[500px] flex flex-col items-center">
+      <div className="w-full">
+        <div className="mb-1 font-semibold text-[#181D27] text-lg">Payment</div>
+        <div className="mb-4 text-sm text-[#535862]">Card details.</div>
+        <div className="flex w-full gap-4 mb-3">
+          <div className="flex-[3]">
+            <label className="block text-sm font-medium text-[#414651] mb-1">Name on card</label>
+            <input
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              value={cardName}
+              onChange={e => setCardName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-[#414651] mb-1">Expiry</label>
+            <CardExpiryElement
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    lineHeight: "1.5",
+                    '::placeholder': { color: "#aab7c4" },
+                  },
+                  invalid: { color: "#9e2146" },
+                },
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex w-full gap-4 mb-1">
+          <div className="flex-[3]">
+            <label className="block text-sm font-medium text-[#414651] mb-1">Card number</label>
+            <CardNumberElement
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    lineHeight: "2.2",
+                    '::placeholder': { color: "#aab7c4" },
+                  },
+                  invalid: { color: "#9e2146" },
+                },
+              }}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-[#414651] mb-1">CVV</label>
+            <CardCvcElement
+              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    lineHeight: "2.2",
+                    '::placeholder': { color: "#aab7c4" },
+                  },
+                  invalid: { color: "#9e2146" },
+                },
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      {error && <div className="text-red-500 mt-3 text-base w-full text-center">{error}</div>}
+      <div className="flex w-full mt-6 gap-3">
+        <button type="submit" className="flex-1 py-2.5 rounded-md bg-black text-white font-semibold text-base" disabled={loading}>
+          {loading ? "Processing..." : `Pay ${paymentAmount}`}
+        </button>
+      </div>
+    </form>
+  );
+}
 
 export default function PlatformSubscription() {
   const [selectedColor, setSelectedColor] = useState("#987CF1");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showSpecialOffer, setShowSpecialOffer] = useState(true);
+  const [themeError, setThemeError] = useState<string | null>(null);
+  const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
+  const [showSpecialOffer, setShowSpecialOffer] = useState(false);
+  const [specialOfferPrice, setSpecialOfferPrice] = useState<number | null>(null);
+  const [specialOfferMessage, setSpecialOfferMessage] = useState<string>("");
+  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -30,6 +169,7 @@ export default function PlatformSubscription() {
   // Subscription status state
   const [subscription, setSubscription] = useState<any>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   // Load logo and theme color from localStorage on component mount
   useEffect(() => {
@@ -100,13 +240,13 @@ export default function PlatformSubscription() {
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    setError(null);
+    setThemeError(null);
 
     if (!file) return;
 
     // Check if file is PNG
     if (!file.type.includes("png")) {
-      setError("Please upload a PNG file only");
+      setThemeError("Please upload a PNG file only");
       return;
     }
 
@@ -134,7 +274,7 @@ export default function PlatformSubscription() {
 
     try {
       setIsLoading(true);
-      setError(null);
+      setThemeError(null);
       const token = localStorage.getItem('token');
       const businessId = localStorage.getItem('businessId');
 
@@ -163,7 +303,6 @@ export default function PlatformSubscription() {
             throw new Error('Failed to upload logo');
           }
 
-          // Save the preview URL as the logo URL
           const savedPreview = localStorage.getItem('logoPreview');
           if (savedPreview) {
             setLogoUrl(savedPreview);
@@ -200,7 +339,7 @@ export default function PlatformSubscription() {
       }
       setTimeout(() => setMessage(null), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save changes');
+      setThemeError(err instanceof Error ? err.message : 'Failed to save changes');
     } finally {
       setIsLoading(false);
     }
@@ -211,7 +350,7 @@ export default function PlatformSubscription() {
     const value = e.target.value.startsWith("#") ? e.target.value : `#${e.target.value}`
     if (value.match(/^#([0-9A-F]{3}){1,2}$/i) || value === "#") {
       setSelectedColor(value)
-      setError(null)
+      setThemeError(null)
       setHasChanges(true)
     }
   }
@@ -228,7 +367,7 @@ export default function PlatformSubscription() {
     // Update hex color
     const hex = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`
     setSelectedColor(hex)
-    setError(null)
+    setThemeError(null)
     setHasChanges(true)
   }
 
@@ -247,7 +386,7 @@ export default function PlatformSubscription() {
 
     // Calculate color based on position and current hue
     updateColorFromPositions(Math.max(0, Math.min(1, x)), Math.max(0, Math.min(1, y)), huePos)
-    setError(null)
+    setThemeError(null)
     setHasChanges(true)
   }
 
@@ -262,7 +401,7 @@ export default function PlatformSubscription() {
 
     // Update color based on new hue and current gradient position
     updateColorFromPositions(gradientPos.x, gradientPos.y, Math.max(0, Math.min(1, x)))
-    setError(null)
+    setThemeError(null)
     setHasChanges(true)
   }
 
@@ -343,19 +482,76 @@ export default function PlatformSubscription() {
       }
 
       const data = await response.json();
+      
       if (data.hasSpecialOffer) {
+        setSpecialOfferPrice(data.specialOfferPrice);
+        setSpecialOfferMessage(data.message);
+        setCurrentPeriodEnd(data.currentPeriodEnd);
         setShowSpecialOffer(true);
       } else {
-        setMessage('Your subscription has been cancelled');
+        // setMessage('Subscription will be canceled at the end of the billing period');
+        // Refresh subscription data
+        const token = localStorage.getItem('token');
+        const businessId = localStorage.getItem('businessId');
+        if (token && businessId) {
+          const statusResponse = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          if (statusResponse.ok) {
+            const statusData = await statusResponse.json();
+            setSubscription(statusData || null);
+          }
+        }
       }
     } catch (err: any) {
-      setError(err.message);
+      setSubscriptionError(err.message);
+      // Clear any existing message when there's an error
+      setMessage(null);
     }
   };
 
-  const handleRenewSubscription = async () => {
+  const handleAcceptSpecialOffer = () => {
+    setShowPaymentForm(true);
+  };
+
+  const handlePaymentMethodCreated = async (paymentMethodId: string) => {
     try {
-      const response = await fetch('https://wellnexai.com/api/subscription/renew-after-special-offer', {
+      const createResponse = await fetch('https://wellnexai.com/api/subscription/renew-after-special-offer', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          paymentMethodId: paymentMethodId
+        })
+      });
+
+      const responseData = await createResponse.json();
+
+      if (!createResponse.ok) {
+        throw new Error(responseData.message || 'Failed to create subscription');
+      }
+
+      setShowPaymentForm(false);
+      setShowSpecialOffer(false);
+      setMessage('Your subscription has been renewed successfully!');
+      
+    } catch (err: any) {
+      console.error('Subscription error:', err);
+      setSubscriptionError(err.message || 'An error occurred while processing your subscription. Please try again.');
+      setShowPaymentForm(false);
+      // Clear any existing message when there's an error
+      setMessage(null);
+    }
+  };
+
+  const handleDeclineSpecialOffer = async () => {
+    try {
+      const response = await fetch('https://wellnexai.com/api/subscription/cancel', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -363,19 +559,15 @@ export default function PlatformSubscription() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to renew subscription');
+        throw new Error('Failed to cancel subscription');
       }
 
+      const data = await response.json();
       setShowSpecialOffer(false);
-      setMessage('Your subscription has been renewed for one more month');
+      setMessage(data.message || 'Your subscription has been cancelled');
     } catch (err: any) {
-      setError(err.message);
+      setThemeError(err.message);
     }
-  };
-
-  const handleConfirmCancel = () => {
-    setShowSpecialOffer(false);
-    setMessage('Your subscription has been cancelled');
   };
 
   return (
@@ -410,9 +602,11 @@ export default function PlatformSubscription() {
             ) : (
               <div className="text-center text-red-500 py-4">No subscription data found.</div>
             )}
+            {subscriptionError && (
+              <div className="text-sm text-red-600 text-center bg-red-50 p-2 rounded-md">{subscriptionError}</div>
+            )}
             <div className="flex gap-2 pt-2">
-              <button className="rounded-md bg-black px-4 py-2 text-sm text-white">Renew Now</button>
-              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm">
+              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleCancelSubscription}>
                 Cancel Subscription
               </button>
             </div>
@@ -433,7 +627,7 @@ export default function PlatformSubscription() {
                   unoptimized
                   onError={(e) => {
                     console.error('Error loading logo:', e);
-                    setError('Failed to load logo');
+                    setThemeError('Failed to load logo');
                     setLogoUrl(null);
                     localStorage.removeItem('businessLogo');
                   }}
@@ -560,13 +754,13 @@ export default function PlatformSubscription() {
               )}
             </div>
           </div>
-          {error && (
-            <div className="text-sm text-red-600 text-center">{error}</div>
+          {themeError && (
+            <div className="text-sm text-red-600 text-center">{themeError}</div>
           )}
           {message && (
             <div className="text-sm text-green-600 text-center">{message}</div>
           )}
-          <div className="flex gap-2 pt-2  mt-4">
+          <div className="flex gap-2 pt-2 mt-4">
             <button
               onClick={handleResetTheme}
               disabled={isLoading}
@@ -584,7 +778,43 @@ export default function PlatformSubscription() {
           </div>
         </div>
       </div>
+      {showSpecialOffer && !showPaymentForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Special Offer</h3>
+            <p className="text-gray-600 mb-4">{specialOfferMessage}</p>
+            <p className="text-sm text-gray-500 mb-6">
+              Your current subscription will end on: {new Date(currentPeriodEnd).toLocaleDateString()}
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleDeclineSpecialOffer}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                No, Cancel
+              </button>
+              <button
+                // onClick={handleAcceptSpecialOffer}
+                onClick={() => alert("Coming Soon")}
+                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+              >
+                Yes, Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
+      {showPaymentForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Payment Details</h3>
+            <Elements stripe={stripePromise}>
+              <PaymentForm onPaymentMethodCreated={handlePaymentMethodCreated} />
+            </Elements>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
                 .cancel-button {

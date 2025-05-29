@@ -22,7 +22,8 @@ export function middleware(request: NextRequest) {
   // Handle logout
   if (pathname === '/logout') {
     const response = NextResponse.redirect(new URL('/signup', request.url))
-    // Clear all relevant cookies
+    // Cllear all relevantlo cookies
+ 
     response.cookies.delete('onboardingToken')
     response.cookies.delete('currentOnboardingStep')
     response.cookies.delete('token')
@@ -83,11 +84,14 @@ export function middleware(request: NextRequest) {
 
   // Prevent going back to signup if onboarding has started
   if (pathname === '/signup' && onboardingToken) {
-    // If there's a current step, redirect to that step
-    if (currentOnboardingStep) {
-      return NextResponse.redirect(new URL(`/onboarding/step-${currentOnboardingStep}`, request.url))
+    // Only redirect if we're not on the create-account page
+    if (!pathname.includes('/create-account')) {
+      // If there's a current step, redirect to that step
+      if (currentOnboardingStep) {
+        return NextResponse.redirect(new URL(`/onboarding/step-${currentOnboardingStep}`, request.url))
+      }
+      return NextResponse.redirect(new URL('/onboarding/step-1', request.url))
     }
-    return NextResponse.redirect(new URL('/onboarding/step-1', request.url))
   }
 
   // Prevent going back to previous steps if on step 5

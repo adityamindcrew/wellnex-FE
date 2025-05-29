@@ -21,6 +21,9 @@ export default function BusinessKeywords() {
   const [editingKeyword, setEditingKeyword] = useState<string | null>(null)
   const [editValue, setEditValue] = useState("")
   const [isUpdating, setIsUpdating] = useState(false)
+  const [newKeyword, setNewKeyword] = useState("")
+  const [isAdding, setIsAdding] = useState(false)
+  const [showAddInput, setShowAddInput] = useState(false)
 
   const fetchKeywords = async () => {
     try {
@@ -134,17 +137,6 @@ export default function BusinessKeywords() {
     setKeywordToDelete(null)
   }
 
-  const toggleCheck = (id: string) => {
-    setKeywords(
-      keywords.map((keyword) => {
-        if (keyword.id === id) {
-          return { ...keyword, checked: !keyword.checked }
-        }
-        return keyword
-      }),
-    )
-  }
-
   const handleEditClick = (keyword: Keyword) => {
     setEditingKeyword(keyword.id)
     setEditValue(keyword.name)
@@ -205,6 +197,49 @@ export default function BusinessKeywords() {
     setEditValue("")
   }
 
+  const handleAddKeyword = async () => {
+    if (!newKeyword.trim()) return
+
+    try {
+      setIsAdding(true)
+      setError(null)
+      const token = localStorage.getItem('token')
+      const businessId = localStorage.getItem('businessId')
+
+      if (!token || !businessId) {
+        throw new Error('Authentication token or business ID not found')
+      }
+
+      const response = await fetch('https://wellnexai.com/api/business/addBusinessKeywords', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.trim()}`
+        },
+        body: JSON.stringify({
+          keywords: [{ name: newKeyword.trim() }],
+          businessId: businessId,
+          replace: false
+        })
+      })
+
+      const responseData = await response.json()
+
+      if (!responseData.status || responseData.code !== 200) {
+        throw new Error(responseData.message || 'Failed to add keyword')
+      }
+
+      await fetchKeywords()
+      setNewKeyword("")
+      setShowAddInput(false)
+    } catch (err) {
+      console.error('Add keyword error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to add keyword')
+    } finally {
+      setIsAdding(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-8">
@@ -232,10 +267,46 @@ export default function BusinessKeywords() {
           <h2 className="text-xl font-semibold">Business Keywords</h2>
           <div className="flex items-center gap-2">
             <div className="rounded-full bg-black px-3 py-1 text-xs text-white">{keywords.length} Keywords</div>
-            {/* <button className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white">
-              <Plus size={16} />
-              <span>Edit Keywords</span>
-            </button> */}
+            {!showAddInput ? (
+              <button 
+                onClick={() => setShowAddInput(true)}
+                disabled={keywords.length >= 10}
+                className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Plus size={16} />
+                <span>Add Keywords</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={newKeyword}
+                    onChange={(e) => setNewKeyword(e.target.value)}
+                    placeholder="Enter keyword"
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#987CF1] pr-8"
+                    disabled={isAdding}
+                  />
+                  <button
+                    onClick={() => {
+                      setShowAddInput(false)
+                      setNewKeyword("")
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+                <button
+                  onClick={handleAddKeyword}
+                  disabled={isAdding || !newKeyword.trim()}
+                  className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50"
+                >
+                  <Plus size={16} />
+                  {isAdding ? 'Adding...' : 'Add keyword'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <div className="px-4 sm:px-6 py-2">
@@ -244,7 +315,7 @@ export default function BusinessKeywords() {
               <div className="w-6"></div>
               <div className="flex items-center gap-1 font-medium">
                 Keywords
-                <ChevronDown size={16} />
+                {/* <ChevronDown size={16} /> */}
               </div>
             </div>
             <div className="flex items-center gap-20">
@@ -257,12 +328,12 @@ export default function BusinessKeywords() {
             <div key={keyword.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 py-3 text-sm gap-2 sm:gap-0">
               <div className="flex items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center">
-                  <input
+                  {/* <input
                     type="checkbox"
-                    checked={keyword.checked}
-                    onChange={() => toggleCheck(keyword.id)}
+                    // checked={keyword.checked}
+                    // onChange={() => toggleCheck(keyword.id)}
                     className="h-4 w-4 rounded border-gray-300 accent-[#987CF1] focus:ring-[#987CF1]"
-                  />
+                  /> */}
                 </div>
                 {editingKeyword === keyword.id ? (
                   <div className="flex-1 flex items-center gap-2">

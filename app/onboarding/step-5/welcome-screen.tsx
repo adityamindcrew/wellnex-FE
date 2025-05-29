@@ -141,9 +141,9 @@ export default function WelcomeScreen() {
 
       {resendStatus === "error" && <p className="text-sm text-red-600">{statusMessage || "Failed to resend email. Please try again."}</p>}
 
-      <a href="#" className="text-sm text-[#987CF1] underline hover:text-[#7F56D9]">
+      {/* <a href="#" className="text-sm text-[#987CF1] underline hover:text-[#7F56D9]">
         Need help: Installing your chatbot?
-      </a>
+      </a> */}
     </div>
   )
 }

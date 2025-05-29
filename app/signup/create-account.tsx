@@ -28,15 +28,15 @@ export default function CreateAccount() {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-    const onboardingStep = localStorage.getItem("onboardingStep");
-    if (onboardingStep && ["1","2","3","4"].includes(onboardingStep)) {
-      router.replace(`/onboarding/step-${onboardingStep}`);
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   setMounted(true);
+  //   const onboardingStep = localStorage.getItem("onboardingStep");
+  //   if (onboardingStep && ["1","2","3","4"].includes(onboardingStep) && window.location.pathname !== '/signup/create-account') {
+  //     router.replace(`/onboarding/step-${onboardingStep}`);
+  //   }
+  // }, [router]);
 
-  if (!mounted) return null;
+  // if (!mounted) return null;
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -234,7 +234,7 @@ export default function CreateAccount() {
             </div>
         </div>
         {/* Right: Image */}
-        <div className="w-full md:w-1/2 flex items-stretch justify-center p-0 m-0 mt-16 mb-16">
+        <div className="w-full md:w-1/2 flex justify-center mt-32 mb-32">
           <div className="relative w-full min-h-[300px] md:min-h-0 md:h-auto aspect-square md:aspect-auto overflow-hidden flex items-center justify-center p-0 m-0">
             <Image
               src={loginImage}

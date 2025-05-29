@@ -22,6 +22,9 @@ export default function BusinessQuestions() {
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [showInput, setShowInput] = useState(false);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -168,16 +171,146 @@ export default function BusinessQuestions() {
     setEditValue("");
   };
 
+  const handleAddQuestion = async () => {
+    if (!newQuestion.trim()) {
+      setError("Please enter a question");
+      return;
+    }
+
+    if (questions.length >= 5) {
+      setError("Maximum 5 questions allowed");
+      return;
+    }
+
+    setIsAdding(true);
+    setError(null);
+
+    try {
+      const businessId = localStorage.getItem('businessId');
+      const token = localStorage.getItem('token');
+      
+      if (!businessId || !token) {
+        throw new Error('Missing businessId or token');
+      }
+
+      const response = await fetch('https://wellnexai.com/api/business/add-business-questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          businessId,
+          questions: [{ name: newQuestion.trim() }]
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to add question');
+      }
+
+      // Add the new question to the list
+      const newQuestionObj = {
+        id: data.data?.[0]?._id || Date.now().toString(),
+        text: newQuestion.trim(),
+        createdAt: new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        }),
+        active: true,
+        checked: false,
+      };
+
+      setQuestions(prev => [...prev, newQuestionObj]);
+      setNewQuestion("");
+      setShowInput(false);
+
+      // Refresh the questions list
+      const refreshResponse = await fetch('https://wellnexai.com/api/business/get-questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ businessId }),
+      });
+
+      const refreshData = await refreshResponse.json();
+      if (refreshResponse.ok) {
+        const refreshedQuestions = (refreshData.data || []).map((q: any) => ({
+          id: q._id,
+          text: q.name,
+          createdAt: new Date(q.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          }),
+          active: true,
+          checked: false,
+        }));
+        setQuestions(refreshedQuestions);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to add question');
+    } finally {
+      setIsAdding(false);
+      setShowInput(false);
+    }
+  };
+
+  const handleAddClick = () => {
+    setShowInput(true);
+    setNewQuestion("");
+  };
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-4 gap-4">
         <h2 className="text-xl font-semibold">Business Questions</h2>
         <div className="flex items-center gap-2">
           <div className="rounded-full bg-black px-3 py-1 text-xs text-white">{questions.length} Questions</div>
-          {/* <button className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white">
-            <Plus size={16} />
-            <span>Edit Questions</span>
-          </button> */}
+          <div className="flex items-center gap-2">
+            {showInput ? (
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={newQuestion}
+                    onChange={(e) => setNewQuestion(e.target.value)}
+                    placeholder="Enter new question"
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#987CF1] pr-8"
+                  />
+                  <button
+                    onClick={() => setShowInput(false)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                <button 
+                  onClick={handleAddQuestion}
+                  disabled={isAdding || !newQuestion.trim()}
+                  className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50"
+                >
+                  <Plus size={16} />
+                  <span>{isAdding ? 'Adding...' : 'Add Question'}</span>
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={handleAddClick}
+                disabled={questions.length >= 5}
+                className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                title={questions.length >= 5 ? "Maximum 5 questions allowed" : ""}
+              >
+                <Plus size={16} />
+                <span>Add Question</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
       <div className="px-4 sm:px-6 py-2">
@@ -188,7 +321,6 @@ export default function BusinessQuestions() {
             <div className="w-6"></div>
             <div className="flex items-center gap-1 font-medium">
               Questions
-              <ChevronDown size={16} />
             </div>
           </div>
           <div className="flex items-center gap-20">
@@ -200,14 +332,14 @@ export default function BusinessQuestions() {
         {questions.map((question) => (
           <div key={question.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 py-3 text-sm gap-2 sm:gap-0">
             <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center">
-                <input
-                  type="checkbox"
-                  checked={question.checked}
-                  onChange={() => toggleCheck(question.id)}
-                  className="h-4 w-4 rounded border-gray-300 accent-[#987CF1] focus:ring-[#987CF1]"
-                />
-              </div>
+            <div className="flex h-6 w-6 items-center justify-center">
+                  {/* <input
+                    type="checkbox"
+                    // checked={keyword.checked}
+                    // onChange={() => toggleCheck(keyword.id)}
+                    className="h-4 w-4 rounded border-gray-300 accent-[#987CF1] focus:ring-[#987CF1]"
+                  /> */}
+                </div>
               {editingQuestion === question.id ? (
                 <div className="flex-1 flex items-center gap-2">
                   <input
@@ -247,9 +379,6 @@ export default function BusinessQuestions() {
                 )}
               </div>
               <div className="flex w-24 items-center justify-end gap-2">
-                {/* <button className="rounded-full p-1 hover:bg-gray-100">
-                  <Eye size={18} className="text-gray-500" />
-                </button> */}
                 <button 
                   onClick={() => handleEditClick(question)}
                   disabled={isUpdating}
