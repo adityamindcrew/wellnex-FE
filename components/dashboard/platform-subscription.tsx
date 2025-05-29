@@ -482,7 +482,7 @@ export default function PlatformSubscription() {
       }
 
       const data = await response.json();
-      
+
       if (data.hasSpecialOffer) {
         setSpecialOfferPrice(data.specialOfferPrice);
         setSpecialOfferMessage(data.message);
@@ -539,7 +539,7 @@ export default function PlatformSubscription() {
       setShowPaymentForm(false);
       setShowSpecialOffer(false);
       setMessage('Your subscription has been renewed successfully!');
-      
+
     } catch (err: any) {
       console.error('Subscription error:', err);
       setSubscriptionError(err.message || 'An error occurred while processing your subscription. Please try again.');

@@ -24,22 +24,37 @@ export interface BusinessListParams {
   skip?: number;
   sort?: string;
   sort_order?: 1 | -1;
-}
-
-export interface BusinessListItem {
-  id: string;
-  name: string;
-  status: string;
-  industry: string;
-  email: string;
-  logo?: string;
+  search?: string;
 }
 
 export interface BusinessListResponse {
-  data: BusinessListItem[];
-  total: number;
+  docs: BusinessListItem[];
+  totalDocs: number;
+  offset: number;
   limit: number;
-  skip: number;
+  totalPages: number;
+  page: number;
+  pagingCounter: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
+  prevPage: number | null;
+  nextPage: number | null;
+}
+
+export interface BusinessListItem {
+  _id: string;
+  name: string;
+  email: string;
+  contact_name: string;
+  website_url: string | null;
+  instagram_url: string | null;
+  logo: string | null;
+  themeColor: string | null;
+  isEmailVerified: boolean;
+  keywords: Array<{
+    name: string;
+    _id: string;
+  }>;
 }
 
 export interface ApiResponse<T> {
@@ -66,7 +81,8 @@ export const wellnexApi = {
           limit: params.limit || 10,
           skip: params.skip || 0,
           sort: params.sort || 'name',
-          sort_order: params.sort_order || -1
+          sort_order: params.sort_order || -1,
+          search: params.search || ''
         }
       }),
   },

@@ -1,5 +1,9 @@
 import { API_BASE_URL, DEFAULT_HEADERS, ApiResponse, ApiError } from './config';
 
+interface RequestOptions extends RequestInit {
+  params?: Record<string, any>;
+}
+
 class ApiClient {
   private baseUrl: string;
   private headers: Record<string, string>;
@@ -11,9 +15,24 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestOptions = {}
   ): Promise<ApiResponse<T>> {
-    const url = `${this.baseUrl}${endpoint}`;
+    let url = `${this.baseUrl}${endpoint}`;
+    
+    // Handle query parameters
+    if (options.params) {
+      const queryParams = new URLSearchParams();
+      Object.entries(options.params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+      const queryString = queryParams.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+    }
+
     const headers = {
       ...this.headers,
       ...options.headers,
@@ -43,11 +62,11 @@ class ApiClient {
     }
   }
 
-  async get<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data: any, options: RequestOptions = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
@@ -55,7 +74,7 @@ class ApiClient {
     });
   }
 
-  async put<T>(endpoint: string, data: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data: any, options: RequestOptions = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',
@@ -63,7 +82,7 @@ class ApiClient {
     });
   }
 
-  async delete<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+  async delete<T>(endpoint: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 
