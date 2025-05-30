@@ -339,7 +339,8 @@ export default function BusinessKeywords() {
                       type="text"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
-                      className="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1]"
+                      className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1]"
+                      style={{ width: `${editValue.length * 8}px`, minWidth: '100px' }}
                       disabled={isUpdating}
                     />
                     <button
