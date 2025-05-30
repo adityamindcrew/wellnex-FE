@@ -146,7 +146,6 @@ export default function HelpPage() {
           </ul>
 
           <h3 className="font-medium mt-4 mb-1">🔹 Bubble</h3>
-          <div>
             <li>Option A: Site-wide Installation :</li>
             <li className="ml-6">Open your Bubble app.</li>
             <li className="ml-6">Scroll to Script in the body (before &lt;/body&gt;).</li>
@@ -159,7 +158,7 @@ export default function HelpPage() {
             <li className="ml-6">Paste the embed code inside the HTML element. </li>
             <li className="ml-6">Place it near the bottom of the page. </li>
             <li className="ml-6">Click Preview or Deploy.  </li>
-          </div>
+         
 
           <h3 className="font-medium mt-4 mb-1">🔹 Framer</h3>
           <ul className="list-disc pl-6 mb-4 text-[#000000]">

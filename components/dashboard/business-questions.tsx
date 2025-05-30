@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ChevronDown, Eye, Pencil, Trash2, Plus, Check, X } from "lucide-react"
 import { log } from "console"
 
@@ -25,6 +25,8 @@ export default function BusinessQuestions() {
   const [isAdding, setIsAdding] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
   const [showInput, setShowInput] = useState(false);
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [inputWidth, setInputWidth] = useState<number>(0);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -72,6 +74,13 @@ export default function BusinessQuestions() {
     };
     fetchQuestions();
   }, []);
+
+  useEffect(() => {
+    if (measureRef.current && editingQuestion) {
+      const width = measureRef.current.offsetWidth;
+      setInputWidth(width);
+    }
+  }, [editValue, editingQuestion]);
 
   const toggleCheck = (id: string) => {
     setQuestions(
@@ -338,12 +347,30 @@ export default function BusinessQuestions() {
               </div>
               {editingQuestion === question.id ? (
                 <div className="flex-1 flex items-center gap-2">
+                  <span
+                    ref={measureRef}
+                    className="invisible absolute whitespace-pre px-2 py-1 border border-transparent text-base font-normal"
+                    style={{
+                      fontFamily: 'inherit',
+                      fontSize: 'inherit',
+                      lineHeight: 'inherit',
+                      letterSpacing: 'inherit'
+                    }}
+                    aria-hidden="true"
+                  >
+                    {editValue || question.text}
+                  </span>
                   <input
                     type="text"
                     value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    className="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1]"
+                    onChange={e => setEditValue(e.target.value)}
+                    className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1]"
                     disabled={isUpdating}
+                    style={{
+                      width: `${Math.max(inputWidth, 200)}px`,
+                      minWidth: '200px',
+                      maxWidth: '100%'
+                    }}
                   />
                   <button
                     onClick={handleUpdateQuestion}

@@ -109,9 +109,9 @@ export default function WelcomeScreen() {
   }
 
   return (
-    <div className="flex flex-col items-center space-y-8 py-8">
-      <div className="w-40">
-        <Lottie animationData={robotAnimation} loop={true} />
+    <div className="flex flex-col items-center space-y-4 py-8">
+      <div className="w-64 h-48 mb-0 flex items-center justify-center mt-2">
+        <Lottie animationData={robotAnimation} loop={true} style={{marginBottom: 0}} />
       </div>
 
       <p className="text-center text-lg">
