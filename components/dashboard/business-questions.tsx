@@ -269,77 +269,73 @@ export default function BusinessQuestions() {
   return (
     <div className="rounded-lg border border-gray-200 bg-white">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-4 gap-4">
-        <h2 className="text-xl font-semibold">Business Questions</h2>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xl font-semibold">Business Questions</h2>
+          <div className="rounded-full bg-black px-3 py-1 text-xs text-white w-fit">{questions.length} Questions</div>
+        </div>
         <div className="flex items-center gap-2">
-          <div className="rounded-full bg-black px-3 py-1 text-xs text-white">{questions.length} Questions</div>
-          <div className="flex items-center gap-2">
-            {showInput ? (
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={newQuestion}
-                    onChange={(e) => setNewQuestion(e.target.value)}
-                    placeholder="Enter new question"
-                    className="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#987CF1] pr-8"
-                  />
-                  <button
-                    onClick={() => setShowInput(false)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-                <button 
-                  onClick={handleAddQuestion}
-                  disabled={isAdding || !newQuestion.trim()}
-                  className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50"
+          {showInput ? (
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={newQuestion}
+                  onChange={(e) => setNewQuestion(e.target.value)}
+                  placeholder="Enter new question"
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#987CF1] pr-8"
+                />
+                <button
+                  onClick={() => setShowInput(false)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  <Plus size={16} />
-                  <span>{isAdding ? 'Adding...' : 'Add Question'}</span>
+                  <X size={16} />
                 </button>
               </div>
-            ) : (
               <button 
-                onClick={handleAddClick}
-                disabled={questions.length >= 5}
-                className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                title={questions.length >= 5 ? "Maximum 5 questions allowed" : ""}
+                onClick={handleAddQuestion}
+                disabled={isAdding || !newQuestion.trim()}
+                className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50"
               >
                 <Plus size={16} />
-                <span>Add Question</span>
+                <span>{isAdding ? 'Adding...' : 'Add Question'}</span>
               </button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <button 
+              onClick={handleAddClick}
+              disabled={questions.length >= 5}
+              className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              title={questions.length >= 5 ? "Maximum 5 questions allowed" : ""}
+            >
+              <Plus size={16} />
+              <span>Add Question</span>
+            </button>
+          )}
         </div>
       </div>
       <div className="px-4 sm:px-6 py-2">
         {loading && <div className="text-center py-4 text-gray-500">Loading questions...</div>}
         {error && <div className="text-center py-4 text-red-500">{error}</div>}
-        <div className="hidden sm:flex items-center justify-between border-b border-gray-100 py-3 text-sm text-gray-500">
+        <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto] items-center border-b border-gray-100 py-3 text-sm text-gray-500">
           <div className="flex items-center gap-2">
             <div className="w-6"></div>
             <div className="flex items-center gap-1 font-medium">
               Questions
             </div>
           </div>
-          <div className="flex items-center gap-20">
-            <div className="w-32 font-medium">Created At</div>
-            <div className="w-20 font-medium">Status</div>
-            <div className="w-24"></div>
-          </div>
+          <div className="w-32 font-medium text-right sm:text-left">Last Edited</div>
+          <div className="w-20 font-medium text-right sm:text-left">Status</div>
+          <div className="w-24"></div>
         </div>
         {questions.map((question) => (
-          <div key={question.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 py-3 text-sm gap-2 sm:gap-0">
+          <div 
+            key={question.id} 
+            className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] items-center border-b border-gray-100 py-3 text-sm gap-2 sm:gap-4"
+          >
             <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center">
-                  {/* <input
-                    type="checkbox"
-                    // checked={keyword.checked}
-                    // onChange={() => toggleCheck(keyword.id)}
-                    className="h-4 w-4 rounded border-gray-300 accent-[#987CF1] focus:ring-[#987CF1]"
-                  /> */}
-                </div>
+              <div className="flex h-6 w-6 items-center justify-center">
+                {/* checkbox placeholder */}
+              </div>
               {editingQuestion === question.id ? (
                 <div className="flex-1 flex items-center gap-2">
                   <input
@@ -368,28 +364,36 @@ export default function BusinessQuestions() {
                 <div className="flex-1">{question.text}</div>
               )}
             </div>
-            <div className="flex items-center justify-between sm:gap-20">
+            <div className="flex items-center justify-between sm:justify-start">
+              <span className="sm:hidden text-gray-500">Last Edited:</span>
               <div className="w-32 text-gray-500">{question.createdAt}</div>
+            </div>
+            <div className="flex items-center justify-between sm:justify-start">
+              <span className="sm:hidden text-gray-500">Status:</span>
               <div className="w-20">
                 {question.active && (
                   <div className="flex items-center gap-1">
                     <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
-                    <span className="text-green-600">Active</span>
+                    <span className="text-green-600 ">Active</span>
                   </div>
                 )}
               </div>
-              <div className="flex w-24 items-center justify-end gap-2">
-                <button 
-                  onClick={() => handleEditClick(question)}
-                  disabled={isUpdating}
-                  className="rounded-full p-1 hover:bg-gray-100"
-                >
-                  <Pencil size={18} className="text-gray-500" />
-                </button>
-                <button className="rounded-full p-1 hover:bg-gray-100" onClick={() => handleDeleteClick(question.id)}>
-                  <Trash2 size={18} className="text-gray-500" />
-                </button>
-              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <button 
+                onClick={() => handleEditClick(question)}
+                disabled={isUpdating}
+                className="rounded-full p-1 hover:bg-gray-100"
+              >
+                <Pencil size={18} className="text-gray-500" />
+              </button>
+              <button 
+                onClick={() => handleDeleteClick(question.id)}
+                disabled={deleteLoading}
+                className="rounded-full p-1 hover:bg-gray-100 disabled:opacity-50"
+              >
+                <Trash2 size={18} className="text-gray-500" />
+              </button>
             </div>
           </div>
         ))}

@@ -68,7 +68,7 @@ export default function Footer() {
                 { name: "Help", href: "/help" },
            
                 { name: "How it works", href: "" },
-                { name: "Careers", href: "" },
+                { name: "Careers", href: "/careers" },
               ].map((item) => (
                 <div key={item.name}>
                   <Link href={item.href} className="block text-[#000000] hover:text-[#000000]">

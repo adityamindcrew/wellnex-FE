@@ -466,6 +466,7 @@ export default function PlatformSubscription() {
     setPreviewUrl(null);
     setSelectedFile(null);
     setHasChanges(true);
+    setIsPickerOpen(false); // Close the color picker when resetting
   };
 
   const handleCancelSubscription = async () => {
@@ -573,8 +574,8 @@ export default function PlatformSubscription() {
   return (
     <div>
       <h2 className="mb-4 text-xl font-semibold">Platform Subscription</h2>
-      <div className="flex flex-col lg:flex-row items-start gap-8">
-        <div className="w-[400px] rounded-lg border border-gray-200 bg-white p-6 lg:p-4">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+        <div className="w-full max-w-lg mx-auto lg:mx-0 lg:max-w-md rounded-lg border border-gray-200 bg-white p-4 sm:p-6 lg:p-4">
           <div className="space-y-4">
             {subscriptionLoading ? (
               <div className="text-center text-gray-500 py-4">Loading subscription...</div>
@@ -612,7 +613,7 @@ export default function PlatformSubscription() {
             </div>
           </div>
         </div>
-        <div className="w-[400px] rounded-lg border border-gray-200 bg-white p-6 lg:p-4">
+        <div className="w-full max-w-lg mx-auto lg:mx-0 lg:max-w-md rounded-lg border border-gray-200 bg-white p-4 sm:p-6 lg:p-4">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div
               className="relative h-12 w-12 rounded-full bg-gray-200 cursor-pointer overflow-hidden "
@@ -780,7 +781,7 @@ export default function PlatformSubscription() {
       </div>
       {showSpecialOffer && !showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Special Offer</h3>
             <p className="text-gray-600 mb-4">{specialOfferMessage}</p>
             <p className="text-sm text-gray-500 mb-6">
@@ -807,7 +808,7 @@ export default function PlatformSubscription() {
 
       {showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Payment Details</h3>
             <Elements stripe={stripePromise}>
               <PaymentForm onPaymentMethodCreated={handlePaymentMethodCreated} />

@@ -264,76 +264,74 @@ export default function BusinessKeywords() {
     <>
       <div className="rounded-lg border border-gray-200 bg-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-4 gap-4">
-          <h2 className="text-xl font-semibold">Business Keywords</h2>
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-semibold">Business Keywords</h2>
+            <div className="rounded-full bg-black px-3 py-1 text-xs text-white w-fit">{keywords.length} Keywords</div>
+          </div>
           <div className="flex items-center gap-2">
-            <div className="rounded-full bg-black px-3 py-1 text-xs text-white">{keywords.length} Keywords</div>
-            {!showAddInput ? (
-              <button 
-                onClick={() => setShowAddInput(true)}
-                disabled={keywords.length >= 10}
-                className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Plus size={16} />
-                <span>Add Keywords</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={newKeyword}
-                    onChange={(e) => setNewKeyword(e.target.value)}
-                    placeholder="Enter keyword"
-                    className="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#987CF1] pr-8"
-                    disabled={isAdding}
-                  />
-                  <button
-                    onClick={() => {
-                      setShowAddInput(false)
-                      setNewKeyword("")
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-                <button
-                  onClick={handleAddKeyword}
-                  disabled={isAdding || !newKeyword.trim()}
-                  className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50"
+            {keywords.length < 10 && (
+              !showAddInput ? (
+                <button 
+                  onClick={() => setShowAddInput(true)}
+                  className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white"
                 >
                   <Plus size={16} />
-                  {isAdding ? 'Adding...' : 'Add keyword'}
+                  <span>Add Keywords</span>
                 </button>
-              </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={newKeyword}
+                      onChange={(e) => setNewKeyword(e.target.value)}
+                      placeholder="Enter keyword"
+                      className="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#987CF1] pr-8"
+                      disabled={isAdding}
+                    />
+                    <button
+                      onClick={() => {
+                        setShowAddInput(false)
+                        setNewKeyword("")
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleAddKeyword}
+                    disabled={isAdding || !newKeyword.trim()}
+                    className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-50"
+                  >
+                    <Plus size={16} />
+                    {isAdding ? 'Adding...' : 'Add keyword'}
+                  </button>
+                </div>
+              )
             )}
           </div>
         </div>
         <div className="px-4 sm:px-6 py-2">
-          <div className="hidden sm:flex items-center justify-between border-b border-gray-100 py-3 text-sm text-gray-500">
+          <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto] items-center border-b border-gray-100 py-3 text-sm text-gray-500">
             <div className="flex items-center gap-2">
               <div className="w-6"></div>
               <div className="flex items-center gap-1 font-medium">
                 Keywords
-                {/* <ChevronDown size={16} /> */}
               </div>
             </div>
-            <div className="flex items-center gap-20">
-              <div className="w-32 font-medium">Created At</div>
-              <div className="w-20 font-medium">Status</div>
-              <div className="w-24"></div>
-            </div>
+            <div className="w-32 font-medium text-right sm:text-left">Last Edited</div>
+            <div className="w-20 font-medium text-right sm:text-left">Status</div>
+            <div className="w-24"></div>
           </div>
           {keywords.map((keyword) => (
-            <div key={keyword.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 py-3 text-sm gap-2 sm:gap-0">
+            <div 
+              key={keyword.id} 
+              className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] items-center border-b border-gray-100 py-3 text-sm gap-2 sm:gap-4"
+            >
               <div className="flex items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center">
-                  {/* <input
-                    type="checkbox"
-                    // checked={keyword.checked}
-                    // onChange={() => toggleCheck(keyword.id)}
-                    className="h-4 w-4 rounded border-gray-300 accent-[#987CF1] focus:ring-[#987CF1]"
-                  /> */}
+                  {/* checkbox placeholder */}
                 </div>
                 {editingKeyword === keyword.id ? (
                   <div className="flex-1 flex items-center gap-2">
@@ -363,8 +361,12 @@ export default function BusinessKeywords() {
                   <div className="flex-1">{keyword.name}</div>
                 )}
               </div>
-              <div className="flex items-center justify-between sm:gap-20">
+              <div className="flex items-center justify-between sm:justify-start">
+                <span className="sm:hidden text-gray-500">Last Edited:</span>
                 <div className="w-32 text-gray-500">{keyword.createdAt}</div>
+              </div>
+              <div className="flex items-center justify-between sm:justify-start">
+                <span className="sm:hidden text-gray-500">Status:</span>
                 <div className="w-20">
                   {keyword.active && (
                     <div className="flex items-center gap-1">
@@ -373,25 +375,22 @@ export default function BusinessKeywords() {
                     </div>
                   )}
                 </div>
-                <div className="flex w-24 items-center justify-end gap-2">
-                  {/* <button className="rounded-full p-1 hover:bg-gray-100">
-                    <Eye size={18} className="text-gray-500" />
-                  </button> */}
-                  <button 
-                    onClick={() => handleEditClick(keyword)}
-                    disabled={isUpdating}
-                    className="rounded-full p-1 hover:bg-gray-100"
-                  >
-                    <Pencil size={18} className="text-gray-500" />
-                  </button>
-                  <button 
-                    onClick={() => handleDeleteClick(keyword.id)}
-                    disabled={isDeleting || isUpdating}
-                    className="rounded-full p-1 hover:bg-gray-100 disabled:opacity-50"
-                  >
-                    <Trash2 size={18} className="text-gray-500" />
-                  </button>
-                </div>
+              </div>
+              <div className="flex items-center justify-end gap-2">
+                <button 
+                  onClick={() => handleEditClick(keyword)}
+                  disabled={isUpdating}
+                  className="rounded-full p-1 hover:bg-gray-100"
+                >
+                  <Pencil size={18} className="text-gray-500" />
+                </button>
+                <button 
+                  onClick={() => handleDeleteClick(keyword.id)}
+                  disabled={isDeleting || isUpdating}
+                  className="rounded-full p-1 hover:bg-gray-100 disabled:opacity-50"
+                >
+                  <Trash2 size={18} className="text-gray-500" />
+                </button>
               </div>
             </div>
           ))}
