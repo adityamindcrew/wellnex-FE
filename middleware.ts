@@ -22,14 +22,21 @@ export function middleware(request: NextRequest) {
   // Handle logout
   if (pathname === '/logout') {
     const response = NextResponse.redirect(new URL('/signup', request.url))
-    // Cllear all relevantlo cookies
- 
+    
+    // Clear all cookies
+    const cookies = request.cookies.getAll()
+    cookies.forEach(cookie => {
+      response.cookies.delete(cookie.name)
+    })
+    
+    // Clear specific important cookies
     response.cookies.delete('onboardingToken')
     response.cookies.delete('currentOnboardingStep')
     response.cookies.delete('token')
     response.cookies.delete('authorization')
-    // Add script to clear localStorage
-    response.headers.set('Clear-Site-Data', '"localStorage"')
+    
+    // Add script to clear localStorage and sessionStorage
+    response.headers.set('Clear-Site-Data', '"localStorage", "sessionStorage", "cookies"')
     return response
   }
   console.log(pathname);
@@ -81,6 +88,20 @@ export function middleware(request: NextRequest) {
   console.log('Middleware - Path:', pathname)
   console.log('Middleware - Token:', token ? 'Present' : 'Missing')
   console.log('Middleware - Is Public:', isPublicRoute)
+
+  // If user is logged in, check if they're trying to access protected routes
+  if (token) {
+    const isProtectedPath = protectedRoutes.some(route => 
+      pathname === route || pathname.startsWith(route + '/')
+    ) || pathname.startsWith('/dashboard') || pathname === '/logout'
+    
+    if (!isProtectedPath) {
+      // If trying to access non-protected path, redirect to dashboard
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    // Allow access to protected paths
+    return NextResponse.next()
+  }
 
   // Prevent going back to signup if onboarding has started
   if (pathname === '/signup' && onboardingToken) {

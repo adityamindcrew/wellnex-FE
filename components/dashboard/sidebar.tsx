@@ -25,13 +25,18 @@ export default function Sidebar() {
     
     // Clear all localStorage items
     localStorage.clear();
-    localStorage.removeItem("token")
-    localStorage.removeItem("businessId")
-    localStorage.removeItem("onboardingStep")
-
-    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-    document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-    document.cookie = "onboardingToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    
+    // Clear all cookies
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+    
+    // Clear sessionStorage
+    sessionStorage.clear();
     
     // Force a page reload to ensure all state is cleared
     window.location.href = "/signin"
