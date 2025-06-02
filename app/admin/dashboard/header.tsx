@@ -28,7 +28,7 @@ export default function Header() {
           }`}
         />
       </div>
-      <div className="flex items-center gap-2 md:gap-3">
+      {/* <div className="flex items-center gap-2 md:gap-3">
         <div className="hidden md:block text-right">
           <div className="text-sm font-medium">Jon Smith</div>
           <div className="text-xs text-gray-500">Sr. Doctor</div>
@@ -36,7 +36,7 @@ export default function Header() {
         <div className="h-8 w-8 md:h-10 md:w-10 overflow-hidden rounded-full bg-gray-200">
           <img src="/avatar.png" alt="Jon Smith" className="h-full w-full object-cover" />
         </div>
-      </div>
+      </div> */}
     </header>
   )
 }

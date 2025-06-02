@@ -56,14 +56,23 @@ export default function SignInPage() {
       // Set loginToken as token and _id as businessId
       const token = data.data?.loginToken;
       const businessId = data.data?._id;
+      const roles = data.data?.roles;
+
       if (token) {
         localStorage.setItem("token", token);
         document.cookie = `token=${token}; path=/; max-age=2592000`;
         document.cookie = `authorization=Bearer ${token}; path=/; max-age=2592000`;
+        
         if (businessId) {
           localStorage.setItem("businessId", businessId);
         }
-        window.location.href = "/dashboard";
+
+        // Check if user is admin and redirect accordingly
+        if (roles && roles.includes('admin')) {
+          window.location.href = "/admin/dashboard";
+        } else {
+          window.location.href = "/dashboard";
+        }
       } else {
         setError("No token received from server");
       }

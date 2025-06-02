@@ -104,12 +104,12 @@ export default function CreateAccount() {
 
   return (
     <div className="min-h-screen w-full bg-[#F5F5F5] flex justify-center">
-      <div className="flex flex-col-reverse md:flex-row w-full max-w-[900px] bg-white shadow-lg rounded-2xl mx-auto">
-        {/* Left: Form */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center px-6 md:px-8 py-8 h-full">
+      <div className="w-full max-w-[500px] bg-white shadow-lg rounded-2xl mx-auto my-8">
+        {/* Form */}
+        <div className="w-full flex flex-col justify-center px-6 md:px-8 py-8">
           {/* Centered logo and headings */}
-          <div className="mb-8 ">
-            <div className="mb-4">
+          <div className="mb-8">
+            <div className="mb-4 flex justify-center">
               <Image src={logo} alt="WellnexAI Logo" width={100} height={200} />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">Create Account</h1>
@@ -227,23 +227,10 @@ export default function CreateAccount() {
 
           </form>
           <div className="text-sm text-gray-700 mt-4 text-center">
-              Do have an account?{" "}
-              <Link href="/signin" className="text-gray-900 font-medium underline">
-                Sign In
-              </Link>
-            </div>
-        </div>
-        {/* Right: Image */}
-        <div className="w-full md:w-1/2 flex justify-center mt-32 mb-32">
-          <div className="relative w-full min-h-[300px] md:min-h-0 md:h-auto aspect-square md:aspect-auto overflow-hidden flex items-center justify-center p-0 m-0">
-            <Image
-              src={loginImage}
-              alt="WellnexAI illustration"
-              fill
-              className="m-auto h-full w-full"
-              sizes="(max-width: 768px ,max-height: 768px) 100vw, 50vw"
-              priority
-            />
+            Do have an account?{" "}
+            <Link href="/signin" className="text-gray-900 font-medium underline">
+              Sign In
+            </Link>
           </div>
         </div>
       </div>

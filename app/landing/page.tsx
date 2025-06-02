@@ -123,7 +123,7 @@ export default function Home() {
                 image={robot.src}
                 title="Launch Your AI Concierge in Just Minutes"
                 description="Your AI chatbot works like a 24/7 receptionist, capturing client details even after hours when your team is busy."
-                learnMoreLink="/"
+                // learnMoreLink="/"
               />
             </div>
             <div className="h-full flex flex-col p-6">
@@ -131,7 +131,7 @@ export default function Home() {
                 image={featureAI.src}
                 title="24/7 Leads Generation"
                 description="Even when your business is closed, the chatbot is live and helping clients share their concerns, request services, and leave contact info for follow-up."
-                learnMoreLink="/"
+                // learnMoreLink="/"
               />
             </div>
           </div>

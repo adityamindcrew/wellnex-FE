@@ -5,7 +5,7 @@ interface FeatureCardProps {
   image: string | StaticImageData
   title: string
   description: string
-   learnMoreLink: string
+  //  learnMoreLink: string
 }
 
 export default function FeatureCard({ image, title, description, learnMoreLink}: FeatureCardProps) {
@@ -16,7 +16,7 @@ export default function FeatureCard({ image, title, description, learnMoreLink}:
         <h3 className="text-lg font-semibold mb-2">{title}</h3>
         <p className="text-sm text-[#000000] mb-4 text-justify">{description}</p>
           <Button variant="link" className="p-0 h-auto text-sm text-black font-medium text-left justify-start" asChild >
-          <a
+          {/* <a
     href={learnMoreLink}
     onClick={e => {
       e.preventDefault();
@@ -24,7 +24,7 @@ export default function FeatureCard({ image, title, description, learnMoreLink}:
     }}
   >
     Learn More &gt;
-  </a>
+  </a> */}
             </Button>
       </div>
       {/* Image Section */}

@@ -67,15 +67,15 @@ export const wellnexApi = {
   // User related endpoints
   users: {
     getCurrentUser: () => apiClient.get<ApiResponse<User>>('/users/me'),
-    updateProfile: (data: Partial<User>) => 
+    updateProfile: (data: Partial<User>) =>
       apiClient.put<ApiResponse<User>>('/users/profile', data),
   },
 
   // Business related endpoints
   business: {
-    getBusinessDetails: () => 
+     getBusinessDetails: () =>
       apiClient.get<ApiResponse<BusinessDetails>>('/business/getBusinessDetail'),
-    getBusinessList: (params: BusinessListParams) => 
+     getBusinessList: (params: BusinessListParams) =>
       apiClient.get<ApiResponse<BusinessListResponse>>('/admin/getBusinessList', {
         params: {
           limit: params.limit || 10,
@@ -87,12 +87,5 @@ export const wellnexApi = {
       }),
   },
 
-  // Add other API endpoints as needed
-  // Example:
-  // auth: {
-  //   login: (credentials: { email: string; password: string }) =>
-  //     apiClient.post<ApiResponse<{ token: string }>>('/auth/login', credentials),
-  //   register: (userData: Partial<User>) =>
-  //     apiClient.post<ApiResponse<User>>('/auth/register', userData),
-  // },
+ 
 }; 

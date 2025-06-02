@@ -71,6 +71,9 @@ const Index = () => {
     cancelled: 0,
     total: 0
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [businessToDelete, setBusinessToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSubscriptionCounts = async () => {
@@ -80,7 +83,7 @@ const Index = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ3ZWxsbmV4dXNlcnMiLCJzdWIiOnsiX2lkIjoiNjgyYzgyZjY5NzIwMTY0YzE0MjE1MTBhIiwiZmlyc3ROYW1lIjoiQWRtaW4gT25lIiwiZW1haWwiOiJhZG1pbjFAbWFpbGluYXRvci5jb20iLCJyb2xlcyI6ImFkbWluIiwiY3JlYXRlZEF0IjoiMjAyNS0wNS0yMFQxMzoyNjoxNC4zNDVaIiwidXBkYXRlZEF0IjoiMjAyNS0wNS0yNlQyMDo1NzoxMC44NzFaIn0sImlhdCI6MTc0ODMzODk2NzYzNCwiZXhwIjoxNzUwOTMwOTY3NjM0fQ.SrMkM1DLyEP2e-5KW8gC5Q9ZuvYtbrhyKsbiIVyE9Vg`
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
           }
         });
         const data = await response.json();
@@ -241,6 +244,58 @@ const Index = () => {
     return buttons;
   };
 
+  const handleDeleteClick = (businessId: string) => {
+    setBusinessToDelete(businessId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setBusinessToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!businessToDelete) return;
+
+    try {
+      setDeleteLoading(true);
+      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : '';
+      const reason = "testing";
+
+      if (!token) {
+        alert('Authentication information missing. Please login again.');
+        return;
+      }
+
+      const response = await fetch(`https://wellnexai.com/api/admin/business/${businessToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          reason
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.status) {
+        setAllBusinesses(prev => prev.filter(business => business._id !== businessToDelete));
+        setBusinesses(prev => prev.filter(business => business._id !== businessToDelete));
+        setShowDeleteModal(false);
+        setBusinessToDelete(null);
+      } else {
+        alert(data.message || 'Failed to delete business');
+      }
+    } catch (err) { 
+      console.error('Error deleting business:', err);
+      alert('Failed to delete business. Please try again.');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return (
     <>
       {/* <Header onSearch={handleSearch} isLoading={loading} /> */}
@@ -291,7 +346,16 @@ const Index = () => {
                       getCurrentPageItems().map((business) => (
                         <TableRow key={business._id}>
                           <TableCell>
-                            <span>{business.name}</span>
+                            <div className="flex items-center gap-2">
+                              {business.logo && (
+                                <img 
+                                  src={`https://wellnexai.com/uploads/business-logos/${business.logo}`}
+                                  alt={`${business.name} logo`}
+                                  className="w-8 h-8 rounded-full object-cover"
+                                />
+                              )}
+                              <span>{business.name}</span>
+                            </div>
                           </TableCell>
                           <TableCell className="text-gray-600">{business.email}</TableCell>
                           <TableCell>
@@ -312,7 +376,10 @@ const Index = () => {
                               <button className="text-gray-500 hover:text-gray-700">
                                 <Pencil className="h-4 w-4" />
                               </button>
-                              <button className="text-gray-500 hover:text-gray-700">
+                              <button 
+                                className="text-gray-500 hover:text-gray-700"
+                                onClick={() => handleDeleteClick(business._id)}
+                              >
                                 <Trash2 className="h-4 w-4" />
                               </button>
                             </div>
@@ -378,6 +445,31 @@ const Index = () => {
         {/* <NotificationsCard /> */}
         <PaymentsCard />
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Delete Business</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to delete this business? This action cannot be undone.</p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleDeleteCancel}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

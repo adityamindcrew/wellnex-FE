@@ -151,7 +151,7 @@ const QuestionsInputInner = forwardRef((props: QuestionsInputProps, ref) => {
       const verificationResponse = await businessApi.sendVerificationEmail(token, businessId)
       console.log("Verification email response:", verificationResponse)
 
-      router.push("/onboarding/step-5");
+      router.push("/onboarding/step-6");
     } catch (err: any) {
       setError(err.message || "Failed to save questions. Please try again.");
     } finally {

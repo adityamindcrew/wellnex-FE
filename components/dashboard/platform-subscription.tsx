@@ -171,24 +171,44 @@ export default function PlatformSubscription() {
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
-  // Load logo and theme color from localStorage on component mount
+  // Load logo and theme color from API on component mount
   useEffect(() => {
-    const savedLogo = localStorage.getItem('businessLogo');
-    const savedPreview = localStorage.getItem('logoPreview');
-    const savedColor = localStorage.getItem('themeColor');
+    const fetchBusinessDetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const businessId = localStorage.getItem('businessId');
+        if (!token || !businessId) return;
 
-    if (savedLogo) {
-      setLogoUrl(savedLogo);
-    }
-    if (savedPreview) {
-      setPreviewUrl(savedPreview);
-    }
-    if (savedColor) {
-      setSelectedColor(savedColor);
-      setInitialColor(savedColor);
-    }
+        const response = await fetch('https://wellnexai.com/api/business/getBusinessDetail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token.replace(/['"]/g, '')}`
+          },
+          body: JSON.stringify({ businessId })
+        });
 
-    // Fetch subscription status
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data) {
+            // Set logo if available
+            if (data.data.logo) {
+              setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
+              localStorage.setItem('businessLogo', `https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
+            }
+            // Set theme color if available
+            if (data.data.themeColor) {
+              setSelectedColor(data.data.themeColor);
+              setInitialColor(data.data.themeColor);
+              localStorage.setItem('themeColor', data.data.themeColor);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching business details:', error);
+      }
+    };
+
     const fetchSubscription = async () => {
       setSubscriptionLoading(true);
       try {
@@ -201,7 +221,7 @@ export default function PlatformSubscription() {
         const response = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token.replace(/['"]/g, '')}`
           },
         });
         if (!response.ok) throw new Error('Failed to fetch subscription status');
@@ -213,6 +233,8 @@ export default function PlatformSubscription() {
         setSubscriptionLoading(false);
       }
     };
+
+    fetchBusinessDetails();
     fetchSubscription();
   }, []);
 
@@ -336,6 +358,7 @@ export default function PlatformSubscription() {
       if (changesMade) {
         setHasChanges(false);
         setSelectedFile(null);
+        setIsPickerOpen(false); // Close the color picker
       }
       setTimeout(() => setMessage(null), 3000);
     } catch (err) {
@@ -459,9 +482,9 @@ export default function PlatformSubscription() {
   }
 
   const handleResetTheme = () => {
-    const defaultColor = "#987CF1";
-    setSelectedColor(defaultColor);
-    setInitialColor(defaultColor);
+    // const defaultColor = "#987CF1";
+    // setSelectedColor(defaultColor);
+    // setInitialColor(defaultColor);
     localStorage.removeItem('logoPreview'); // Clear logo preview from localStorage
     setPreviewUrl(null);
     setSelectedFile(null);

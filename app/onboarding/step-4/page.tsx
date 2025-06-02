@@ -1,21 +1,34 @@
 "use client"
-
 import { useRef, useState, useEffect } from "react";
 import FormCard from "../components/form-card"
-import QuestionsInput from "./questions-input"
+import ServicesGrid from "./servies-grid"
+import { useRouter } from "next/navigation"
 
-export default function ChatbotQuestionsPage() {
-  const questionsInputRef = useRef<{ handleSave: () => void }>(null);
-  const [hasQuestions, setHasQuestions] = useState(false);
+interface ServicesGridRef {
+  handleNext: () => void;
+}
 
-  // Check for existing questions in localStorage
+export default function ServicesProvidedPage() {
+  const servicesGridRef = useRef<ServicesGridRef>(null);
+  const [hasServices, setHasServices] = useState(false);
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   const onboardingStep = localStorage.getItem("onboardingStep");
+  //   if (onboardingStep === "4") {
+  //     router.replace("/onboarding/step-4");
+  //   } else if (onboardingStep !== "3") {
+  //     router.replace("/onboarding/step-3");
+  //   }
+  // }, [router]);
+
   useEffect(() => {
-    const savedQuestions = localStorage.getItem('questions');
-    if (savedQuestions) {
+    const savedServices = localStorage.getItem('services');
+    if (savedServices) {
       try {
-        const parsed = JSON.parse(savedQuestions);
-        if (Array.isArray(parsed) && parsed.some(q => q.trim() !== "")) {
-          setHasQuestions(true);
+        const parsed = JSON.parse(savedServices);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setHasServices(true);
         }
       } catch (e) {
         // Ignore parse errors
@@ -24,14 +37,14 @@ export default function ChatbotQuestionsPage() {
   }, []);
 
   return (
-    <FormCard
-      title="Customize the Questions Your Chatbot Will Ask/Reply"
-      description="These questions will be shown to your customers during their AI consultation. Their answers will be matched with your keywords to recommend the most relevant services or products."
-      showBack={true}
-      onNext={() => questionsInputRef.current?.handleSave()}
-      hasData={hasQuestions}
+    <FormCard 
+      title="What Services Do You Offer?" 
+      description="Let us know about the services your business provides." 
+      showBack={true} 
+      onNext={() => servicesGridRef.current?.handleNext()}
+      hasData={hasServices}
     >
-      <QuestionsInput ref={questionsInputRef} onQuestionsChange={(hasData) => setHasQuestions(hasData)} />
+      <ServicesGrid ref={servicesGridRef} onKeywordsChange={(hasData: boolean) => setHasServices(hasData)} />
     </FormCard>
   )
 }
