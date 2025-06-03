@@ -195,13 +195,13 @@ export default function PlatformSubscription() {
             if (data.data.logo) {
               setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
               localStorage.setItem('businessLogo', `https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
-            }
+    }
             // Set theme color if available
             if (data.data.themeColor) {
               setSelectedColor(data.data.themeColor);
               setInitialColor(data.data.themeColor);
               localStorage.setItem('themeColor', data.data.themeColor);
-            }
+    }
           }
         }
       } catch (error) {
