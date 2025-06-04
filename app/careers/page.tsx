@@ -112,8 +112,6 @@ export default function CareersForm() {
       <div className="min-h-screen flex items-center justify-center bg-white py-12">
         <div className="max-w-lg w-full p-4 sm:p-8 bg-white rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-2 text-center">Join us in shaping the future of AI-powered beauty and wellness!</h2>
-          {/* <p className="text-gray-600 mb-6 text-center">Get in touch</p> */}
-
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <Label htmlFor="name">Full Name</Label>
@@ -205,6 +203,10 @@ export default function CareersForm() {
             {success && (
               <div className="text-green-500 text-sm text-center">Thank you for your message! We'll get back to you soon.</div>
             )}
+
+            <div className="text-xs text-gray-500 text-center mb-2">
+              We may not have active openings at the moment, we welcome you to submit your resume for future opportunities in marketing, customer service, backend development, and frontend development. If a position aligns with your skills and expertise, we'll be sure to reach out.
+            </div>
 
             <div className="pt-2">
               <Button
