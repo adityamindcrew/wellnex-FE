@@ -151,6 +151,7 @@ export default function PlatformSubscription() {
   const [specialOfferMessage, setSpecialOfferMessage] = useState<string>("");
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
+  const [message1, setMessage1] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -170,7 +171,7 @@ export default function PlatformSubscription() {
   const [subscription, setSubscription] = useState<any>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-
+  const [showRenewSubscription, setShowRenewSubscription] = useState(false);
   // Load logo and theme color from API on component mount
   useEffect(() => {
     const fetchBusinessDetails = async () => {
@@ -491,7 +492,52 @@ export default function PlatformSubscription() {
     setHasChanges(true);
     setIsPickerOpen(false); // Close the color picker when resetting
   };
+  const handleRenewSubscription = async () => {
+    setShowRenewSubscription(true);
+  }
 
+  const handleRenewSubscriptionAPI = async (paymentMethodId: string) => {
+    try {
+      const response = await fetch('https://wellnexai.com/api/subscription/renew-after-special-offer', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          paymentMethodId: paymentMethodId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel subscription');
+      }
+
+      const data = await response.json();
+      // Close the popup
+      setShowRenewSubscription(false);
+
+      // Refresh subscription data
+      const token = localStorage.getItem('token');
+      const businessId = localStorage.getItem('businessId');
+      if (token && businessId) {
+        const statusResponse = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          setSubscription(statusData || null);
+        }
+      }
+    } catch (err: any) {
+      setSubscriptionError(err.message);
+      // Clear any existing message when there's an error
+      setMessage(null);
+    }
+  }
   const handleCancelSubscription = async () => {
     try {
       const response = await fetch('https://wellnexai.com/api/subscription/cancel', {
@@ -543,7 +589,7 @@ export default function PlatformSubscription() {
 
   const handlePaymentMethodCreated = async (paymentMethodId: string) => {
     try {
-      const createResponse = await fetch('https://wellnexai.com/api/subscription/renew-after-special-offer', {
+      const createResponse = await fetch('https://wellnexai.com/api/subscription/apply-special-offer', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -562,11 +608,11 @@ export default function PlatformSubscription() {
 
       setShowPaymentForm(false);
       setShowSpecialOffer(false);
-      setMessage('Your subscription has been renewed successfully!');
-
+      setMessage1('Your subscription has been renewed successfully!');
+      setTimeout(() => setMessage1(null), 3000);
     } catch (err: any) {
       console.error('Subscription error:', err);
-      setSubscriptionError(err.message || 'An error occurred while processing your subscription. Please try again.');
+      setSubscriptionError(err.message || 'An error occurred while processing your subscription?. Please try again.');
       setShowPaymentForm(false);
       // Clear any existing message when there's an error
       setMessage(null);
@@ -606,21 +652,26 @@ export default function PlatformSubscription() {
               <>
                 <div className="flex justify-between">
                   <div className="text-sm font-medium text-gray-500">Subscription Status</div>
-                  <div className="text-sm font-medium">{subscription.status || 'N/A'}</div>
+                  <div className="text-sm font-medium">
+                    {subscription?.status
+                      ? subscription?.status === 'active' && subscription?.cancelAtPeriodEnd
+                        ? 'Active (Cancel at period end)'
+                        : subscription?.status[0].toUpperCase() + subscription?.status.slice(1)
+                      : 'N/A'}</div>
                 </div>
                 <div className="flex justify-between">
                   <div className="text-sm font-medium text-gray-500">Start Date</div>
-                  <div className="text-sm">{subscription.currentPeriodStart ? subscription.currentPeriodStart.slice(0, 10) : 'N/A'}</div>
+                  <div className="text-sm">{subscription?.currentPeriodStart ? subscription?.currentPeriodStart.slice(0, 10) : 'N/A'}</div>
                 </div>
                 <div className="flex justify-between">
-                  <div className="text-sm font-medium text-gray-500">Next Renewal Date</div>
+                  <div className="text-sm font-medium text-gray-500">{subscription?.cancelAtPeriodEnd ? 'End Date' : 'Next Renewal Date'}</div>
                   <div className="text-sm">
-                    {subscription.currentPeriodEnd ? subscription.currentPeriodEnd.slice(0, 10) : 'N/A'}
+                    {subscription?.currentPeriodEnd ? subscription?.currentPeriodEnd.slice(0, 10) : 'N/A'}
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <div className="text-sm font-medium text-gray-500">Email</div>
-                  <div className="text-sm">{subscription.email || 'N/A'}</div>
+                  <div className="text-sm">{subscription?.email || 'N/A'}</div>
                 </div>
               </>
             ) : (
@@ -629,10 +680,16 @@ export default function PlatformSubscription() {
             {subscriptionError && (
               <div className="text-sm text-red-600 text-center bg-red-50 p-2 rounded-md">{subscriptionError}</div>
             )}
+            {message1 && (
+              <div className="text-sm text-green-600 text-center bg-green-50 p-2 rounded-md">{message1}</div>
+            )}
             <div className="flex gap-2 pt-2">
-              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleCancelSubscription}>
+              {subscription?.status !== "canceled" && !subscription?.cancelAtPeriodEnd && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleCancelSubscription}>
                 Cancel Subscription
-              </button>
+              </button>}
+              {subscription?.status === "canceled" && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
+                Renew Subscription
+              </button>}
             </div>
           </div>
         </div>
@@ -818,8 +875,8 @@ export default function PlatformSubscription() {
                 No, Cancel
               </button>
               <button
-                // onClick={handleAcceptSpecialOffer}
-                onClick={() => alert("Coming Soon")}
+                onClick={handleAcceptSpecialOffer}
+                // onClick={() => alert("Coming Soon")}
                 className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
               >
                 Yes, Continue
@@ -839,7 +896,16 @@ export default function PlatformSubscription() {
           </div>
         </div>
       )}
-
+      {showRenewSubscription && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Renew Subscription</h3>
+            <Elements stripe={stripePromise}>
+              <PaymentForm onPaymentMethodCreated={handleRenewSubscriptionAPI} />
+            </Elements>
+          </div>
+        </div>
+      )}
       <style jsx>{`
                 .cancel-button {
                     margin-top: 20px;
