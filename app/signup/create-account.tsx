@@ -27,6 +27,13 @@ export default function CreateAccount() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState({
+    businessName: '',
+    phoneNumber: '',
+    businessEmail: '',
+    contactName: '',
+    password: '',
+  });
 
   // useEffect(() => {
   //   setMounted(true);
@@ -67,10 +74,49 @@ export default function CreateAccount() {
     }
   }
 
+  const validateFields = () => {
+    const errors: typeof formErrors = {
+      businessName: '',
+      phoneNumber: '',
+      businessEmail: '',
+      contactName: '',
+      password: '',
+    };
+    if (!formData.businessName.trim()) {
+      errors.businessName = 'Business name is required.';
+    }
+    if (!formData.phoneNumber.trim()) {
+      errors.phoneNumber = 'Phone number is required.';
+    } else if (!/^\+?\d{7,15}$/.test(formData.phoneNumber.trim())) {
+      errors.phoneNumber = 'Enter a valid phone number.';
+    }
+    if (!formData.businessEmail.trim()) {
+      errors.businessEmail = 'Business email is required.';
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.businessEmail.trim())) {
+      errors.businessEmail = 'Enter a valid email address.';
+    }
+    if (!formData.contactName.trim()) {
+      errors.contactName = 'Contact name is required.';
+    }
+    if (!formData.password.trim()) {
+      errors.password = 'Password is required.';
+    } else {
+      const pwdError = validatePassword(formData.password);
+      if (pwdError) errors.password = pwdError;
+    }
+    setFormErrors(errors);
+    return Object.values(errors).every((v) => !v);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
+
+    if (!validateFields()) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const signupData: BusinessSignupData = {
@@ -123,7 +169,6 @@ export default function CreateAccount() {
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              
               <input
                 type="text"
                 name="businessName"
@@ -133,6 +178,7 @@ export default function CreateAccount() {
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
+              {formErrors.businessName && <p className="text-xs text-red-600 mt-1">{formErrors.businessName}</p>}
             </div>
             <div>
               <input
@@ -144,6 +190,7 @@ export default function CreateAccount() {
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
+              {formErrors.phoneNumber && <p className="text-xs text-red-600 mt-1">{formErrors.phoneNumber}</p>}
             </div>
             <div className="relative">
               <input
@@ -158,6 +205,7 @@ export default function CreateAccount() {
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 <Info className="h-5 w-5 text-gray-400" />
               </div>
+              {formErrors.businessEmail && <p className="text-xs text-red-600 mt-1">{formErrors.businessEmail}</p>}
             </div>
 
             <div>
@@ -190,6 +238,7 @@ export default function CreateAccount() {
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
+              {formErrors.contactName && <p className="text-xs text-red-600 mt-1">{formErrors.contactName}</p>}
             </div>
 
             <div className="relative">
@@ -210,9 +259,7 @@ export default function CreateAccount() {
               >
                 {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
               </button>
-              <p className="mt-1 text-xs text-red-600 min-h-[18px]">
-                {passwordError || "\u00A0"}
-              </p>
+              {formErrors.password && <p className="mt-1 text-xs text-red-600 min-h-[18px]">{formErrors.password}</p>}
             </div>
             <div className="pt-2">
               <button

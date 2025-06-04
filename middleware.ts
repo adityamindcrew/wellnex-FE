@@ -89,18 +89,23 @@ export function middleware(request: NextRequest) {
   console.log('Middleware - Token:', token ? 'Present' : 'Missing')
   console.log('Middleware - Is Public:', isPublicRoute)
 
-  // If user is logged in, check if they're trying to access protected routes
-  if (token) {
-    const isProtectedPath = protectedRoutes.some(route => 
-      pathname === route || pathname.startsWith(route + '/')
-    ) || pathname.startsWith('/dashboard') || pathname === '/logout'
-    
-    if (!isProtectedPath) {
-      // If trying to access non-protected path, redirect to dashboard
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-    // Allow access to protected paths
-    return NextResponse.next()
+  // Set dashboard lock cookie when on dashboard
+  if (token && (pathname === '/dashboard' || pathname.startsWith('/dashboard/'))) {
+    const response = NextResponse.next();
+    response.cookies.set('dashboardLock', 'true', { path: '/' });
+    return response;
+  }
+
+  // Get dashboard lock cookie
+  const dashboardLock = request.cookies.get('dashboardLock')?.value === 'true';
+
+  // If dashboard lock is set, block all navigation except dashboard and logout
+  if (
+    token &&
+    dashboardLock &&
+    !(pathname === '/dashboard' || pathname.startsWith('/dashboard/') || pathname === '/logout')
+  ) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Prevent going back to signup if onboarding has started
