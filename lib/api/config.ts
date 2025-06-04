@@ -3,6 +3,7 @@ export const API_BASE_URL = 'https://wellnexai.com/api';
 const getToken = () => {
   if (typeof window !== 'undefined') {
     return localStorage.getItem("token") || '';
+
   }
   return '';
 };

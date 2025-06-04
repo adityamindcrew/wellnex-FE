@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/landing', '/faqs', '/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout', '/admin/dashboard', '/onboarding/services-provided']
+const publicRoutes = ['/landing', '/faqs', '/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout','/careers']
 
 // Define protected routes that require authentication
 const protectedRoutes = [
@@ -116,8 +116,8 @@ export function middleware(request: NextRequest) {
   }
 
   // Prevent going back to previous steps if on step 5
-  if (currentOnboardingStep === '5' && pathname.match(/\/onboarding\/step-[1-4]/)) {
-    return NextResponse.redirect(new URL('/onboarding/step-5', request.url))
+  if (currentOnboardingStep === '6' && pathname.match(/\/onboarding\/step-[1-5]/)) {
+    return NextResponse.redirect(new URL('/onboarding/step-6', request.url))
   }
 
   // Special case for onboarding: allow if onboardingToken exists

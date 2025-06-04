@@ -237,20 +237,20 @@ export const businessApi = {
       throw error;
     }
   },
-  updateOneService: async (services: { name: string }[], token: string, businessId: string) => {
-    const response = await fetch(`${BASE_URL}/business/updateOneService`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        businessId,
-        services
-      })
-    });
-    return response.json();
-  },
+  // updateOneService: async (services: { name: string }[], token: string, businessId: string) => {
+  //   const response = await fetch(`${BASE_URL}/business/updateOneService`, {
+  //     method: 'PUT',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${token}`
+  //     },
+  //     body: JSON.stringify({
+  //       businessId,
+  //       services
+  //     })
+  //   });
+  //   return response.json();
+  // },
 };
 
 export default api; 

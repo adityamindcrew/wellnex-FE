@@ -29,12 +29,7 @@ interface ServicesGridProps {
 
 const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
   const { formData, updateFormData } = useOnboarding()
-  const servicesFromContext = Array.isArray(formData.services) ? formData.services : [];
-  const [services, setServices] = useState<string[]>(
-    servicesFromContext.length > 0
-      ? [...servicesFromContext.filter((s) => s.trim() !== ""), ...Array(9 - servicesFromContext.filter((s) => s.trim() !== "").length).fill("")]
-      : Array(9).fill("")
-  );
+  const [services, setServices] = useState<string[]>(Array(9).fill(""));
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -52,12 +47,7 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
     handleNext,
   }));
 
-  useEffect(() => {
-    const uniqueServices = Array.from(new Set(servicesFromContext.filter((s) => s.trim() !== "")))
-    setServices([...uniqueServices, ...Array(9 - uniqueServices.length).fill("")])
-  }, [formData.services])
-
-  // On mount, load services from localStorage if available
+  // On mount, load services from localStorage if available, else from context
   useEffect(() => {
     const savedServices = localStorage.getItem('services');
     if (savedServices) {
@@ -67,22 +57,28 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
           const newServices = [...parsed.filter((s) => s.trim() !== ""), ...Array(9 - parsed.filter((s) => s.trim() !== "").length).fill("")];
           setServices(newServices);
           updateFormData({ services: parsed });
-          props.onKeywordsChange?.(parsed.length > 0);
+          props.onKeywordsChange?.(parsed.some(service => service.trim() !== ""));
+          return; // Don't run context sync below
         }
       } catch (e) {
         // Ignore parse errors
       }
     }
+    // If no localStorage, use context
+    const contextServices = Array.isArray(formData.services) ? formData.services : [];
+    const uniqueServices = Array.from(new Set(contextServices.filter((s) => s.trim() !== "")));
+    setServices([...uniqueServices, ...Array(9 - uniqueServices.length).fill("")]);
+    props.onKeywordsChange?.(uniqueServices.length > 0);
     // eslint-disable-next-line
   }, []);
 
   // Save services to localStorage whenever they change
-  useEffect(() => {
-    if (services && Array.isArray(services)) {
-      const filtered = services.filter((s) => s.trim() !== "");
-      localStorage.setItem('services', JSON.stringify(filtered));
-    }
-  }, [services]);
+  // useEffect(() => {
+  //   if (services && Array.isArray(services)) {
+  //     const filtered = services.filter((s) => s.trim() !== "");
+  //     localStorage.setItem('services', JSON.stringify(filtered));
+  //   }
+  // }, [services]);
 
   // Handle Next button click
   const handleNext = async () => {
@@ -101,18 +97,33 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
         setError("Token or Business ID not found")
         return
       }
-      const response = await businessApi.updateOneService(
-        filteredServices.map(name => ({ name })),
-        token,
-        businessId
-      ) as ApiResponse
+
+      const response = await fetch('https://wellnexai.com/api/business/addBusinessServices', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          businessId,
+          services: filteredServices.map(name => ({ name }))
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save services');
+      }
+
+      const data = await response.json();
+      
       // Update the services state with the returned data
-      if (response.data?.services) {
-        const newServices = response.data.services.map((s: Service) => s.name)
-        updateFormData({ services: Array.from(new Set(newServices.filter((s) => s.trim() !== ""))) })
+      if (data.data?.services) {
+        const newServices = data.data.services.map((s: Service) => s.name)
+        updateFormData({ services: Array.from(new Set(newServices.filter((s: string) => s.trim() !== ""))) })
       } else {
         updateFormData({ services: filteredServices })
       }
+      
       // Set onboarding step to 4 and navigate
       localStorage.setItem("onboardingStep", "4")
       router.push('/onboarding/services-provided')

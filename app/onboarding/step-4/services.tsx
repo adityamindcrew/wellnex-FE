@@ -25,35 +25,38 @@ interface ApiResponse {
 export default function ServicesInput() {
   const { formData, updateFormData } = useOnboarding()
   const servicesFromContext = Array.isArray(formData.services) ? formData.services : [];
-  const [services, setServices] = useState<string[]>(
-    servicesFromContext.length > 0
-      ? [...servicesFromContext.filter((s) => s.trim() !== ""), ...Array(9 - servicesFromContext.filter((s) => s.trim() !== "").length).fill("")]
-      : Array(9).fill("")
-  );
+  const [services, setServices] = useState<string[]>([]);
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    const uniqueServices = Array.from(new Set(servicesFromContext.filter((s) => s.trim() !== "")))
-    setServices([...uniqueServices, ...Array(9 - uniqueServices.length).fill("")])
-  }, [formData.services])
-
-  // On mount, load services from localStorage if available
+  // Load services from localStorage on component mount
   useEffect(() => {
     const savedServices = localStorage.getItem('services');
     if (savedServices) {
       try {
         const parsed = JSON.parse(savedServices);
         if (Array.isArray(parsed)) {
-          const newServices = [...parsed.filter((s) => s.trim() !== ""), ...Array(9 - parsed.filter((s) => s.trim() !== "").length).fill("")];
-          setServices(newServices);
-          updateFormData({ services: parsed });
+          const uniqueServices = Array.from(new Set(parsed.filter((s) => s.trim() !== "")));
+          setServices([...uniqueServices, ...Array(9 - uniqueServices.length).fill("")]);
+          updateFormData({ services: uniqueServices });
+          if (uniqueServices.length > 0) {
+            onKeywordsChange?.(true);
+          }
+          return;
         }
       } catch (e) {
-        // Ignore parse errors
+        console.error("Error parsing saved services:", e);
       }
     }
+    // If no localStorage, use context
+    const contextServices = Array.isArray(formData.services) ? formData.services : [];
+    const uniqueContextServices = Array.from(new Set(contextServices.filter((s) => s.trim() !== "")));
+    setServices([...uniqueContextServices, ...Array(9 - uniqueContextServices.length).fill("")]);
+    if (uniqueContextServices.length > 0) {
+      onKeywordsChange?.(true);
+    }
+    // eslint-disable-next-line
   }, []);
 
   // Save services to localStorage whenever they change
@@ -61,8 +64,22 @@ export default function ServicesInput() {
     if (services && Array.isArray(services)) {
       const filtered = services.filter((s) => s.trim() !== "");
       localStorage.setItem('services', JSON.stringify(filtered));
+      // Notify parent about data change
+      onKeywordsChange?.(filtered.length > 0);
     }
   }, [services]);
+
+  // Handle input change
+  const handleInputChange = (index: number, value: string) => {
+    const newServices = [...services];
+    newServices[index] = value;
+    setServices(newServices);
+    // Update form data with non-empty services
+    const filtered = newServices.filter(s => s.trim() !== "");
+    updateFormData({ services: filtered });
+    // Notify parent about data change
+    onKeywordsChange?.(filtered.length > 0);
+  }
 
   // Handle Next button click
   const handleNext = async () => {
@@ -81,19 +98,35 @@ export default function ServicesInput() {
         setError("Token or Business ID not found")
         return
       }
-      const response = await businessApi.updateOneService(
-        filteredServices.map(name => ({ name })),
-        token,
-        businessId
-      ) as ApiResponse
+
+      const response = await fetch('https://wellnexai.com/api/business/addBusinessServices', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          businessId,
+          services: filteredServices.map(name => ({ name }))
+        })
+      });
+      console.log('services',services)
+
+      if (!response.ok) {
+        throw new Error('Failed to save services');
+      }
+
+      const data = await response.json();
+      
       // Update the services state with the returned data
-      if (response.data?.services) {
-        const newServices = response.data.services.map((s: Service) => s.name)
-        updateFormData({ services: Array.from(new Set(newServices.filter((s) => s.trim() !== ""))) })
+      if (data.data?.services) {
+        const newServices = data.data.services.map((s: Service) => s.name)
+        updateFormData({ services: Array.from(new Set(newServices.filter((s: string) => s.trim() !== ""))) })
       } else {
         updateFormData({ services: filteredServices })
       }
-      // Navigate to step 4
+      
+      // Navigate to step 5
       localStorage.setItem("onboardingStep", "5");
       router.push('/onboarding/step-5')
     } catch (error) {
@@ -102,16 +135,6 @@ export default function ServicesInput() {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  // Handle input change
-  const handleInputChange = (index: number, value: string) => {
-    const newServices = [...services]
-    newServices[index] = value
-    setServices(newServices)
-    // Check if there are any non-empty services
-    const hasData = newServices.some(s => s.trim() !== "")
-    updateFormData({ services: newServices.filter(s => s.trim() !== "") })
   }
 
   // Handle key press (for Enter key navigation)
@@ -157,6 +180,20 @@ export default function ServicesInput() {
       </div>
 
       {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+
+      <div className="flex justify-end mt-6">
+        <button
+          onClick={handleNext}
+          disabled={isSubmitting || services.filter(s => s.trim() !== "").length === 0}
+          className={`px-4 py-2 rounded-md text-white ${
+            isSubmitting || services.filter(s => s.trim() !== "").length === 0
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-black hover:bg-gray-800'
+          }`}
+        >
+          {isSubmitting ? 'Saving...' : 'Next'}
+        </button>
+      </div>
     </div>
   )
 }
