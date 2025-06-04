@@ -34,7 +34,7 @@ const PaymentsCard = () => {
       try {
         setLoading(true);
         // Fetch all payments at once
-        const response = await fetch(`https://wellnexai.com/api/admin/subscriptions/payments?limit=30&skip=0&status=paid`, {
+        const response = await fetch(`https://wellnexai.com/api/admin/subscriptions/payments?limit=1000&skip=0&status=paid`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
