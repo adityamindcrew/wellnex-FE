@@ -276,7 +276,7 @@ export default function BusinessKeywords() {
                   className="flex items-center gap-1 rounded-lg bg-black px-3 py-1.5 text-sm text-white"
                 >
                   <Plus size={16} />
-                  <span>Add Keywords</span>
+                  <span>Add Keyword</span>
                 </button>
               ) : (
                 <div className="flex items-center gap-2">

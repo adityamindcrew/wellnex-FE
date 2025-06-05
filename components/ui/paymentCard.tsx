@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
-import { log } from "console";
 
 interface Payment {
   number: string;
@@ -21,6 +20,7 @@ const PaymentsCard = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [allPayments, setAllPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -33,8 +33,8 @@ const PaymentsCard = () => {
     const fetchAllPayments = async () => {
       try {
         setLoading(true);
-        // Fetch all payments at once
-        const response = await fetch(`https://wellnexai.com/api/admin/subscriptions/payments?limit=1000&skip=0&status=paid`, {
+        setError(null);
+        const response = await fetch(`https://wellnexai.com/api/admin/subscriptions/payments?limit=25&skip=0&status=paid`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -45,13 +45,14 @@ const PaymentsCard = () => {
         if (data.status === true) {
           setAllPayments(data.data.payments);
           const totalCount = data.data.total || data.data.payments.length;
-          console.log(' totalCount',totalCount.data);
-          
           setTotalItems(totalCount);
           setTotalPages(Math.ceil(totalCount / ITEMS_PER_PAGE));
+        } else {
+          setError('Failed to fetch payments');
         }
       } catch (err) {
         console.error('Error fetching payments:', err);
+        setError('An error occurred while fetching payments');
       } finally {
         setLoading(false);
       }
@@ -182,6 +183,8 @@ const PaymentsCard = () => {
         <div className="mt-4 space-y-4">
           {loading ? (
             <div className="text-center py-4">Loading...</div>
+          ) : error ? (
+            <div className="text-center py-4 text-red-500">{error}</div>
           ) : payments.length === 0 ? (
             <div className="text-center py-4 text-gray-500">No payments found</div>
           ) : (

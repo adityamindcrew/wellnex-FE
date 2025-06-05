@@ -113,7 +113,7 @@ const Index = () => {
           }
         });
         const data = await response.json();
-        console.log(data);
+    
         if (data.status === true) {
           setSubscriptionCounts(data.data);
         }
@@ -345,7 +345,6 @@ const Index = () => {
         return;
       }
 
-      console.log('Payload being sent to API:', payload);
 
       const response = await fetch('https://wellnexai.com/api/business/updateBusinessDetail', {
         method: 'PUT',
@@ -619,8 +618,7 @@ const Index = () => {
                     });
 
                     // Log response details for debugging
-                    console.log('Upload Response Status:', uploadRes.status);
-                    console.log('Upload Response Headers:', Object.fromEntries(uploadRes.headers.entries()));
+               
 
                     // Check if response is JSON
                     const contentType = uploadRes.headers.get("content-type");
@@ -632,7 +630,7 @@ const Index = () => {
                     }
 
                     const uploadData = await uploadRes.json();
-                    console.log('Upload Response Data:', uploadData);
+               
                     
                     if (!uploadRes.ok) {
                       throw new Error(uploadData.message || 'Upload failed');

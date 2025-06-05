@@ -172,68 +172,70 @@ export default function PlatformSubscription() {
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showRenewSubscription, setShowRenewSubscription] = useState(false);
+  const [specialOfferExpiry, setSpecialOfferExpiry] = useState<string>("");
+  const fetchBusinessDetails = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const businessId = localStorage.getItem('businessId');
+      if (!token || !businessId) return;
+
+      const response = await fetch('https://wellnexai.com/api/business/getBusinessDetail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.replace(/['"]/g, '')}`
+        },
+        body: JSON.stringify({ businessId })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.data) {
+          // Set logo if available
+          if (data.data.logo) {
+            setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
+            localStorage.setItem('businessLogo', `https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
+  }
+          // Set theme color if available
+          if (data.data.themeColor) {
+            setSelectedColor(data.data.themeColor);
+            setInitialColor(data.data.themeColor);
+            localStorage.setItem('themeColor', data.data.themeColor);
+  }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching business details:', error);
+    }
+  };
+
+  const fetchSubscription = async () => {
+    setSubscriptionLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const businessId = localStorage.getItem('businessId');
+      if (!token || !businessId) {
+        setSubscriptionLoading(false);
+        return;
+      }
+      const response = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token.replace(/['"]/g, '')}`
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch subscription status');
+      const data = await response.json();
+      setSubscription(data || null);
+    } catch (err) {
+      setSubscription(null);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
   // Load logo and theme color from API on component mount
   useEffect(() => {
-    const fetchBusinessDetails = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const businessId = localStorage.getItem('businessId');
-        if (!token || !businessId) return;
-
-        const response = await fetch('https://wellnexai.com/api/business/getBusinessDetail', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token.replace(/['"]/g, '')}`
-          },
-          body: JSON.stringify({ businessId })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.data) {
-            // Set logo if available
-            if (data.data.logo) {
-              setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
-              localStorage.setItem('businessLogo', `https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
-    }
-            // Set theme color if available
-            if (data.data.themeColor) {
-              setSelectedColor(data.data.themeColor);
-              setInitialColor(data.data.themeColor);
-              localStorage.setItem('themeColor', data.data.themeColor);
-    }
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching business details:', error);
-      }
-    };
-
-    const fetchSubscription = async () => {
-      setSubscriptionLoading(true);
-      try {
-        const token = localStorage.getItem('token');
-        const businessId = localStorage.getItem('businessId');
-        if (!token || !businessId) {
-          setSubscriptionLoading(false);
-          return;
-        }
-        const response = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token.replace(/['"]/g, '')}`
-          },
-        });
-        if (!response.ok) throw new Error('Failed to fetch subscription status');
-        const data = await response.json();
-        setSubscription(data || null);
-      } catch (err) {
-        setSubscription(null);
-      } finally {
-        setSubscriptionLoading(false);
-      }
-    };
 
     fetchBusinessDetails();
     fetchSubscription();
@@ -557,6 +559,7 @@ export default function PlatformSubscription() {
         setSpecialOfferPrice(data.specialOfferPrice);
         setSpecialOfferMessage(data.message);
         setCurrentPeriodEnd(data.currentPeriodEnd);
+        setSpecialOfferExpiry(data.expiryDate || "");
         setShowSpecialOffer(true);
       } else {
         // setMessage('Subscription will be canceled at the end of the billing period');
@@ -580,6 +583,34 @@ export default function PlatformSubscription() {
       setSubscriptionError(err.message);
       // Clear any existing message when there's an error
       setMessage(null);
+    }
+  };
+
+  const checkSpecialOffer = async () => {
+    try {
+      const response = await fetch('https://wellnexai.com/api/subscription/check-special-offer', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check special offer');
+      }
+
+      const data = await response.json();
+      
+      if (data.hasSpecialOffer) {
+        setSpecialOfferPrice(data.specialOfferPrice);
+        setSpecialOfferMessage(data.message);
+        setCurrentPeriodEnd(data.currentPeriodEnd);
+        setSpecialOfferExpiry(data.expiryDate || "");
+        setShowSpecialOffer(true);
+      }
+    } catch (err) {
+      console.error('Error checking special offer:', err);
+      setSubscriptionError('Failed to check special offer');
     }
   };
 
@@ -610,6 +641,7 @@ export default function PlatformSubscription() {
       setShowSpecialOffer(false);
       setMessage1('Your subscription has been renewed successfully!');
       setTimeout(() => setMessage1(null), 3000);
+      fetchSubscription();
     } catch (err: any) {
       console.error('Subscription error:', err);
       setSubscriptionError(err.message || 'An error occurred while processing your subscription?. Please try again.');
@@ -638,6 +670,16 @@ export default function PlatformSubscription() {
     } catch (err: any) {
       setThemeError(err.message);
     }
+  };
+
+  const shouldShowRenewButton = () => {
+    const today = new Date();
+    const cancelDate = subscription?.cancelAtPeriodEnd ? new Date(subscription.cancelAtPeriodEnd) : null;
+    const expiryDate = specialOfferExpiry ? new Date(specialOfferExpiry) : null;
+
+    if (!cancelDate || !expiryDate) return false;
+
+    return today > cancelDate && today>expiryDate;
   };
 
   return (
@@ -684,10 +726,10 @@ export default function PlatformSubscription() {
               <div className="text-sm text-green-600 text-center bg-green-50 p-2 rounded-md">{message1}</div>
             )}
             <div className="flex gap-2 pt-2">
-              {subscription?.status !== "canceled" && !subscription?.cancelAtPeriodEnd && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleCancelSubscription}>
+              {subscription?.status !== "canceled" && !subscription?.cancelAtPeriodEnd && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
                 Cancel Subscription
               </button>}
-              {subscription?.status === "canceled" && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
+              {subscription?.status === "canceled" && shouldShowRenewButton() && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
                 Renew Subscription
               </button>}
             </div>
@@ -872,14 +914,14 @@ export default function PlatformSubscription() {
                 onClick={handleDeclineSpecialOffer}
                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
-                No, Cancel
+                I want to cancel my subscription
               </button>
               <button
                 onClick={handleAcceptSpecialOffer}
                 // onClick={() => alert("Coming Soon")}
                 className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
               >
-                Yes, Continue
+                Yes, I accept the offer 
               </button>
             </div>
           </div>
