@@ -108,53 +108,53 @@ export default function CareersForm() {
 
   return (
     <>
-      <Header />
+    <Header />
       <div className="min-h-screen flex items-center justify-center bg-white py-12">
-        <div className="max-w-lg w-full p-4 sm:p-8 bg-white rounded-lg shadow-md">
+      <div className="max-w-lg w-full p-4 sm:p-8 bg-white rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-2 text-center">Join us in shaping the future of AI-powered beauty and wellness!</h2>
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="John Doe"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="mt-1"
-              />
-              {errors.name && <div className="text-xs text-red-500 mt-1">{errors.name}</div>}
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <div>
+            <Label htmlFor="name">Full Name</Label>
+            <Input
+              id="name"
+              name="name"
+              placeholder="John Doe"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="mt-1"
+            />
+            {errors.name && <div className="text-xs text-red-500 mt-1">{errors.name}</div>}
+          </div>
 
-            <div>
-              <Label htmlFor="phoneNumber">Phone Number</Label>
-              <Input
-                id="phoneNumber"
-                name="phoneNumber"
-                placeholder="+44 123 456 7890"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                required
-                className="mt-1"
-              />
-              {errors.phoneNumber && <div className="text-xs text-red-500 mt-1">{errors.phoneNumber}</div>}
-            </div>
+          <div>
+            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Input
+              id="phoneNumber"
+              name="phoneNumber"
+              placeholder="+44 123 456 7890"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              required
+              className="mt-1"
+            />
+            {errors.phoneNumber && <div className="text-xs text-red-500 mt-1">{errors.phoneNumber}</div>}
+          </div>
 
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="john@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="mt-1"
-              />
-              {errors.email && <div className="text-xs text-red-500 mt-1">{errors.email}</div>}
-            </div>
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="john@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="mt-1"
+            />
+            {errors.email && <div className="text-xs text-red-500 mt-1">{errors.email}</div>}
+          </div>
 
             <div>
               <Label htmlFor="position">Position</Label>
@@ -170,57 +170,57 @@ export default function CareersForm() {
               {errors.position && <div className="text-xs text-red-500 mt-1">{errors.position}</div>}
             </div>
 
-            <div>
-              <Label htmlFor="message">Message</Label>
-              <Textarea
-                id="message"
-                name="message"
-                placeholder="Tell us how we can help..."
-                value={formData.message}
-                onChange={handleChange}
-                className="min-h-[120px] mt-1"
-                required
-              />
-              {errors.message && <div className="text-xs text-red-500 mt-1">{errors.message}</div>}
-            </div>
+          <div>
+            <Label htmlFor="message">Message</Label>
+            <Textarea
+              id="message"
+              name="message"
+              placeholder="Tell us how we can help..."
+              value={formData.message}
+              onChange={handleChange}
+              className="min-h-[120px] mt-1"
+              required
+            />
+            {errors.message && <div className="text-xs text-red-500 mt-1">{errors.message}</div>}
+          </div>
 
-            <div>
-              <Label htmlFor="file">Upload Resume (PDF, DOCX, etc.)</Label>
-              <Input
-                id="file"
-                name="file"
-                type="file"
-                accept=".pdf,.doc,.docx,.txt,.rtf"
-                onChange={handleFileChange}
-                className="mt-1"
-              />
-              {formData.file && (
-                <div className="text-xs text-gray-500 mt-1">Selected: {formData.file.name}</div>
-              )}
-              {errors.file && <div className="text-xs text-red-500 mt-1">{errors.file}</div>}
-            </div>
-
-            {success && (
-              <div className="text-green-500 text-sm text-center">Thank you for your message! We'll get back to you soon.</div>
+          <div>
+            <Label htmlFor="file">Upload Resume (PDF, DOCX, etc.)</Label>
+            <Input
+              id="file"
+              name="file"
+              type="file"
+              accept=".pdf,.doc,.docx,.txt,.rtf"
+              onChange={handleFileChange}
+              className="mt-1"
+            />
+            {formData.file && (
+              <div className="text-xs text-gray-500 mt-1">Selected: {formData.file.name}</div>
             )}
+            {errors.file && <div className="text-xs text-red-500 mt-1">{errors.file}</div>}
+          </div>
+
+          {success && (
+            <div className="text-green-500 text-sm text-center">Thank you for your message! We'll get back to you soon.</div>
+          )}
 
             <div className="text-xs text-gray-500 text-center mb-2">
               We may not have active openings at the moment, we welcome you to submit your resume for future opportunities in marketing, customer service, backend development, and frontend development. If a position aligns with your skills and expertise, we'll be sure to reach out.
             </div>
 
-            <div className="pt-2">
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting || !isFormComplete}
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Button>
-            </div>
-          </form>
-        </div>
+          <div className="pt-2">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting || !isFormComplete}
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </div>
+        </form>
       </div>
-      <Footer />
-    </>
+    </div>
+         <Footer />
+         </>
   )
 }

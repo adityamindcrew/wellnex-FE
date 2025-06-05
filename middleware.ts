@@ -90,22 +90,57 @@ export function middleware(request: NextRequest) {
   console.log('Middleware - Is Public:', isPublicRoute)
 
   // Set dashboard lock cookie when on dashboard
-  if (token && (pathname === '/dashboard' || pathname.startsWith('/dashboard/'))) {
+  if (token && pathname === '/dashboard') {
     const response = NextResponse.next();
     response.cookies.set('dashboardLock', 'true', { path: '/' });
+    // Add cache control headers to prevent back navigation
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
     return response;
   }
 
-  // Get dashboard lock cookie
-  const dashboardLock = request.cookies.get('dashboardLock')?.value === 'true';
+  // Set admin dashboard lock cookie when on admin dashboard
+  if (token && pathname === '/admin/dashboard') {
+    const response = NextResponse.next();
+    response.cookies.set('adminDashboardLock', 'true', { path: '/' });
+    // Add cache control headers to prevent back navigation
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
+  }
 
-  // If dashboard lock is set, block all navigation except dashboard and logout
+  // Get dashboard locks
+  const dashboardLock = request.cookies.get('dashboardLock')?.value === 'true';
+  const adminDashboardLock = request.cookies.get('adminDashboardLock')?.value === 'true';
+
+  // If regular dashboard lock is set, block navigation except dashboard and logout
   if (
     token &&
     dashboardLock &&
-    !(pathname === '/dashboard' || pathname.startsWith('/dashboard/') || pathname === '/logout')
+    !(pathname === '/dashboard' || pathname === '/logout')
   ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    const response = NextResponse.redirect(new URL('/dashboard', request.url));
+    // Add cache control headers to prevent back navigation
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
+  }
+
+  // If admin dashboard lock is set, block navigation except admin dashboard and logout
+  if (
+    token &&
+    adminDashboardLock &&
+    !(pathname === '/admin/dashboard' || pathname === '/logout')
+  ) {
+    const response = NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    // Add cache control headers to prevent back navigation
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   }
 
   // Prevent going back to signup if onboarding has started

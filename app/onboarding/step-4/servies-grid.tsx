@@ -14,88 +14,62 @@ interface Service {
   _id: string;
 }
 
-interface ApiResponse {
-  code: number;
-  status: boolean;
-  message: string;
-  data: {
-    services: Service[];
-  };
-}
-
 interface ServicesGridProps {
   onKeywordsChange?: (hasData: boolean) => void;
 }
 
 const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
   const { formData, updateFormData } = useOnboarding()
-  const [services, setServices] = useState<string[]>(Array(9).fill(""));
+  const [services, setServices] = useState<string[]>(new Array(9).fill(""));
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-
-  // useEffect(() => {
-  //   const onboardingStep = localStorage.getItem("onboardingStep");
-  //   if (onboardingStep === "5") {
-  //     router.replace("/onboarding/step-5");
-  //   } else {
-  //     localStorage.setItem("onboardingStep", "3");
-  //   }
-  // }, [router]);
 
   useImperativeHandle(ref, () => ({
     handleNext,
   }));
 
-  // On mount, load services from localStorage if available, else from context
-  useEffect(() => {
-    const savedServices = localStorage.getItem('services');
-    if (savedServices) {
-      try {
-        const parsed = JSON.parse(savedServices);
-        if (Array.isArray(parsed)) {
-          const newServices = [...parsed.filter((s) => s.trim() !== ""), ...Array(9 - parsed.filter((s) => s.trim() !== "").length).fill("")];
-          setServices(newServices);
-          updateFormData({ services: parsed });
-          props.onKeywordsChange?.(parsed.some(service => service.trim() !== ""));
-          return; // Don't run context sync below
-        }
-      } catch (e) {
-        // Ignore parse errors
-      }
-    }
-    // If no localStorage, use context
-    const contextServices = Array.isArray(formData.services) ? formData.services : [];
-    const uniqueServices = Array.from(new Set(contextServices.filter((s) => s.trim() !== "")));
-    setServices([...uniqueServices, ...Array(9 - uniqueServices.length).fill("")]);
-    props.onKeywordsChange?.(uniqueServices.length > 0);
-    // eslint-disable-next-line
-  }, []);
-
-  // Save services to localStorage whenever they change
-  // useEffect(() => {
-  //   if (services && Array.isArray(services)) {
-  //     const filtered = services.filter((s) => s.trim() !== "");
-  //     localStorage.setItem('services', JSON.stringify(filtered));
-  //   }
-  // }, [services]);
-
   // Handle Next button click
   const handleNext = async () => {
-    // Filter out empty and duplicate services
-    const filteredServices = Array.from(new Set(services.filter((s) => s.trim() !== "")))
-    if (filteredServices.length === 0) {
+    const filledServices = services.filter(s => s.trim() !== "");
+    
+    if (filledServices.length === 0) {
       setError("Please enter at least one service")
       return
     }
+
     try {
       setIsSubmitting(true)
       setError(null)
       const token = localStorage.getItem("token")
       const businessId = localStorage.getItem("businessId")
+      
       if (!token || !businessId) {
         setError("Token or Business ID not found")
         return
+      }
+
+      // Get existing services from localStorage
+      const savedServices = localStorage.getItem('services');
+      let existingServices: { name: string }[] = [];
+      if (savedServices) {
+        try {
+          existingServices = JSON.parse(savedServices);
+        } catch (e) {
+          console.error("Error parsing saved services:", e);
+        }
+      }
+
+      // Filter out services that already exist
+      const newServices = filledServices
+        .map(name => ({ name }))
+        .filter(service => !existingServices.some(existing => existing.name === service.name));
+
+      // If no new services, just move to next page
+      if (newServices.length === 0) {
+        localStorage.setItem("onboardingStep", "4")
+        router.push('/onboarding/step-5')
+        return;
       }
 
       const response = await fetch('https://wellnexai.com/api/business/addBusinessServices', {
@@ -106,7 +80,7 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
         },
         body: JSON.stringify({
           businessId,
-          services: filteredServices.map(name => ({ name }))
+          services: newServices
         })
       });
 
@@ -116,17 +90,14 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
 
       const data = await response.json();
       
-      // Update the services state with the returned data
+      // Save all services (existing + new) to localStorage
       if (data.data?.services) {
-        const newServices = data.data.services.map((s: Service) => s.name)
-        updateFormData({ services: Array.from(new Set(newServices.filter((s: string) => s.trim() !== ""))) })
-      } else {
-        updateFormData({ services: filteredServices })
+        const allServices = [...existingServices, ...newServices];
+        localStorage.setItem('services', JSON.stringify(allServices));
       }
-      
-      // Set onboarding step to 4 and navigate
+
       localStorage.setItem("onboardingStep", "4")
-      router.push('/onboarding/services-provided')
+      router.push('/onboarding/step-5')
     } catch (error) {
       console.error("Error saving services:", error)
       setError("Failed to save services. Please try again.")
@@ -137,60 +108,66 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
 
   // Handle input change
   const handleInputChange = (index: number, value: string) => {
-    const newServices = [...services]
-    newServices[index] = value
-    setServices(newServices)
-    setError(null) // Clear error when user makes changes
-    // Check if there are any non-empty services
-    const hasData = newServices.some(s => s.trim() !== "")
-    props.onKeywordsChange?.(hasData)
+    const newServices = [...services];
+    newServices[index] = value;
+    setServices(newServices);
+    setError(null);
+    props.onKeywordsChange?.(newServices.some(s => s.trim() !== ""));
   }
 
-  // Handle key press (for Enter key navigation)
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      // Focus the next input if available
-      const nextIndex = index + 1
-      if (nextIndex < 9) {
-        const nextInput = document.getElementById(`service-${nextIndex}`)
-        nextInput?.focus()
+  // Load initial data
+  useEffect(() => {
+    const savedServices = localStorage.getItem('services');
+    if (savedServices) {
+      try {
+        const parsed = JSON.parse(savedServices);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const newServices = new Array(9).fill("");
+          parsed.forEach((service: { name: string }, index: number) => {
+            if (index < 9) {
+              newServices[index] = service.name;
+            }
+          });
+          setServices(newServices);
+          props.onKeywordsChange?.(true);
+        }
+      } catch (e) {
+        localStorage.removeItem('services');
       }
     }
-  }
+  }, []);
 
   return (
     <Suspense>
-    <div className="space-y-6">
-      <div>
-        <Label htmlFor="service-0">Services</Label>
-        <div className="mt-2 grid grid-cols-1 gap-4 md:grid-cols-3">
-          {Array.from({ length: 9 }).map((_, index) => (
-            <Input
-              key={index}
-              id={`service-${index}`}
-              value={services[index] || ""}
-              onChange={(e) => handleInputChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              placeholder={index === 0 ? "Enter service" : ""}
-              className="w-full"
-              disabled={isSubmitting}
-            />
-          ))}
+      <div className="space-y-6">
+        <div>
+          <Label htmlFor="service-0">Services</Label>
+          <div className="mt-2 grid grid-cols-1 gap-4 md:grid-cols-3">
+            {Array.from({ length: 9 }).map((_, index) => (
+              <Input
+                key={index}
+                id={`service-${index}`}
+                value={services[index] || ""}
+                onChange={(e) => handleInputChange(index, e.target.value)}
+                placeholder={index === 0 ? "Enter service" : ""}
+                className="w-full"
+                disabled={isSubmitting}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="rounded-md border p-4 text-sm">
-        <p className="font-medium">Example</p>
-        <p className="mt-2">
-          Enter the services your business offers. These help your chatbot understand what services you provide and suggest
-          the most relevant options to your customers. For example: Facial Treatment, Massage Therapy, Hair Styling,
-          Manicure, Pedicure, etc.
-        </p>
-      </div>
+        <div className="rounded-md border p-4 text-sm">
+          <p className="font-medium">Example</p>
+          <p className="mt-2">
+            Enter the services your business offers. These help your chatbot understand what services you provide and suggest
+            the most relevant options to your customers. For example: Facial Treatment, Massage Therapy, Hair Styling,
+            Manicure, Pedicure, etc.
+          </p>
+        </div>
 
-      {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-    </div>
+        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+      </div>
     </Suspense>
   )
 });

@@ -18,18 +18,15 @@ export function useDashboardSearch() {
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <DashboardSearchContext.Provider value={{ searchTerm, setSearchTerm, isLoading, setIsLoading }}>
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <div className="hidden md:block   bg-white min-h-screen">
-          <Sidebar />
-        </div>
-        {/* Main content area */}
+      <div className="flex min-h-screen bg-white">
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <div className="flex-1 flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-1 p-6 overflow-auto  bg-white">{children}</main>
+          <Header onHamburgerClick={() => setIsSidebarOpen(true)} />
+          <main className="flex-1 p-6 overflow-auto bg-white">{children}</main>
         </div>
       </div>
     </DashboardSearchContext.Provider>

@@ -1,9 +1,13 @@
 "use client"
-import { Search } from "lucide-react"
+import { Search, Menu } from "lucide-react"
 import { useState } from "react"
 import { useDashboardSearch } from "./layout";
 
-export default function Header() {
+interface HeaderProps {
+  onHamburgerClick?: () => void;
+}
+
+export default function Header({ onHamburgerClick }: HeaderProps) {
   const { searchTerm, setSearchTerm, isLoading } = useDashboardSearch();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -13,7 +17,7 @@ export default function Header() {
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 md:px-6">
-      <div className="relative w-full max-w-[450px] ml-12 md:ml-0">
+      <div className="relative w-full max-w-[450px] ml-0 md:ml-12">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3">
           <Search className={`h-5 w-5 ${isLoading ? 'animate-pulse text-gray-500' : 'text-gray-400'}`} />
         </div>
@@ -28,6 +32,14 @@ export default function Header() {
           }`}
         />
       </div>
+      {/* Hamburger menu on the right for mobile */}
+      <button
+        className="md:hidden ml-2 p-2 rounded-md bg-black text-white shadow-lg"
+        onClick={onHamburgerClick}
+        aria-label="Open sidebar menu"
+      >
+        <Menu size={24} />
+      </button>
       {/* <div className="flex items-center gap-2 md:gap-3">
         <div className="hidden md:block text-right">
           <div className="text-sm font-medium">Jon Smith</div>
