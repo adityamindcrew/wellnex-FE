@@ -73,9 +73,9 @@ export default function Home() {
               </div>
               <p className="text-xs text-[#000000] max-w-[178px]">
                 {step === 1 && <><strong>Sign up & personalize your <br/> chatbot</strong> (Choose your branding, questions, and services)</>}
-                {step === 2 && <><strong>"Pay securely via stripe</strong> (199/month - charged in your local currency)</>}
-                {step === 3 && <><strong>"Get your unique embed code </strong>(Ready to copy & paste into your website)</>}
-                {step === 4 &&<><strong> "Start collecting new clients leads 24/7 </strong>(Let AI handle engagement while you focus on results)</>}
+                {step === 2 && <><strong>Pay securely via stripe</strong> (199/month - charged in your local currency)</>}
+                {step === 3 && <><strong>Get your unique embed code </strong>(Ready to copy & paste into your website)</>}
+                {step === 4 &&<><strong>Start collecting new clients leads 24/7 </strong>(Let AI handle engagement while you focus on results)</>}
               </p>
             </div>
           ))}

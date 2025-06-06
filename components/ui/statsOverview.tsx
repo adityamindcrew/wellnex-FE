@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import StatCard from "./statCard";
-import { Users, Briefcase, BarChart4, Building } from "lucide-react";
 import leads from "../../app/assets/images/leads.png"
-import active from "../../app/assets/images/active.png"
 import interaction from "../../app/assets/images/intercation.png"
-import success from "../../app/assets/images/success.png"
 
 interface LeadCounts {
   leads: number;
-  activeServices: number;
   userInteraction: number;
-  successRate: number;
 }
 
 const StatsOverview = () => {
@@ -33,9 +28,7 @@ const StatsOverview = () => {
         const data = await response.json();
         setStats({
           leads: data.data?.totalLeads ?? 0,
-          activeServices: data.data?.activeServices ?? 0,
           userInteraction: data.data?.userInteraction ?? 0,
-          successRate: data.data?.successRate ?? 0,
         });
       } catch (err: any) {
         setError(err.message || "Unknown error");
@@ -47,26 +40,16 @@ const StatsOverview = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto">
       <StatCard 
         value={loading ? "..." : String(stats?.leads ?? 0)} 
         label="Number of Leads" 
         imageSrc={leads}
       />
       <StatCard 
-        value={loading ? "..." : String(stats?.activeServices ?? 0)} 
-        label="Active Services" 
-        imageSrc={active}
-      />
-      <StatCard 
         value={loading ? "..." : String(stats?.userInteraction ?? 0)} 
-        label="User Intercation" 
+        label="User Interaction" 
         imageSrc={interaction}
-      />
-      <StatCard 
-        value={loading ? "..." : String(stats?.successRate ?? 0)} 
-        label="Success Rate" 
-        imageSrc={success}
       />
       {error && <div className="col-span-full text-red-500 text-center">{error}</div>}
     </div>
