@@ -72,6 +72,7 @@ export default function SignInPage() {
           window.location.href = "/admin/dashboard";
         } else {
           if (data.data?.nextStep.length > 0) {
+            localStorage.setItem("nextStep", data.data?.nextStep);
             router.push(`/onboarding/${data.data?.nextStep}`);
           } else {
             if (!data.data.isEmailVerified) {
