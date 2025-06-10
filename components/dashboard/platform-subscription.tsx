@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardNumberElement, useStripe, useElements, CardExpiryElement, CardCvcElement } from "@stripe/react-stripe-js";
+import { useRouter } from "next/navigation"
 
 const stripePromise = loadStripe('pk_test_51LuNV2E2Y7YLkjxVuaZ1F13llOwUjsRcrodK7nbLAxmqxcnKqjnWxlc83V53bnFdnWOSW07fvBQjEmKXp2ChPXNo004z40bvvz');
 
@@ -142,11 +143,13 @@ function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paym
 }
 
 export default function PlatformSubscription() {
+  const router = useRouter()
   const [selectedColor, setSelectedColor] = useState("#987CF1");
   const [isLoading, setIsLoading] = useState(false);
   const [themeError, setThemeError] = useState<string | null>(null);
   const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
   const [showSpecialOffer, setShowSpecialOffer] = useState(false);
+  const [showNoSubscriptionPopup, setShowNoSubscriptionPopup] = useState(false);
   const [specialOfferPrice, setSpecialOfferPrice] = useState<number | null>(null);
   const [specialOfferMessage, setSpecialOfferMessage] = useState<string>("");
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string>("");
@@ -187,22 +190,21 @@ export default function PlatformSubscription() {
         },
         body: JSON.stringify({ businessId })
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.data) {
-          // Set logo if available
-          if (data.data.logo) {
-            setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
-            localStorage.setItem('businessLogo', `https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
-          }
-          // Set theme color if available
-          if (data.data.themeColor) {
-            setSelectedColor(data.data.themeColor);
-            setInitialColor(data.data.themeColor);
-            localStorage.setItem('themeColor', data.data.themeColor);
-          }
+      const data = await response.json();
+      if (data.data) {
+        // Set logo if available
+        if (data.data.logo) {
+          setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
+          localStorage.setItem('businessLogo', `https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
         }
+        // Set theme color if available
+        if (data.data.themeColor) {
+          setSelectedColor(data.data.themeColor);
+          setInitialColor(data.data.themeColor);
+          localStorage.setItem('themeColor', data.data.themeColor);
+        }
+      } else if (data.message === "Error getting subscription details: No active subscription found") {
+        setShowNoSubscriptionPopup(true);
       }
     } catch (error) {
       console.error('Error fetching business details:', error);
@@ -960,6 +962,24 @@ export default function PlatformSubscription() {
             <Elements stripe={stripePromise}>
               <PaymentForm onPaymentMethodCreated={handleRenewSubscriptionAPI} />
             </Elements>
+          </div>
+        </div>
+      )}
+      {showNoSubscriptionPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold mb-4">No Active Subscription</h3>
+              <p className="text-gray-600 mb-6">
+                You need an active subscription to access this feature. Please subscribe to continue using our platform.
+              </p>
+              <button
+                onClick={() => { setShowNoSubscriptionPopup(false); router.push('/payment/currencySelection') }}
+                className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                Subscribe Now
+              </button>
+            </div>
           </div>
         </div>
       )}
