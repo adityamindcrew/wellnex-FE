@@ -32,19 +32,6 @@ const QuestionsInputInner = forwardRef((props: QuestionsInputProps, ref) => {
   // }, [router])
 
   // Update form data when questions change
-  // useEffect(() => {
-  //   // Filter out empty questions
-  //   const filteredQuestions = questions.filter((question) => question.trim() !== "")
-  //   // Only update if the value actually changed
-  //   if (
-  //     !formData.questions ||
-  //     filteredQuestions.length !== (formData.questions?.length ?? 0) ||
-  //     filteredQuestions.some((q, i) => q !== (formData.questions?.[i] ?? ""))
-  //   ) {
-  //   updateFormData({ questions: filteredQuestions })
-  //   }
-  // }, [questions, formData.questions, updateFormData])
-
   useEffect(() => {
     const filteredQuestions = questions.filter((question) => question.trim() !== "");
   

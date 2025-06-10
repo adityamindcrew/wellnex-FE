@@ -1,16 +1,13 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from "react"
+import React, { createContext, useContext, useState } from "react"
 import { useRouter } from "next/navigation"
 
 interface OnboardingFormData {
-  businessName?: string
-  logo?: string
-  themeColor?: string
   keywords?: string[]
-  questions?: string[]
   services?: string[]
-  isVerified?: boolean
+  questions?: string[]
+  [key: string]: any
 }
 
 interface OnboardingContextType {
@@ -31,26 +28,6 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   const [formData, setFormData] = useState<OnboardingFormData>({})
   const [isVerified, setIsVerified] = useState(false)
 
-  // Check verification status on mount
-  useEffect(() => {
-    const verified = localStorage.getItem('isVerified') === 'true'
-    setIsVerified(verified)
-  }, [])
-
-  // Prevent access to other steps when on verification screen
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const onboardingStep = localStorage.getItem("onboardingStep")
-      if (onboardingStep === "5" && !isVerified) {
-        // If on step 5 and not verified, prevent access to other steps
-        const currentPath = window.location.pathname
-        if (currentPath !== '/onboarding/step-5') {
-          router.replace('/onboarding/step-5')
-        }
-      }
-    }
-  }, [isVerified, router])
-
   const updateFormData = (data: Partial<OnboardingFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }))
   }
@@ -58,14 +35,12 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   const nextStep = () => {
     const nextStepNumber = currentStep + 1
     setCurrentStep(nextStepNumber)
-    localStorage.setItem("onboardingStep", nextStepNumber.toString())
     router.push(`/onboarding/step-${nextStepNumber}`)
   }
 
   const prevStep = () => {
     const prevStepNumber = currentStep - 1
     setCurrentStep(prevStepNumber)
-    localStorage.setItem("onboardingStep", prevStepNumber.toString())
     router.push(`/onboarding/step-${prevStepNumber}`)
   }
 
@@ -78,10 +53,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         prevStep,
         currentStep,
         isVerified,
-        setIsVerified: (verified: boolean) => {
-          setIsVerified(verified)
-          localStorage.setItem('isVerified', verified.toString())
-        }
+        setIsVerified
       }}
     >
       {children}

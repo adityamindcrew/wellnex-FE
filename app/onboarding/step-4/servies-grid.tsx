@@ -67,7 +67,6 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
 
       // If no new services, just move to next page
       if (newServices.length === 0) {
-        localStorage.setItem("onboardingStep", "4")
         router.push('/onboarding/step-5')
         return;
       }
@@ -96,7 +95,6 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
         localStorage.setItem('services', JSON.stringify(allServices));
       }
 
-      localStorage.setItem("onboardingStep", "4")
       router.push('/onboarding/step-5')
     } catch (error) {
       console.error("Error saving services:", error)

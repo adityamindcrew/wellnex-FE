@@ -134,7 +134,7 @@ export default function CreateAccount() {
       if (response.data && response.data._id && response.data.loginToken) {
         localStorage.setItem('businessId', response.data._id);
         localStorage.setItem('token', response.data.loginToken);
-        localStorage.setItem('onboardingStep', '1');
+        // localStorage.setItem('onboardingStep', '1');
         document.cookie = `onboardingToken=${response.data.loginToken}; path=/`;
         router.push('/onboarding/step-1');
       } else {

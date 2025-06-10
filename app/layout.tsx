@@ -9,15 +9,8 @@ export const metadata: Metadata = {
   title: "WellnexAI",
   description: "AI-powered chatbot for wellness businesses",
   icons: {
-    icon: [
-      { url: '/logo.png', type: 'image/png' },
-      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
-      { url: '/logo.png', sizes: '16x16', type: 'image/png' },
-    ],
-    shortcut: '/logo.png',
-    apple: [
-      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
-    ],
+    icon: { url: '/logo.png', type: 'image/png' },
+    apple: { url: '/logo.png', type: 'image/png' }
   },
   manifest: '/manifest.json',
 }
@@ -29,6 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="apple-touch-icon" type="image/png" href="/logo.png" />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   )

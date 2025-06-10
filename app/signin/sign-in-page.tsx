@@ -62,7 +62,7 @@ export default function SignInPage() {
         localStorage.setItem("token", token);
         document.cookie = `token=${token}; path=/; max-age=2592000`;
         document.cookie = `authorization=Bearer ${token}; path=/; max-age=2592000`;
-        
+
         if (businessId) {
           localStorage.setItem("businessId", businessId);
         }
@@ -71,7 +71,19 @@ export default function SignInPage() {
         if (roles && roles.includes('admin')) {
           window.location.href = "/admin/dashboard";
         } else {
-          window.location.href = "/dashboard";
+          if (data.data?.nextStep.length > 0) {
+            router.push(`/onboarding/${data.data?.nextStep}`);
+          } else {
+            if (!data.data.isEmailVerified) {
+              router.push(`/onboarding/step-6`);
+            }
+            else if (!data.data.subscription) {
+              router.push(`/payment/currencySelection`);
+            }
+            else {
+              router.push(`/dashboard`);
+            }
+          }
         }
       } else {
         setError("No token received from server");
@@ -107,22 +119,22 @@ export default function SignInPage() {
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">Sign In</h1>
             <p className="text-gray-500 text-base mb-2 text-center">Your Business. Your AI. Welcome back!</p>
-        </div>
+          </div>
           <form className="space-y-4 mb-4" onSubmit={handleSubmit}>
-          <div>
-            <input
-              type="email"
-              placeholder="Email"
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D6C3FF]"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-            />
-          </div>
+              />
+            </div>
             <div className="relative">
-            <input
+              <input
                 type={showPassword ? "text" : "password"}
-              placeholder="Password"
+                placeholder="Password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D6C3FF] pr-10"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -136,27 +148,27 @@ export default function SignInPage() {
               >
                 {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
               </button>
-          </div>
+            </div>
             {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-          <button
-            type="submit"
+            <button
+              type="submit"
               className="w-full py-2 px-4 bg-[rgba(152,124,241,0.5)] border border-[#000000] text-[#000000] font-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
               disabled={loading}
-          >
+            >
               {loading ? "Logging in..." : "Log in"}
-          </button>
-        </form>
+            </button>
+          </form>
           <div className="flex flex-col items-center mt-2">
             <Link href="/forgot-password" className="text-gray-700 hover:text-gray-900 text-sm mb-2 underline">
-            Forgot your password?
-          </Link>
-          <div className="text-sm text-gray-700">
-            Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-gray-900 font-medium underline">
-              Sign Up
+              Forgot your password?
             </Link>
+            <div className="text-sm text-gray-700">
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="text-gray-900 font-medium underline">
+                Sign Up
+              </Link>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>

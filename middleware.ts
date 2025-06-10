@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/landing', '/faqs', '/signin', '/signup', '/policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout','/careers']
+const publicRoutes = ['/landing', '/faqs', '/signin', '/signup', '/onboarding/step-1', '/onboarding/step-2', '/onboarding/step-3', '/onboarding/step-4', '/onboarding/step-5', '/onboarding/step-6','policy-page', '/about', '/help', '/verifyEmail', '/forgot-password', '/logout','/careers']
 
 // Define protected routes that require authentication
 const protectedRoutes = [
@@ -31,15 +31,11 @@ export function middleware(request: NextRequest) {
     
     // Clear specific important cookies
     response.cookies.delete('onboardingToken')
-    response.cookies.delete('currentOnboardingStep')
     response.cookies.delete('token')
     response.cookies.delete('authorization')
     
-    // Add script to clear localStorage and sessionStorage
-    response.headers.set('Clear-Site-Data', '"localStorage", "sessionStorage", "cookies"')
     return response
   }
-  console.log(pathname);
 
   // Redirect /lading to /landing (typo fix)
   if (pathname === '/') {
@@ -75,19 +71,6 @@ export function middleware(request: NextRequest) {
   const token = tokenCookie ||
     (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null) ||
     (authCookie?.startsWith('Bearer ') ? authCookie.split(' ')[1] : null)
-
-  const onboardingToken = request.cookies.get('onboardingToken')?.value
-  const currentOnboardingStep = request.cookies.get('currentOnboardingStep')?.value
-
-  // Add debug logging
-  console.log('Middleware - Auth Cookie:', authCookie ? 'Present' : 'Missing')
-  console.log('Middleware - Token Cookie:', tokenCookie ? 'Present' : 'Missing')
-  console.log('Middleware - Auth Header:', authHeader ? 'Present' : 'Missing')
-  console.log('Middleware - Final Token:', token ? 'Present' : 'Missing')
-
-  console.log('Middleware - Path:', pathname)
-  console.log('Middleware - Token:', token ? 'Present' : 'Missing')
-  console.log('Middleware - Is Public:', isPublicRoute)
 
   // Set dashboard lock cookie when on dashboard
   if (token && pathname === '/dashboard') {
@@ -143,40 +126,6 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // Prevent going back to signup if onboarding has started
-  if (pathname === '/signup' && onboardingToken) {
-    // Only redirect if we're not on the create-account page
-    if (!pathname.includes('/create-account')) {
-      // If there's a current step, redirect to that step
-      if (currentOnboardingStep) {
-        return NextResponse.redirect(new URL(`/onboarding/step-${currentOnboardingStep}`, request.url))
-      }
-      return NextResponse.redirect(new URL('/onboarding/step-1', request.url))
-    }
-  }
-
-  // Prevent going back to previous steps if on step 5
-  if (currentOnboardingStep === '6' && pathname.match(/\/onboarding\/step-[1-5]/)) {
-    return NextResponse.redirect(new URL('/onboarding/step-6', request.url))
-  }
-
-  // Special case for onboarding: allow if onboardingToken exists
-  if (pathname.startsWith('/onboarding') && onboardingToken) {
-    // Store current step in a long-lasting cookie
-    if (pathname.match(/\/onboarding\/step-\d+/)) {
-      const step = pathname.split('/').pop()?.replace('step-', '')
-      if (step) {
-        const response = NextResponse.next()
-        response.cookies.set('currentOnboardingStep', step, {
-          maxAge: 30 * 24 * 60 * 60, // 30 days
-          path: '/',
-        })
-        return response
-      }
-    }
-    return NextResponse.next()
-  }
-
   // If it's a public route, allow access
   if (isPublicRoute) {
     return NextResponse.next()
@@ -184,7 +133,6 @@ export function middleware(request: NextRequest) {
 
   // If it's a protected route and there's no token, redirect to signin
   if (isProtectedRoute && !token) {
-    console.log('Middleware - Redirecting to signin from protected route')
     const url = new URL('/signin', request.url)
     url.searchParams.set('from', pathname)
     return NextResponse.redirect(url)
@@ -192,14 +140,12 @@ export function middleware(request: NextRequest) {
 
   // If there's no token and it's not a public route, redirect to signin
   if (!token) {
-    console.log('Middleware - Redirecting to signin')
     const url = new URL('/signin', request.url)
     url.searchParams.set('from', pathname)
     return NextResponse.redirect(url)
   }
 
   // If there's a token, allow access
-  console.log('Middleware - Allowing access to:', pathname)
   return NextResponse.next()
 }
 

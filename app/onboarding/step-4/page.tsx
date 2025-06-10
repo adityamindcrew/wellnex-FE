@@ -13,15 +13,6 @@ export default function ServicesProvidedPage() {
   const [hasServices, setHasServices] = useState(false);
   const router = useRouter();
 
-  // useEffect(() => {
-  //   const onboardingStep = localStorage.getItem("onboardingStep");
-  //   if (onboardingStep === "4") {
-  //     router.replace("/onboarding/step-4");
-  //   } else if (onboardingStep !== "3") {
-  //     router.replace("/onboarding/step-3");
-  //   }
-  // }, [router]);
-
   useEffect(() => {
     const savedServices = localStorage.getItem('services');
     if (savedServices) {

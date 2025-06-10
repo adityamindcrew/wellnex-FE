@@ -39,15 +39,6 @@ const KeywordsGrid = forwardRef((props: KeywordsGridProps, ref) => {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  // useEffect(() => {
-  //   const onboardingStep = localStorage.getItem("onboardingStep");
-  //   if (onboardingStep === "5") {
-  //     router.replace("/onboarding/step-5");
-  //   } else {
-  //     localStorage.setItem("onboardingStep", "3");
-  //   }
-  // }, [router]);
-
   useImperativeHandle(ref, () => ({
     handleNext,
   }));
