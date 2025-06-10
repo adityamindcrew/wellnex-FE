@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { businessApi } from "../../app/services/api";
 import Image from "next/image";
-import { ImageIcon, ChevronDown, ChevronUp, PipetteIcon } from "lucide-react";
+import { ImageIcon, ChevronDown, ChevronUp, PipetteIcon, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loadStripe } from "@stripe/stripe-js";
@@ -62,7 +62,7 @@ function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paym
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg px-8 py-6 w-full max-w-[500px] flex flex-col items-center">
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl px-8 py-6 w-full max-w-[500px] flex flex-col items-center">
       <div className="w-full">
         <div className="mb-1 font-semibold text-[#181D27] text-lg">Payment</div>
         <div className="mb-4 text-sm text-[#535862]">Card details.</div>
@@ -195,13 +195,13 @@ export default function PlatformSubscription() {
           if (data.data.logo) {
             setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
             localStorage.setItem('businessLogo', `https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
-  }
+          }
           // Set theme color if available
           if (data.data.themeColor) {
             setSelectedColor(data.data.themeColor);
             setInitialColor(data.data.themeColor);
             localStorage.setItem('themeColor', data.data.themeColor);
-  }
+          }
         }
       }
     } catch (error) {
@@ -600,7 +600,7 @@ export default function PlatformSubscription() {
       }
 
       const data = await response.json();
-      
+
       if (data.hasSpecialOffer) {
         setSpecialOfferPrice(data.specialOfferPrice);
         setSpecialOfferMessage(data.message);
@@ -679,7 +679,7 @@ export default function PlatformSubscription() {
 
     if (!cancelDate || !expiryDate) return false;
 
-    return today > cancelDate && today>expiryDate;
+    return today > cancelDate && today > expiryDate;
   };
 
   return (
@@ -904,7 +904,12 @@ export default function PlatformSubscription() {
       {showSpecialOffer && !showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Special Offer</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Special Offer</h3>
+              <button className="text-gray-600 hover:text-gray-800" onClick={() => setShowSpecialOffer(false)}>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
             <p className="text-gray-600 mb-4">{specialOfferMessage}</p>
             <p className="text-sm text-gray-500 mb-6">
               Your current subscription will end on: {new Date(currentPeriodEnd).toLocaleDateString()}
@@ -921,7 +926,7 @@ export default function PlatformSubscription() {
                 // onClick={() => alert("Coming Soon")}
                 className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
               >
-                Yes, I accept the offer 
+                Yes, I accept the offer
               </button>
             </div>
           </div>
@@ -931,7 +936,12 @@ export default function PlatformSubscription() {
       {showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Payment Details</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Payment Details</h3>
+              <button className="text-gray-600 hover:text-gray-800" onClick={() => setShowPaymentForm(false)}>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
             <Elements stripe={stripePromise}>
               <PaymentForm onPaymentMethodCreated={handlePaymentMethodCreated} />
             </Elements>
@@ -941,7 +951,12 @@ export default function PlatformSubscription() {
       {showRenewSubscription && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Renew Subscription</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold mb-4">Renew Subscription</h3>
+              <button className="text-gray-600 hover:text-gray-800" onClick={() => setShowRenewSubscription(false)}>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
             <Elements stripe={stripePromise}>
               <PaymentForm onPaymentMethodCreated={handleRenewSubscriptionAPI} />
             </Elements>

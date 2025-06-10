@@ -2,13 +2,13 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -48,6 +48,8 @@ interface BusinessListItem {
   }>;
   subscriptionDetail?: {
     status: string;
+    cancelAtPeriodEnd: string;
+    currentPeriodEnd: string;
   };
   questions?: Array<{
     name: string;
@@ -104,7 +106,7 @@ const Index = () => {
   useEffect(() => {
     const fetchSubscriptionCounts = async () => {
       try {
-    
+
         const response = await fetch('https://wellnexai.com/api/admin/subscriptions/counts', {
           method: 'GET',
           headers: {
@@ -113,7 +115,7 @@ const Index = () => {
           }
         });
         const data = await response.json();
-    
+
         if (data.status === true) {
           setSubscriptionCounts(data.data);
         }
@@ -135,7 +137,7 @@ const Index = () => {
           sort: 'name',
           sort_order: -1
         });
-        
+
         if (response?.data?.data?.businesses) {
           const businesses = response.data.data.businesses;
           setAllBusinesses(businesses);
@@ -159,12 +161,12 @@ const Index = () => {
 
   // Filter businesses based on search term
   useEffect(() => {
-    const filtered = allBusinesses.filter(business => 
+    const filtered = allBusinesses.filter(business =>
       business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       business.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       business.contact_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    
+
     setBusinesses(filtered);
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset to first page when search changes
@@ -197,9 +199,9 @@ const Index = () => {
 
     // Previous button
     buttons.push(
-      <button 
+      <button
         key="prev"
-        className="px-3 py-1 text-sm rounded border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
+        className="px-3 py-1 text-sm rounded border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={currentPage === 1}
         onClick={() => setCurrentPage(currentPage - 1)}
       >
@@ -210,7 +212,7 @@ const Index = () => {
     // First page
     if (startPage > 1) {
       buttons.push(
-        <button 
+        <button
           key="1"
           className="px-3 py-1 text-sm rounded border hover:bg-gray-50"
           onClick={() => setCurrentPage(1)}
@@ -226,13 +228,12 @@ const Index = () => {
     // Page numbers
     for (let i = startPage; i <= endPage; i++) {
       buttons.push(
-        <button 
+        <button
           key={i}
-          className={`px-3 py-1 text-sm rounded ${
-            currentPage === i 
-              ? 'bg-black text-white' 
-              : 'border hover:bg-gray-50'
-          }`}
+          className={`px-3 py-1 text-sm rounded ${currentPage === i
+            ? 'bg-black text-white'
+            : 'border hover:bg-gray-50'
+            }`}
           onClick={() => setCurrentPage(i)}
         >
           {i}
@@ -246,7 +247,7 @@ const Index = () => {
         buttons.push(<span key="ellipsis2" className="px-2">...</span>);
       }
       buttons.push(
-        <button 
+        <button
           key={totalPages}
           className="px-3 py-1 text-sm rounded border hover:bg-gray-50"
           onClick={() => setCurrentPage(totalPages)}
@@ -258,7 +259,7 @@ const Index = () => {
 
     // Next button
     buttons.push(
-      <button 
+      <button
         key="next"
         className="px-3 py-1 text-sm rounded border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={currentPage === totalPages}
@@ -304,9 +305,9 @@ const Index = () => {
           reason
         })
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok && data.status) {
         setAllBusinesses(prev => prev.filter(business => business._id !== businessToDelete));
         setBusinesses(prev => prev.filter(business => business._id !== businessToDelete));
@@ -315,7 +316,7 @@ const Index = () => {
       } else {
         alert(data.message || 'Failed to delete business');
       }
-    } catch (err) { 
+    } catch (err) {
       console.error('Error deleting business:', err);
       alert('Failed to delete business. Please try again.');
     } finally {
@@ -339,7 +340,7 @@ const Index = () => {
     try {
       setEditLoading(true);
       const token = localStorage.getItem("token");
-      
+
       if (!token) {
         alert('Authentication information missing. Please login again.');
         return;
@@ -354,15 +355,15 @@ const Index = () => {
         },
         body: JSON.stringify(payload)
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok && data.status) {
         // Update the business in the list
-        setAllBusinesses(prev => prev.map(business => 
+        setAllBusinesses(prev => prev.map(business =>
           business._id === editingBusiness._id ? { ...business, ...data.data } : business
         ));
-        setBusinesses(prev => prev.map(business => 
+        setBusinesses(prev => prev.map(business =>
           business._id === editingBusiness._id ? { ...business, ...data.data } : business
         ));
         setShowEditModal(false);
@@ -392,7 +393,7 @@ const Index = () => {
               </TabsList>
               <Badge variant="outline" className="bg-gray-100 ml-2 text-[#000000]">{totalItems} Users</Badge>
             </div>
-            
+
             <TabsContent value="profiles">
               <div className="overflow-x-auto">
                 <Table>
@@ -430,13 +431,13 @@ const Index = () => {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               {business.logo ? (
-                                <img 
+                                <img
                                   src={`https://wellnexai.com/uploads/business-logos/${business.logo}`}
                                   alt={`${business.name} logo`}
                                   className="w-8 h-8 rounded-full object-cover"
                                 />
                               ) : (
-                                <img 
+                                <img
                                   src={loginImage.src}
                                   alt="Default logo"
                                   className="w-8 h-8 rounded-full object-cover"
@@ -448,17 +449,27 @@ const Index = () => {
                           <TableCell className="text-gray-600">{business.email}</TableCell>
                           <TableCell>
                             {business.subscriptionDetail ? (
-                              <Badge 
-                                variant="outline" 
-                                className={`${
-                                  business.subscriptionDetail.status === 'active' 
+                              <>
+                                <Badge
+                                  variant="outline"
+                                  className={`${business.subscriptionDetail.status === 'active'
                                     ? 'bg-green-50 text-green-600 border-green-200'
                                     : 'bg-red-50 text-red-600 border-red-200'
-                                }`}
-                              >
-                                {business.subscriptionDetail.status.charAt(0).toUpperCase() + 
-                                 business.subscriptionDetail.status.slice(1)}
-                              </Badge>
+                                    }`}
+                                >
+                                  {business.subscriptionDetail.status.charAt(0).toUpperCase() +
+                                    business.subscriptionDetail.status.slice(1)}
+
+                                </Badge>
+                                {business.subscriptionDetail.cancelAtPeriodEnd
+                                  && business.subscriptionDetail.status === 'active' && (
+                                    <> <br />
+                                      <span className="text-xs text-gray-500">
+
+                                        (Cancels at {new Date(business.subscriptionDetail.currentPeriodEnd).toLocaleDateString()})
+                                      </span></>
+                                  )}
+                              </>
                             ) : (
                               <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
                                 No Subscription
@@ -469,8 +480,8 @@ const Index = () => {
                             <div className="flex flex-col gap-1">
                               {business.services && business.services.length > 0 ? (
                                 business.services.map((service, index) => (
-                                  <span 
-                                    key={service._id} 
+                                  <span
+                                    key={service._id}
                                     className="text-sm text-gray-600"
                                   >
                                     {service.name}
@@ -483,13 +494,13 @@ const Index = () => {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <button 
+                              <button
                                 className="text-gray-500 hover:text-gray-700"
                                 onClick={() => handleEditClick(business)}
                               >
                                 <Pencil className="h-4 w-4" />
                               </button>
-                              <button 
+                              <button
                                 className="text-gray-500 hover:text-gray-700"
                                 onClick={() => handleDeleteClick(business._id)}
                               >
@@ -503,7 +514,7 @@ const Index = () => {
                   </TableBody>
                 </Table>
               </div>
-              
+
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-sm text-gray-500">
                   Showing {startItem} to {endItem} of {totalItems} businesses
@@ -513,7 +524,7 @@ const Index = () => {
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="users">
               <div className="p-8 text-center text-gray-500">
                 Users tab content will appear here
@@ -522,10 +533,10 @@ const Index = () => {
           </Tabs>
         </div>
       </Card>
-      
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-8">
-        <SubscriptionCard 
+        <SubscriptionCard
           type="active"
           count={subscriptionCounts.active}
           label="Active Subscriptions"
@@ -533,8 +544,8 @@ const Index = () => {
           color="green"
           imageSrc={activeImg}
         />
-        
-        <SubscriptionCard 
+
+        <SubscriptionCard
           type="pending"
           count={subscriptionCounts.paused}
           label="Paused Subscriptions"
@@ -542,8 +553,8 @@ const Index = () => {
           color="amber"
           imageSrc={paused}
         />
-        
-        <SubscriptionCard 
+
+        <SubscriptionCard
           type="canceled"
           count={subscriptionCounts.cancelled}
           label="Canceled Subscriptions"
@@ -552,7 +563,7 @@ const Index = () => {
           imageSrc={cancel}
         />
       </div>
-      
+
       {/* Notifications & Payments Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
         {/* <NotificationsCard /> */}
@@ -594,7 +605,7 @@ const Index = () => {
                 const formData = new FormData(e.currentTarget);
                 let logoUrl = editingBusiness.logo;
                 const logoFile = formData.get('logo');
-                
+
                 // Handle logo upload if a new file is selected
                 if (logoFile && logoFile instanceof File && logoFile.size > 0) {
                   try {
@@ -602,7 +613,7 @@ const Index = () => {
                     uploadForm.append('logo', logoFile);
                     uploadForm.append('businessId', editingBusiness._id);
                     const token = localStorage.getItem("token");
-                    
+
                     if (!token) {
                       alert('Authentication token missing. Please login again.');
                       return;
@@ -618,7 +629,7 @@ const Index = () => {
                     });
 
                     // Log response details for debugging
-               
+
 
                     // Check if response is JSON
                     const contentType = uploadRes.headers.get("content-type");
@@ -630,8 +641,8 @@ const Index = () => {
                     }
 
                     const uploadData = await uploadRes.json();
-               
-                    
+
+
                     if (!uploadRes.ok) {
                       throw new Error(uploadData.message || 'Upload failed');
                     }
@@ -738,7 +749,8 @@ const Index = () => {
                   >
                     <option value="active">Active</option>
                     <option value="paused">Paused</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="canceled">Canceled</option>
+                    <option value="canceledImmediately">Canceled Immediately</option>
                   </select>
                 </div>
                 <div>
