@@ -67,7 +67,7 @@ export default function Footer() {
                 { name: "About", href: "/about" },
                 { name: "Help", href: "/help" },
            
-                { name: "How it works", href: "" },
+                // { name: "How it works", href: "" },
                 { name: "Careers", href: "/careers" },
               ].map((item) => (
                 <div key={item.name}>

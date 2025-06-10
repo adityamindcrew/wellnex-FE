@@ -537,7 +537,7 @@ export default function PlatformSubscription() {
     } catch (err: any) {
       setSubscriptionError(err.message);
       // Clear any existing message when there's an error
-      setMessage(null);
+      setMessage1(null);
     }
   }
   const handleCancelSubscription = async () => {
@@ -582,7 +582,7 @@ export default function PlatformSubscription() {
     } catch (err: any) {
       setSubscriptionError(err.message);
       // Clear any existing message when there's an error
-      setMessage(null);
+      setMessage1(null);
     }
   };
 
@@ -647,7 +647,7 @@ export default function PlatformSubscription() {
       setSubscriptionError(err.message || 'An error occurred while processing your subscription?. Please try again.');
       setShowPaymentForm(false);
       // Clear any existing message when there's an error
-      setMessage(null);
+      setMessage1(null);
     }
   };
 
@@ -666,7 +666,7 @@ export default function PlatformSubscription() {
 
       const data = await response.json();
       setShowSpecialOffer(false);
-      setMessage(data.message || 'Your subscription has been cancelled');
+      setMessage1(data.message || 'Your subscription has been cancelled');
     } catch (err: any) {
       setThemeError(err.message);
     }
