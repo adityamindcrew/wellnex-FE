@@ -33,7 +33,8 @@ export function middleware(request: NextRequest) {
     response.cookies.delete('onboardingToken')
     response.cookies.delete('token')
     response.cookies.delete('authorization')
-    
+    response.cookies.delete('adminDashboardLock')
+    response.cookies.delete('dashboardLock')
     return response
   }
 
@@ -71,6 +72,7 @@ export function middleware(request: NextRequest) {
   const token = tokenCookie ||
     (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null) ||
     (authCookie?.startsWith('Bearer ') ? authCookie.split(' ')[1] : null)
+console.log(token);
 
   // Set dashboard lock cookie when on dashboard
   if (token && pathname === '/dashboard') {
