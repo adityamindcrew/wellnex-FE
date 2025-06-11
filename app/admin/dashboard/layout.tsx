@@ -24,6 +24,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     <DashboardSearchContext.Provider value={{ searchTerm, setSearchTerm, isLoading, setIsLoading }}>
       <div className="flex min-h-screen bg-white">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <div className="hidden md:block w-px bg-gray-200 min-h-screen" />
         <div className="flex-1 flex flex-col min-h-screen">
           <Header onHamburgerClick={() => setIsSidebarOpen(true)} />
           <main className="flex-1 p-6 overflow-auto bg-white">{children}</main>

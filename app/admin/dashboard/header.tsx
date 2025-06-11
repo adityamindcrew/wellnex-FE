@@ -16,8 +16,8 @@ export default function Header({ onHamburgerClick }: HeaderProps) {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 md:px-6">
-      <div className="relative w-full max-w-[450px] ml-0 md:ml-12">
+    <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white pr-4 md:pr-6">
+      <div className="relative w-full max-w-[450px] ml-0 md:ml-12 ml-0 lg:ml-6">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3">
           <Search className={`h-5 w-5 ${isLoading ? 'animate-pulse text-gray-500' : 'text-gray-400'}`} />
         </div>
