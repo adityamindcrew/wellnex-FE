@@ -9,15 +9,17 @@ export default function ChatbotUnderstandingPage() {
 
   // Check for existing keywords in localStorage
   useEffect(() => {
-    const savedKeywords = localStorage.getItem('keywords');
-    if (savedKeywords) {
-      try {
-        const parsed = JSON.parse(savedKeywords);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setHasKeywords(true);
+    if (typeof window !== 'undefined') {
+      const savedKeywords = localStorage.getItem('keywords');
+      if (savedKeywords) {
+        try {
+          const parsed = JSON.parse(savedKeywords);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setHasKeywords(true);
+          }
+        } catch (e) {
+          // Ignore parse errors
         }
-      } catch (e) {
-        // Ignore parse errors
       }
     }
   }, []);

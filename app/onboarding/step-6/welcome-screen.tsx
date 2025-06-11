@@ -32,8 +32,8 @@ export default function WelcomeScreen() {
     setHasResendClicked(true)
 
     try {
-      const token = localStorage.getItem("token")
-      const businessId = localStorage.getItem("businessId")
+      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+      const businessId = typeof window !== 'undefined' ? localStorage.getItem("businessId") : null;
       
       if (!token || !businessId) {
         throw new Error("Missing token or businessId")
@@ -64,8 +64,8 @@ export default function WelcomeScreen() {
     setIsChecking(true)
     setHasCheckClicked(true)
     try {
-      const token = localStorage.getItem("token")
-      const businessId = localStorage.getItem("businessId")
+      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+      const businessId = typeof window !== 'undefined' ? localStorage.getItem("businessId") : null;
       
       if (!token || !businessId) {
         throw new Error("Missing token or businessId")
@@ -83,9 +83,11 @@ export default function WelcomeScreen() {
       
       if (data.data?.isEmailVerified === true) {
         // Set tokens in both localStorage and cookies
-        localStorage.setItem('token', token)
-        document.cookie = `token=${token}; path=/`
-        document.cookie = `authorization=Bearer ${token}; path=/`
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', token)
+          document.cookie = `token=${token}; path=/`
+          document.cookie = `authorization=Bearer ${token}; path=/`
+        }
         
         router.push('/payment/currencySelection')
       } else {

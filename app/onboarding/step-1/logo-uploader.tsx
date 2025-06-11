@@ -19,8 +19,8 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const uploadLogo = async (file: File) => {
-    const token = localStorage.getItem('token');
-    const businessId = localStorage.getItem('businessId');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const businessId = typeof window !== 'undefined' ? localStorage.getItem('businessId') : null;
     
     if (!token || !businessId) {
       setError('No authentication token or business ID found. Please sign up or log in again.');
@@ -58,7 +58,9 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
     reader.onload = (event) => {
       const base64String = event.target?.result as string
       setPreviewUrl(base64String)
-      localStorage.setItem('logoPreview', base64String)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('logoPreview', base64String)
+      }
       onFileSelect(file)
     }
     reader.readAsDataURL(file)
@@ -66,19 +68,21 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
 
   // Load preview from local storage on mount
   useEffect(() => {
-    const savedPreview = localStorage.getItem('logoPreview')
-    if (savedPreview) {
-      setPreviewUrl(savedPreview)
-      // Convert base64 to File object
-      fetch(savedPreview)
-        .then(res => res.blob())
-        .then(blob => {
-          const file = new File([blob], 'logo.png', { type: 'image/png' })
-          onFileSelect(file)
-        })
-        .catch(err => {
-          console.error('Error converting base64 to file:', err)
-        })
+    if (typeof window !== 'undefined') {
+      const savedPreview = localStorage.getItem('logoPreview')
+      if (savedPreview) {
+        setPreviewUrl(savedPreview)
+        // Convert base64 to File object
+        fetch(savedPreview)
+          .then(res => res.blob())
+          .then(blob => {
+            const file = new File([blob], 'logo.png', { type: 'image/png' })
+            onFileSelect(file)
+          })
+          .catch(err => {
+            console.error('Error converting base64 to file:', err)
+          })
+      }
     }
   }, [onFileSelect])
 

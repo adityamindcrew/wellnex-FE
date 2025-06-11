@@ -10,15 +10,17 @@ export default function ChatbotQuestionsPage() {
 
   // Check for existing questions in localStorage
   useEffect(() => {
-    const savedQuestions = localStorage.getItem('questions');
-    if (savedQuestions) {
-      try {
-        const parsed = JSON.parse(savedQuestions);
-        if (Array.isArray(parsed) && parsed.some(q => q.trim() !== "")) {
-          setHasQuestions(true);
+    if (typeof window !== 'undefined') {
+      const savedQuestions = localStorage.getItem('questions');
+      if (savedQuestions) {
+        try {
+          const parsed = JSON.parse(savedQuestions);
+          if (Array.isArray(parsed) && parsed.some(q => q.trim() !== "")) {
+            setHasQuestions(true);
+          }
+        } catch (e) {
+          // Ignore parse errors
         }
-      } catch (e) {
-        // Ignore parse errors
       }
     }
   }, []);

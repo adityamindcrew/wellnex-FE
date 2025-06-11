@@ -13,10 +13,12 @@ export default function LogoUploadPage() {
 
   // Check for existing logo in formData
   useEffect(() => {
-    const savedLogo = localStorage.getItem('logoPreview')
-    if (savedLogo) {
-      // If we have a saved logo, we can proceed
-      setSelectedFile(new File([], 'logo.png'))
+    if (typeof window !== 'undefined') {
+      const savedLogo = localStorage.getItem('logoPreview')
+      if (savedLogo) {
+        // If we have a saved logo, we can proceed
+        setSelectedFile(new File([], 'logo.png'))
+      }
     }
   }, [])
 
