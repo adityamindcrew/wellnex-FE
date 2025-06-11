@@ -346,7 +346,6 @@ const Index = () => {
         return;
       }
 
-
       const response = await fetch('https://wellnexai.com/api/business/updateBusinessDetail', {
         method: 'PUT',
         headers: {
@@ -359,13 +358,38 @@ const Index = () => {
       const data = await response.json();
 
       if (response.ok && data.status) {
-        // Update the business in the list
+        // Update the business in the list with the new subscription status
+        const updatedBusiness = {
+          ...editingBusiness,
+          ...data.data,
+          subscriptionDetail: {
+            ...editingBusiness.subscriptionDetail,
+            status: payload.subscriptionStatus
+          }
+        };
+
         setAllBusinesses(prev => prev.map(business =>
-          business._id === editingBusiness._id ? { ...business, ...data.data } : business
+          business._id === editingBusiness._id ? updatedBusiness : business
         ));
         setBusinesses(prev => prev.map(business =>
-          business._id === editingBusiness._id ? { ...business, ...data.data } : business
+          business._id === editingBusiness._id ? updatedBusiness : business
         ));
+
+        // Update subscription counts
+        const newStatus = payload.subscriptionStatus;
+        const oldStatus = editingBusiness.subscriptionDetail?.status;
+        
+        setSubscriptionCounts(prev => {
+          const newCounts = { ...prev };
+          if (oldStatus) {
+            newCounts[oldStatus as keyof typeof newCounts]--;
+          }
+          if (newStatus) {
+            newCounts[newStatus as keyof typeof newCounts]++;
+          }
+          return newCounts;
+        });
+
         setShowEditModal(false);
         setEditingBusiness(null);
       } else {

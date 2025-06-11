@@ -974,7 +974,17 @@ export default function PlatformSubscription() {
                 You need an active subscription to access this feature. Please subscribe to continue using our platform.
               </p>
               <button
-                onClick={() => { setShowNoSubscriptionPopup(false); router.push('/payment/currencySelection') }}
+                onClick={() => {
+                  const token = localStorage.getItem('token');
+                  if (!token) {
+                    window.location.href = '/signin';
+                  } else {
+                    // Clear the dashboard lock cookie
+                    document.cookie = "dashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    setShowNoSubscriptionPopup(false);
+                    window.location.href = '/payment/currencySelection';
+                  }
+                }}
                 className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Subscribe Now
