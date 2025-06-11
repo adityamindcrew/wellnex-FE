@@ -63,24 +63,24 @@ function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paym
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl px-8 py-6 w-full max-w-[500px] flex flex-col items-center">
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl px-8 py-6 w-full max-w-[600px] flex flex-col items-center">
       <div className="w-full">
         <div className="mb-1 font-semibold text-[#181D27] text-lg">Payment</div>
         <div className="mb-4 text-sm text-[#535862]">Card details.</div>
-        <div className="flex w-full gap-4 mb-3">
-          <div className="flex-[3]">
+        <div className="flex w-full gap-6 mb-4">
+          <div className="flex-[6]">
             <label className="block text-sm font-medium text-[#414651] mb-1">Name on card</label>
             <input
-              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              className="block w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:border-black focus:ring-0"
               value={cardName}
               onChange={e => setCardName(e.target.value)}
               required
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-[4]">
             <label className="block text-sm font-medium text-[#414651] mb-1">Expiry</label>
             <CardExpiryElement
-              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              className="block w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:border-black focus:ring-0"
               options={{
                 style: {
                   base: {
@@ -95,11 +95,11 @@ function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paym
             />
           </div>
         </div>
-        <div className="flex w-full gap-4 mb-1">
-          <div className="flex-[3]">
+        <div className="flex w-full gap-6 mb-4">
+          <div className="flex-[6]">
             <label className="block text-sm font-medium text-[#414651] mb-1">Card number</label>
             <CardNumberElement
-              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              className="block w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:border-black focus:ring-0"
               options={{
                 style: {
                   base: {
@@ -113,10 +113,10 @@ function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paym
               }}
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-[4]">
             <label className="block text-sm font-medium text-[#414651] mb-1">CVV</label>
             <CardCvcElement
-              className="block w-full rounded-md border border-gray-300 px-4 py-2.5 text-base focus:border-black focus:ring-0"
+              className="block w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:border-black focus:ring-0"
               options={{
                 style: {
                   base: {
@@ -668,7 +668,9 @@ export default function PlatformSubscription() {
 
       const data = await response.json();
       setShowSpecialOffer(false);
+      
       setMessage1(data.message || 'Your subscription has been cancelled');
+      fetchSubscription();
     } catch (err: any) {
       setThemeError(err.message);
     }
@@ -974,7 +976,17 @@ export default function PlatformSubscription() {
                 You need an active subscription to access this feature. Please subscribe to continue using our platform.
               </p>
               <button
-                onClick={() => { setShowNoSubscriptionPopup(false); router.push('/payment/currencySelection') }}
+                onClick={() => {
+                  const token = localStorage.getItem('token');
+                  if (!token) {
+                    window.location.href = '/signin';
+                  } else {
+                    // Clear the dashboard lock cookie
+                    document.cookie = "dashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    setShowNoSubscriptionPopup(false);
+                    window.location.href = '/payment/currencySelection';
+                  }
+                }}
                 className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Subscribe Now

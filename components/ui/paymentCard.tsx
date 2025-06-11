@@ -170,7 +170,7 @@ const PaymentsCard = () => {
   };
 
   return (
-    <Card>
+    <Card className="w-full max-w-6xl mx-auto">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-base font-medium">Payments</CardTitle>
  
@@ -207,11 +207,11 @@ const PaymentsCard = () => {
         </div>
 
         {/* Pagination */}
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm text-gray-500">
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <span className="text-sm text-gray-500 whitespace-nowrap">
             Showing {startItem} to {endItem} of {totalItems} payments
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             {renderPaginationButtons()}
           </div>
         </div>

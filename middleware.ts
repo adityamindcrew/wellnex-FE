@@ -19,6 +19,71 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
   const { pathname } = url
 
+  // Get the tokens from cookies and headers
+  const authCookie = request.cookies.get('authorization')?.value
+  const tokenCookie = request.cookies.get('token')?.value
+  const authHeader = request.headers.get('authorization')
+
+  const token = tokenCookie ||
+    (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null) ||
+    (authCookie?.startsWith('Bearer ') ? authCookie.split(' ')[1] : null)
+console.log(token);
+
+  // Check if the route is public or protected
+  const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
+  const isProtectedRoute = protectedRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
+
+  // If it's a public route, allow access immediately
+  if (isPublicRoute) {
+    return NextResponse.next()
+  }
+
+  // If it's a protected route and there's no token, redirect to signin
+  if (isProtectedRoute && !token) {
+    const url = new URL('/signin', request.url)
+    url.searchParams.set('from', pathname)
+    return NextResponse.redirect(url)
+  }
+
+  // If trying to access dashboard from public route, block it (this condition might become less relevant if isPublicRoute handles it)
+  if (pathname === '/dashboard' && isPublicRoute) {
+    return new Response('Access Denied', { status: 403 })
+  }
+
+  // If authenticated and on dashboard, set strict lock
+  if (pathname === '/dashboard' && token) {
+    const response = NextResponse.next()
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.cookies.set('dashboardLock', 'true', { path: '/' })
+    return response
+  }
+
+  // If authenticated and on admin dashboard, set strict lock
+  if (pathname === '/admin/dashboard' && token) {
+    const response = NextResponse.next()
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.cookies.set('adminDashboardLock', 'true', { path: '/' })
+    return response
+  }
+
+  // If dashboard lock is set, only allow dashboard and logout
+  if (request.cookies.get('dashboardLock')?.value === 'true') {
+    if (pathname !== '/dashboard' && pathname !== '/logout') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+  }
+
+  // If admin dashboard lock is set, only allow admin dashboard and logout
+  if (request.cookies.get('adminDashboardLock')?.value === 'true') {
+    if (pathname !== '/admin/dashboard' && pathname !== '/logout') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    }
+  }
+
   // Handle logout
   if (pathname === '/logout') {
     const response = NextResponse.redirect(new URL('/signup', request.url))
@@ -58,93 +123,27 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Check if the route is public
-  const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
-
-  // Check if the route is protected
-  const isProtectedRoute = protectedRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
-
-  // Get the tokens from cookies and headers
-  const authCookie = request.cookies.get('authorization')?.value
-  const tokenCookie = request.cookies.get('token')?.value
-  const authHeader = request.headers.get('authorization')
-
-  const token = tokenCookie ||
-    (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null) ||
-    (authCookie?.startsWith('Bearer ') ? authCookie.split(' ')[1] : null)
-console.log(token);
-
-  // Set dashboard lock cookie when on dashboard
-  if (token && pathname === '/dashboard') {
-    const response = NextResponse.next();
-    response.cookies.set('dashboardLock', 'true', { path: '/' });
-    // Add cache control headers to prevent back navigation
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-    return response;
+  // Store current step in cookie when on onboarding
+  if (pathname.startsWith('/onboarding/step-')) {
+    const currentStep = pathname.split('step-')[1]
+    const response = NextResponse.next()
+    response.cookies.set('currentStep', currentStep || '1', { path: '/' })
+    response.cookies.set('inOnboarding', 'true', { path: '/' })
+    return response
   }
 
-  // Set admin dashboard lock cookie when on admin dashboard
-  if (token && pathname === '/admin/dashboard') {
-    const response = NextResponse.next();
-    response.cookies.set('adminDashboardLock', 'true', { path: '/' });
-    // Add cache control headers to prevent back navigation
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-    return response;
+  // If trying to access dashboard while on onboarding, keep them on current step
+  if (pathname === '/dashboard' && request.cookies.get('inOnboarding')?.value === 'true') {
+    const currentStep = request.cookies.get('currentStep')?.value || '1'
+    return NextResponse.redirect(new URL(`/onboarding/step-${currentStep}`, request.url))
   }
 
-  // Get dashboard locks
-  const dashboardLock = request.cookies.get('dashboardLock')?.value === 'true';
-  const adminDashboardLock = request.cookies.get('adminDashboardLock')?.value === 'true';
-
-  // If regular dashboard lock is set, block navigation except dashboard and logout
-  if (
-    token &&
-    dashboardLock &&
-    !(pathname === '/dashboard' || pathname === '/logout')
-  ) {
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
-    // Add cache control headers to prevent back navigation
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-    return response;
-  }
-
-  // If admin dashboard lock is set, block navigation except admin dashboard and logout
-  if (
-    token &&
-    adminDashboardLock &&
-    !(pathname === '/admin/dashboard' || pathname === '/logout')
-  ) {
-    const response = NextResponse.redirect(new URL('/admin/dashboard', request.url));
-    // Add cache control headers to prevent back navigation
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-    return response;
-  }
-
-  // If it's a public route, allow access
-  if (isPublicRoute) {
-    return NextResponse.next()
-  }
-
-  // If it's a protected route and there's no token, redirect to signin
-  if (isProtectedRoute && !token) {
-    const url = new URL('/signin', request.url)
-    url.searchParams.set('from', pathname)
-    return NextResponse.redirect(url)
-  }
-
-  // If there's no token and it's not a public route, redirect to signin
-  if (!token) {
-    const url = new URL('/signin', request.url)
-    url.searchParams.set('from', pathname)
-    return NextResponse.redirect(url)
+  // Clear onboarding cookies when not in onboarding
+  if (!pathname.startsWith('/onboarding/')) {
+    const response = NextResponse.next()
+    response.cookies.delete('inOnboarding')
+    response.cookies.delete('currentStep')
+    return response
   }
 
   // If there's a token, allow access

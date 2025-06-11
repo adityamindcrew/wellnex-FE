@@ -28,7 +28,7 @@ const StatsOverview = () => {
         const data = await response.json();
         setStats({
           leads: data.data?.totalLeads ?? 0,
-          userInteraction: data.data?.userInteraction ?? 0,
+          userInteraction: data.data?.totalBusiness ?? 0,
         });
       } catch (err: any) {
         setError(err.message || "Unknown error");
@@ -48,7 +48,7 @@ const StatsOverview = () => {
       />
       <StatCard 
         value={loading ? "..." : String(stats?.userInteraction ?? 0)} 
-        label="User Interaction" 
+        label="Total businesses" 
         imageSrc={interaction}
       />
       {error && <div className="col-span-full text-red-500 text-center">{error}</div>}

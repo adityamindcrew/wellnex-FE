@@ -88,7 +88,7 @@ export default function FormCard({
             <div className="flex w-full items-center justify-between pt-8">
               <div className="text-sm text-muted-foreground">Step {getCurrentStepNumber()}/{totalSteps}</div>
               <div className="flex space-x-2">
-                {showCancel && (
+                {/* {showCancel && (
                   <Button variant="outline" onClick={() => {
                     if (typeof window !== "undefined") {
                       window.history.back()
@@ -96,7 +96,7 @@ export default function FormCard({
                   }}>
                     Cancel
                   </Button>
-                )}
+                )} */}
                 {showBack && (
                   <Button variant="outline" onClick={handleBack} disabled={typeof window !== 'undefined' && localStorage.getItem("nextStep") === `step-${currentStepIndex+1}`}>
                     Back
