@@ -50,18 +50,20 @@ const KeywordsGrid = forwardRef((props: KeywordsGridProps, ref) => {
 
   // On mount, load keywords from localStorage if available
   useEffect(() => {
-    const savedKeywords = localStorage.getItem('keywords');
-    if (savedKeywords) {
-      try {
-        const parsed = JSON.parse(savedKeywords);
-        if (Array.isArray(parsed)) {
-          const newKeywords = [...parsed.filter((k) => k.trim() !== ""), ...Array(9 - parsed.filter((k) => k.trim() !== "").length).fill("")];
-          setKeywords(newKeywords);
-          updateFormData({ keywords: parsed });
-          props.onKeywordsChange?.(parsed.length > 0);
+    if (typeof window !== 'undefined') {
+      const savedKeywords = localStorage.getItem('keywords');
+      if (savedKeywords) {
+        try {
+          const parsed = JSON.parse(savedKeywords);
+          if (Array.isArray(parsed)) {
+            const newKeywords = [...parsed.filter((k) => k.trim() !== ""), ...Array(9 - parsed.filter((k) => k.trim() !== "").length).fill("")];
+            setKeywords(newKeywords);
+            updateFormData({ keywords: parsed });
+            props.onKeywordsChange?.(parsed.length > 0);
+          }
+        } catch (e) {
+          // Ignore parse errors
         }
-      } catch (e) {
-        // Ignore parse errors
       }
     }
     // eslint-disable-next-line
@@ -69,7 +71,7 @@ const KeywordsGrid = forwardRef((props: KeywordsGridProps, ref) => {
 
   // Save keywords to localStorage whenever they change
   useEffect(() => {
-    if (keywords && Array.isArray(keywords)) {
+    if (typeof window !== 'undefined' && keywords && Array.isArray(keywords)) {
       const filtered = keywords.filter((k) => k.trim() !== "");
       localStorage.setItem('keywords', JSON.stringify(filtered));
     }
@@ -86,8 +88,8 @@ const KeywordsGrid = forwardRef((props: KeywordsGridProps, ref) => {
     try {
       setIsSubmitting(true)
       setError(null)
-      const token = localStorage.getItem("token")
-      const businessId = localStorage.getItem("businessId")
+      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+      const businessId = typeof window !== 'undefined' ? localStorage.getItem("businessId") : null;
       if (!token || !businessId) {
         setError("Token or Business ID not found")
         return

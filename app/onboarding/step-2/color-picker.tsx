@@ -31,17 +31,19 @@ const ColorPicker = forwardRef((props: { onColorSelect?: () => void }, ref) => {
 
   // On mount, load color from localStorage
   useEffect(() => {
-    const savedColor = localStorage.getItem('themeColor');
-    if (savedColor) {
-      setSelectedColor(savedColor);
-      updateFormData({ themeColor: savedColor });
+    if (typeof window !== 'undefined') {
+      const savedColor = localStorage.getItem('themeColor');
+      if (savedColor) {
+        setSelectedColor(savedColor);
+        updateFormData({ themeColor: savedColor });
+      }
     }
     // eslint-disable-next-line
   }, []);
 
   // Save color to localStorage whenever it changes
   useEffect(() => {
-    if (selectedColor) {
+    if (typeof window !== 'undefined' && selectedColor) {
       localStorage.setItem('themeColor', selectedColor);
     }
   }, [selectedColor]);
@@ -195,8 +197,8 @@ const ColorPicker = forwardRef((props: { onColorSelect?: () => void }, ref) => {
       return;
     }
 
-    const token = localStorage.getItem('token')
-    const businessId = localStorage.getItem('businessId')
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const businessId = typeof window !== 'undefined' ? localStorage.getItem('businessId') : null;
     if (!token || !businessId) {
       setError('No authentication token or business ID found. Please sign up or log in again.')
       return

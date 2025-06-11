@@ -14,15 +14,17 @@ export default function ServicesProvidedPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const savedServices = localStorage.getItem('services');
-    if (savedServices) {
-      try {
-        const parsed = JSON.parse(savedServices);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setHasServices(true);
+    if (typeof window !== 'undefined') {
+      const savedServices = localStorage.getItem('services');
+      if (savedServices) {
+        try {
+          const parsed = JSON.parse(savedServices);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setHasServices(true);
+          }
+        } catch (e) {
+          // Ignore parse errors
         }
-      } catch (e) {
-        // Ignore parse errors
       }
     }
   }, []);

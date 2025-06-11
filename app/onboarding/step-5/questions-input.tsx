@@ -45,23 +45,27 @@ const QuestionsInputInner = forwardRef((props: QuestionsInputProps, ref) => {
     }
   
     // Save to localStorage
-    localStorage.setItem("questions", JSON.stringify(questions));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("questions", JSON.stringify(questions));
+    }
   }, [questions, formData.questions, updateFormData]);
   
 
   useEffect(() => {
-    const storedQuestions = localStorage.getItem("questions");
-    if (storedQuestions) {
-      try {
-        const parsed = JSON.parse(storedQuestions);
-        if (Array.isArray(parsed)) {
-          setQuestions(parsed);
-          // Check if there are any non-empty questions
-          const hasData = parsed.some(q => q.trim() !== "")
-          props.onQuestionsChange?.(hasData)
+    if (typeof window !== 'undefined') {
+      const storedQuestions = localStorage.getItem("questions");
+      if (storedQuestions) {
+        try {
+          const parsed = JSON.parse(storedQuestions);
+          if (Array.isArray(parsed)) {
+            setQuestions(parsed);
+            // Check if there are any non-empty questions
+            const hasData = parsed.some(q => q.trim() !== "")
+            props.onQuestionsChange?.(hasData)
+          }
+        } catch (e) {
+          console.error("Failed to parse questions from localStorage:", e);
         }
-      } catch (e) {
-        console.error("Failed to parse questions from localStorage:", e);
       }
     }
   }, [props.onQuestionsChange]);
@@ -102,8 +106,8 @@ const QuestionsInputInner = forwardRef((props: QuestionsInputProps, ref) => {
     setError(null)
     setIsSubmitting(true)
     try {
-      const businessId = localStorage.getItem("businessId")
-      const token = localStorage.getItem("token")
+      const businessId = typeof window !== 'undefined' ? localStorage.getItem("businessId") : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
       
       if (!businessId) {
         setError("Business ID not found. Please try again.");

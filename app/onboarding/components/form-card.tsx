@@ -98,7 +98,7 @@ export default function FormCard({
                   </Button>
                 )}
                 {showBack && (
-                  <Button variant="outline" onClick={handleBack} disabled={localStorage.getItem("nextStep") === `step-${currentStepIndex+1}`}>
+                  <Button variant="outline" onClick={handleBack} disabled={typeof window !== 'undefined' && localStorage.getItem("nextStep") === `step-${currentStepIndex+1}`}>
                     Back
                   </Button>
                 )}

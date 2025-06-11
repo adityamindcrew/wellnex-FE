@@ -12,9 +12,11 @@ export default function OnboardingStep2() {
 
   // Check for existing color in localStorage
   useEffect(() => {
-    const savedColor = localStorage.getItem('themeColor');
-    if (savedColor) {
-      setHasColor(true);
+    if (typeof window !== 'undefined') {
+      const savedColor = localStorage.getItem('themeColor');
+      if (savedColor) {
+        setHasColor(true);
+      }
     }
   }, []);
 

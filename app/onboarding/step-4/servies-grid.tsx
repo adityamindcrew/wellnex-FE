@@ -41,8 +41,8 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
     try {
       setIsSubmitting(true)
       setError(null)
-      const token = localStorage.getItem("token")
-      const businessId = localStorage.getItem("businessId")
+      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+      const businessId = typeof window !== 'undefined' ? localStorage.getItem("businessId") : null;
       
       if (!token || !businessId) {
         setError("Token or Business ID not found")
@@ -50,13 +50,15 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
       }
 
       // Get existing services from localStorage
-      const savedServices = localStorage.getItem('services');
       let existingServices: { name: string }[] = [];
-      if (savedServices) {
-        try {
-          existingServices = JSON.parse(savedServices);
-        } catch (e) {
-          console.error("Error parsing saved services:", e);
+      if (typeof window !== 'undefined') {
+        const savedServices = localStorage.getItem('services');
+        if (savedServices) {
+          try {
+            existingServices = JSON.parse(savedServices);
+          } catch (e) {
+            console.error("Error parsing saved services:", e);
+          }
         }
       }
 
@@ -115,22 +117,24 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
 
   // Load initial data
   useEffect(() => {
-    const savedServices = localStorage.getItem('services');
-    if (savedServices) {
-      try {
-        const parsed = JSON.parse(savedServices);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const newServices = new Array(9).fill("");
-          parsed.forEach((service: { name: string }, index: number) => {
-            if (index < 9) {
-              newServices[index] = service.name;
-            }
-          });
-          setServices(newServices);
-          props.onKeywordsChange?.(true);
+    if (typeof window !== 'undefined') {
+      const savedServices = localStorage.getItem('services');
+      if (savedServices) {
+        try {
+          const parsed = JSON.parse(savedServices);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const newServices = new Array(9).fill("");
+            parsed.forEach((service: { name: string }, index: number) => {
+              if (index < 9) {
+                newServices[index] = service.name;
+              }
+            });
+            setServices(newServices);
+            props.onKeywordsChange?.(true);
+          }
+        } catch (e) {
+          localStorage.removeItem('services');
         }
-      } catch (e) {
-        localStorage.removeItem('services');
       }
     }
   }, []);
