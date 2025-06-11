@@ -22,65 +22,11 @@ import PaymentsCard from "../../../components/ui/paymentCard";
 import activeImg from "../../../app/assets/images/activeSubscription.png";
 import paused from "../../../app/assets/images/paused.png";
 import cancel from "../../../app/assets/images/cancel.png";
-import { wellnexApi } from "@/lib/api/wellnex";
+import { BusinessListItem, wellnexApi } from "@/lib/api/wellnex";
 import { useDashboardSearch } from "./layout";
 import loginImage from '../../assets/images/login.png';
 
 const ITEMS_PER_PAGE = 5;
-
-interface BusinessListItem {
-  _id: string;
-  name: string;
-  email: string;
-  contact_name: string;
-  website_url: string | null;
-  instagram_url: string | null;
-  logo: string | null;
-  themeColor: string | null;
-  isEmailVerified: boolean;
-  keywords: Array<{
-    name: string;
-    _id: string;
-  }>;
-  services: Array<{
-    name: string;
-    _id: string;
-  }>;
-  subscriptionDetail?: {
-    status: string;
-    cancelAtPeriodEnd: string;
-    currentPeriodEnd: string;
-  };
-  questions?: Array<{
-    name: string;
-    _id?: string;
-  }>;
-}
-
-interface BusinessListResponse {
-  code: number;
-  status: boolean;
-  message: string;
-  data: {
-    businesses: BusinessListItem[];
-    totalDocs: number;
-    offset: number;
-    limit: number;
-    totalPages: number;
-    page: number;
-    pagingCounter: number;
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    prevPage: number | null;
-    nextPage: number | null;
-  };
-}
-
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message: string;
-}
 
 const Index = () => {
   const { searchTerm } = useDashboardSearch();
@@ -102,6 +48,8 @@ const Index = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingBusiness, setEditingBusiness] = useState<BusinessListItem | null>(null);
   const [editLoading, setEditLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchSubscriptionCounts = async () => {
@@ -126,36 +74,35 @@ const Index = () => {
 
     fetchSubscriptionCounts();
   }, []);
+  const fetchBusinesses = async () => {
+    try {
+      setLoading(true);
+      const response = await wellnexApi.business.getBusinessList({
+        limit: 1000, // Keep fetching all businesses
+        skip: 0,
+        sort: 'name',
+        sort_order: -1
+      });
 
-  useEffect(() => {
-    const fetchBusinesses = async () => {
-      try {
-        setLoading(true);
-        const response = await wellnexApi.business.getBusinessList({
-          limit: 1000, // Keep fetching all businesses
-          skip: 0,
-          sort: 'name',
-          sort_order: -1
-        });
-
-        if (response?.data?.data?.businesses) {
-          const businesses = response.data.data.businesses;
-          setAllBusinesses(businesses);
-          setTotalItems(response.data.data.totalDocs); // Use totalDocs from API for total count
-        } else {
-          setAllBusinesses([]);
-          setTotalItems(0);
-        }
-      } catch (err) {
-        setError('Failed to fetch business list');
-        console.error('Error fetching business list:', err);
+      if (response?.data?.data?.businesses) {
+        const businesses = response.data.data.businesses;
+        setAllBusinesses(businesses);
+        setTotalItems(response.data.data.totalDocs); // Use totalDocs from API for total count
+      } else {
         setAllBusinesses([]);
         setTotalItems(0);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err) {
+      setError('Failed to fetch business list');
+      console.error('Error fetching business list:', err);
+      setAllBusinesses([]);
+      setTotalItems(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchBusinesses();
   }, []);
 
@@ -169,7 +116,7 @@ const Index = () => {
 
     setBusinesses(filtered);
     setTotalItems(filtered.length);
-    setCurrentPage(1); // Reset to first page when search changes
+    // setCurrentPage(1); // Reset to first page when search changes
   }, [searchTerm, allBusinesses]);
 
   // Get current page items
@@ -346,7 +293,6 @@ const Index = () => {
         return;
       }
 
-
       const response = await fetch('https://wellnexai.com/api/business/updateBusinessDetail', {
         method: 'PUT',
         headers: {
@@ -360,14 +306,16 @@ const Index = () => {
 
       if (response.ok && data.status) {
         // Update the business in the list
-        setAllBusinesses(prev => prev.map(business =>
-          business._id === editingBusiness._id ? { ...business, ...data.data } : business
-        ));
-        setBusinesses(prev => prev.map(business =>
-          business._id === editingBusiness._id ? { ...business, ...data.data } : business
-        ));
-        setShowEditModal(false);
-        setEditingBusiness(null);
+        fetchBusinesses();
+        setSuccessMessage(data.message || 'Business information has been updated successfully.');
+        setShowSuccessMessage(true);
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          setShowSuccessMessage(false);
+          setSuccessMessage('');
+          setShowEditModal(false);
+          setEditingBusiness(null);
+        }, 3000);
       } else {
         alert(data.message || 'Failed to update business');
       }
@@ -598,207 +546,217 @@ const Index = () => {
       {showEditModal && editingBusiness && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-lg w-full">
-            <h3 className="text-2xl font-semibold mb-8 text-gray-900">Update Information</h3>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                let logoUrl = editingBusiness.logo;
-                const logoFile = formData.get('logo');
-
-                // Handle logo upload if a new file is selected
-                if (logoFile && logoFile instanceof File && logoFile.size > 0) {
-                  try {
-                    const uploadForm = new FormData();
-                    uploadForm.append('logo', logoFile);
-                    uploadForm.append('businessId', editingBusiness._id);
-                    const token = localStorage.getItem("token");
-
-                    if (!token) {
-                      alert('Authentication token missing. Please login again.');
-                      return;
-                    }
-
-                    // Using the business update endpoint
-                    const uploadRes = await fetch('https://wellnexai.com/api/business/updateBusinessDetail', {
-                      method: 'PUT',
-                      headers: {
-                        'Authorization': `Bearer ${token}`,
-                      },
-                      body: uploadForm,
-                    });
-
-                    // Log response details for debugging
-
-
-                    // Check if response is JSON
-                    const contentType = uploadRes.headers.get("content-type");
-                    if (!contentType || !contentType.includes("application/json")) {
-                      // Log the actual response for debugging
-                      const responseText = await uploadRes.text();
-                      console.error('Non-JSON Response:', responseText);
-                      throw new Error(`Expected JSON response but got ${contentType}`);
-                    }
-
-                    const uploadData = await uploadRes.json();
-
-
-                    if (!uploadRes.ok) {
-                      throw new Error(uploadData.message || 'Upload failed');
-                    }
-
-                    if (uploadData.status && uploadData.data?.logo) {
-                      logoUrl = uploadData.data.logo;
-                    } else {
-                      throw new Error('Invalid response format from server');
-                    }
-                  } catch (err) {
-                    console.error('Error uploading logo:', err);
-                    alert(`Failed to upload logo: ${err instanceof Error ? err.message : 'Unknown error'}`);
-                    return;
-                  }
-                }
-
-                // Process questions
-                const questions: { name: string; _id?: string }[] = [];
-                for (let i = 0; i < (editingBusiness.questions?.length || 0); i++) {
-                  const q = formData.get(`question_${i}`);
-                  if (q && typeof q === 'string' && q.trim() !== '') {
-                    questions.push({
-                      name: q,
-                      _id: editingBusiness.questions?.[i]?._id
-                    });
-                  }
-                }
-
-                // Process services
-                const services = (formData.get('services') as string || '')
-                  .split(',')
-                  .map(s => ({ name: s.trim() }))
-                  .filter(s => s.name);
-
-                // Prepare update payload
-                const payload = {
-                  businessId: editingBusiness._id,
-                  name: formData.get('name'),
-                  email: formData.get('email'),
-                  logo: logoUrl, // Now this will always be a string
-                  subscriptionStatus: formData.get('subscriptionStatus'),
-                  services,
-                  questions
-                };
-
-                handleEditSubmit(payload);
-              }}
-              encType="multipart/form-data"
-            >
-              {/* Basic Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    defaultValue={editingBusiness.name}
-                    className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    defaultValue={editingBusiness.email}
-                    className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
-                  />
-                </div>
+            {showSuccessMessage ? (
+              <div className="text-center py-8">
+                <div className="text-green-600 text-2xl mb-2">✓</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Success!</h3>
+                <p className="text-gray-600">{successMessage}</p>
               </div>
+            ) : (
+              <>
+                <h3 className="text-2xl font-semibold mb-8 text-gray-900">Update Information</h3>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    let logoUrl = editingBusiness.logo;
+                    const logoFile = formData.get('logo');
 
-              <hr className="my-4" />
+                    // Handle logo upload if a new file is selected
+                    if (logoFile && logoFile instanceof File && logoFile.size > 0) {
+                      try {
+                        const uploadForm = new FormData();
+                        uploadForm.append('logo', logoFile);
+                        uploadForm.append('businessId', editingBusiness._id);
+                        const token = localStorage.getItem("token");
 
-              {/* Logo */}
-              <div className="flex items-center gap-4">
-                {editingBusiness.logo && (
-                  <img
-                    src={`https://wellnexai.com/uploads/business-logos/${editingBusiness.logo}`}
-                    alt="Current Logo"
-                    className="w-16 h-16 rounded-full object-cover mb-2"
-                  />
-                )}
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
-                  <input
-                    type="file"
-                    name="logo"
-                    accept="image/*"
-                    className="block w-full text-sm text-gray-700"
-                  />
-                </div>
-              </div>
+                        if (!token) {
+                          alert('Authentication token missing. Please login again.');
+                          return;
+                        }
 
-              <hr className="my-4" />
+                        // Using the business update endpoint
+                        const uploadRes = await fetch('https://wellnexai.com/api/business/updateBusinessDetail', {
+                          method: 'PUT',
+                          headers: {
+                            'Authorization': `Bearer ${token}`,
+                          },
+                          body: uploadForm,
+                        });
 
-              {/* Subscription & Services */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Status</label>
-                  <select
-                    name="subscriptionStatus"
-                    defaultValue={editingBusiness.subscriptionDetail?.status || 'active'}
-                    className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
-                  >
-                    <option value="active">Active</option>
-                    <option value="paused">Paused</option>
-                    <option value="canceled">Canceled</option>
-                    <option value="canceledImmediately">Canceled Immediately</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Services Offered</label>
-                  <input
-                    type="text"
-                    name="services"
-                    defaultValue={editingBusiness.services.map(s => s.name).join(', ')}
-                    className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
-                  />
-                </div>
-              </div>
+                        // Log response details for debugging
 
-              <hr className="my-4" />
 
-              {/* Questions (collapsible) */}
-              <details className="mb-2">
-                <summary className="cursor-pointer font-medium text-[#987CF1]">Questions (click to expand)</summary>
-                <div className="space-y-2 mt-2">
-                  {(editingBusiness.questions || []).map((q, i) => (
-                    <input
-                      key={q._id}
-                      type="text"
-                      name={`question_${i}`}
-                      defaultValue={q.name}
-                      className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
-                    />
-                  ))}
-                </div>
-              </details>
+                        // Check if response is JSON
+                        const contentType = uploadRes.headers.get("content-type");
+                        if (!contentType || !contentType.includes("application/json")) {
+                          // Log the actual response for debugging
+                          const responseText = await uploadRes.text();
+                          console.error('Non-JSON Response:', responseText);
+                          throw new Error(`Expected JSON response but got ${contentType}`);
+                        }
 
-              <div className="mt-8 flex justify-end gap-4">
-                <button
-                  type="button"
-                  onClick={handleEditCancel}
-                  className="px-6 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium"
+                        const uploadData = await uploadRes.json();
+
+
+                        if (!uploadRes.ok) {
+                          throw new Error(uploadData.message || 'Upload failed');
+                        }
+
+                        if (uploadData.status && uploadData.data?.logo) {
+                          logoUrl = uploadData.data.logo;
+                        } else {
+                          throw new Error('Invalid response format from server');
+                        }
+                      } catch (err) {
+                        console.error('Error uploading logo:', err);
+                        alert(`Failed to upload logo: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                        return;
+                      }
+                    }
+
+                    // Process questions
+                    const questions: { name: string; _id?: string }[] = [];
+                    for (let i = 0; i < (editingBusiness.questions?.length || 0); i++) {
+                      const q = formData.get(`question_${i}`);
+                      if (q && typeof q === 'string' && q.trim() !== '') {
+                        questions.push({
+                          name: q,
+                          _id: editingBusiness.questions?.[i]?._id
+                        });
+                      }
+                    }
+
+                    // Process services
+                    const services = (formData.get('services') as string || '')
+                      .split(',')
+                      .map(s => ({ name: s.trim() }))
+                      .filter(s => s.name);
+
+                    // Prepare update payload
+                    const payload = {
+                      businessId: editingBusiness._id,
+                      name: formData.get('name'),
+                      email: formData.get('email'),
+                      logo: logoUrl, // Now this will always be a string
+                      subscriptionStatus: formData.get('subscriptionStatus'),
+                      services,
+                      questions
+                    };
+
+                    handleEditSubmit(payload);
+                  }}
+                  encType="multipart/form-data"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 rounded-lg bg-black text-white font-medium"
-                  disabled={editLoading}
-                >
-                  {editLoading ? 'Saving...' : 'Update'}
-                </button>
-              </div>
-            </form>
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        defaultValue={editingBusiness.name}
+                        className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        defaultValue={editingBusiness.email}
+                        className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="my-4" />
+
+                  {/* Logo */}
+                  <div className="flex items-center gap-4">
+                    {editingBusiness.logo && (
+                      <img
+                        src={`https://wellnexai.com/uploads/business-logos/${editingBusiness.logo}`}
+                        alt="Current Logo"
+                        className="w-16 h-16 rounded-full object-cover mb-2"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                      <input
+                        type="file"
+                        name="logo"
+                        accept="image/*"
+                        className="block w-full text-sm text-gray-700"
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="my-4" />
+
+                  {/* Subscription & Services */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Status</label>
+                      <select
+                        name="subscriptionStatus"
+                        defaultValue={editingBusiness.subscriptionDetail?.status || 'active'}
+                        className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
+                      >
+                        <option value="active">Active</option>
+                        <option value="paused">Paused</option>
+                        <option value="canceled">Canceled</option>
+                        <option value="canceledImmediately">Canceled Immediately</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Services Offered</label>
+                      <input
+                        type="text"
+                        name="services"
+                        defaultValue={editingBusiness.services.map(s => s.name).join(', ')}
+                        className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="my-4" />
+
+                  {/* Questions (collapsible) */}
+                  <details className="mb-2">
+                    <summary className="cursor-pointer font-medium text-[#987CF1]">Questions (click to expand)</summary>
+                    <div className="space-y-2 mt-2">
+                      {(editingBusiness.questions || []).map((q, i) => (
+                        <input
+                          key={q._id}
+                          type="text"
+                          name={`question_${i}`}
+                          defaultValue={q.name}
+                          className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
+                        />
+                      ))}
+                    </div>
+                  </details>
+
+                  <div className="mt-8 flex justify-end gap-4">
+                    <button
+                      type="button"
+                      onClick={handleEditCancel}
+                      className="px-6 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2 rounded-lg bg-black text-white font-medium"
+                      disabled={editLoading}
+                    >
+                      {editLoading ? 'Saving...' : 'Update'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </div>
         </div>
       )}
