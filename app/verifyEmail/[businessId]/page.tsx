@@ -5,13 +5,14 @@ import { useRouter, useSearchParams, useParams } from 'next/navigation'
 import Image from 'next/image'
 import logo from '../../assets/images/logo.png'
 import { businessApi } from '../../services/api'
+import { use } from 'react'
 
-function VerifyEmailContent({ params }: { params: { businessId: string } }) {
+function VerifyEmailContent({ params }: { params: Promise<{ businessId: string }> }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('Verifying your email...')
-  const { businessId } = params
+  const { businessId } = use(params)
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -114,7 +115,7 @@ function VerifyEmailContent({ params }: { params: { businessId: string } }) {
     </div>
   )
 }
-export default function VerifyEmail({ params }: { params: { businessId: string } }) {
+export default function VerifyEmail({ params }: { params: Promise<{ businessId: string }> }) {
   return (
     <Suspense>
       <VerifyEmailContent params={params} />
