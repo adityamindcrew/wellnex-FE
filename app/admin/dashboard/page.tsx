@@ -521,8 +521,8 @@ const Index = () => {
           count={subscriptionCounts.cancelAtPeriodEndCount}
           label="Cancels At Period End"
           description="Businesses currently utilizing services with active subcriptions and will cancel at the end of their billing cycle."
-          color="green"
-          imageSrc={activeImg}
+          color="red"
+          imageSrc={cancel}
         />
       </div>
 
