@@ -28,7 +28,7 @@ export interface BusinessListParams {
 }
 
 export interface BusinessListResponse {
-  docs: BusinessListItem[];
+  businesses: BusinessListItem[];
   totalDocs: number;
   offset: number;
   limit: number;
@@ -42,9 +42,9 @@ export interface BusinessListResponse {
 }
 
 export interface BusinessListItem {
-  _id: string;
-  name: string;
   email: string;
+  name: string;
+  _id: string;
   contact_name: string;
   website_url: string | null;
   instagram_url: string | null;
@@ -54,6 +54,19 @@ export interface BusinessListItem {
   keywords: Array<{
     name: string;
     _id: string;
+  }>;
+  services: Array<{
+    name: string;
+    _id: string;
+  }>;
+  subscriptionDetail?: {
+    status: string;
+    cancelAtPeriodEnd: string;
+    currentPeriodEnd: string;
+  };
+  questions?: Array<{
+    name: string;
+    _id?: string;
   }>;
 }
 
@@ -73,9 +86,9 @@ export const wellnexApi = {
 
   // Business related endpoints
   business: {
-     getBusinessDetails: () =>
+    getBusinessDetails: () =>
       apiClient.get<ApiResponse<BusinessDetails>>('/business/getBusinessDetail'),
-     getBusinessList: (params: BusinessListParams) =>
+    getBusinessList: (params: BusinessListParams) =>
       apiClient.get<ApiResponse<BusinessListResponse>>('/admin/getBusinessList', {
         params: {
           limit: params.limit || 10,
@@ -87,5 +100,5 @@ export const wellnexApi = {
       }),
   },
 
- 
+
 }; 
