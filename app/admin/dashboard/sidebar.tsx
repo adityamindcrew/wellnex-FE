@@ -28,24 +28,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     } catch (err) {
       // Optionally handle error
     }
-    
-    // Clear all localStorage items
-    localStorage.clear();
-    
-    // Clear all cookies
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i];
-      const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-    }
-    
-    // Clear sessionStorage
-    sessionStorage.clear();
-    
-    // Force a page reload to ensure all state is cleared
-    window.location.href = "/signin"
+    // Clear localStorage and cookies
+    localStorage.clear()
+    sessionStorage.clear()
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "onboardingToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "dashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "adminDashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    router.push("/signin")
   }, [router])
 
   return (

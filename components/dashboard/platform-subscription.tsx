@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { businessApi } from "../../app/services/api";
 import Image from "next/image";
 import { ImageIcon, ChevronDown, ChevronUp, PipetteIcon, X } from "lucide-react";
@@ -150,6 +150,8 @@ export default function PlatformSubscription() {
   const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
   const [showSpecialOffer, setShowSpecialOffer] = useState(false);
   const [showNoSubscriptionPopup, setShowNoSubscriptionPopup] = useState(false);
+  const [showPausedSubscriptionPopup, setShowPausedSubscriptionPopup] = useState(false);
+
   const [specialOfferPrice, setSpecialOfferPrice] = useState<number | null>(null);
   const [specialOfferMessage, setSpecialOfferMessage] = useState<string>("");
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string>("");
@@ -176,6 +178,30 @@ export default function PlatformSubscription() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showRenewSubscription, setShowRenewSubscription] = useState(false);
   const [specialOfferExpiry, setSpecialOfferExpiry] = useState<string>("");
+  const handleLogout = useCallback(async () => {
+    const token = localStorage.getItem("token")
+    console.log("Token:", token)
+    try {
+      await fetch(`https://wellnexai.com/api/business/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+    } catch (err) {
+      // Optionally handle error
+    }
+    // Clear localStorage and cookies
+    localStorage.clear()
+    sessionStorage.clear()
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "onboardingToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "dashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "adminDashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    router.push("/signin")
+  }, [router])
   const fetchBusinessDetails = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -192,6 +218,8 @@ export default function PlatformSubscription() {
       });
       const data = await response.json();
       if (data.data) {
+        console.log(data.data);
+
         // Set logo if available
         if (data.data.logo) {
           setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
@@ -202,6 +230,12 @@ export default function PlatformSubscription() {
           setSelectedColor(data.data.themeColor);
           setInitialColor(data.data.themeColor);
           localStorage.setItem('themeColor', data.data.themeColor);
+        }
+        if (data.data.subscriptionDetail.status === 'paused') {
+          setShowPausedSubscriptionPopup(true)
+          setTimeout(() => {
+            handleLogout()
+          }, 10000);
         }
       } else if (data.message === "Error getting subscription details: No active subscription found") {
         setShowNoSubscriptionPopup(true);
@@ -668,22 +702,12 @@ export default function PlatformSubscription() {
 
       const data = await response.json();
       setShowSpecialOffer(false);
-      
+
       setMessage1(data.message || 'Your subscription has been cancelled');
       fetchSubscription();
     } catch (err: any) {
       setThemeError(err.message);
     }
-  };
-
-  const shouldShowRenewButton = () => {
-    const today = new Date();
-    const cancelDate = subscription?.cancelAtPeriodEnd ? new Date(subscription.cancelAtPeriodEnd) : null;
-    const expiryDate = specialOfferExpiry ? new Date(specialOfferExpiry) : null;
-
-    if (!cancelDate || !expiryDate) return false;
-
-    return today > cancelDate && today > expiryDate;
   };
 
   return (
@@ -991,10 +1015,23 @@ export default function PlatformSubscription() {
               >
                 Subscribe Now
               </button>
+              <button
+                className="ml-5 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                onClick={() => handleLogout()}>Logout</button>
             </div>
           </div>
         </div>
       )}
+      {showPausedSubscriptionPopup && <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-4">No Active Subscription</h3>
+            <p className="text-gray-600 mb-6">
+              Your subscription is paused. Please contact admin.
+            </p>
+          </div>
+        </div>
+      </div>}
       <style jsx>{`
                 .cancel-button {
                     margin-top: 20px;

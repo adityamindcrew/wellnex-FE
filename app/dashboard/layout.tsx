@@ -29,10 +29,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Token verification failed:", error)
         // Clear invalid token
-        localStorage.removeItem("token")
         localStorage.clear()
+        sessionStorage.clear()
         document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
         document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        document.cookie = "onboardingToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        document.cookie = "dashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        document.cookie = "adminDashboardLock=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
         router.replace("/signin")
       }
     }
@@ -56,7 +59,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         transform transition-transform duration-200 ease-in-out
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-      <Sidebar />
+        <Sidebar />
       </div>
 
       {/* Main content */}
