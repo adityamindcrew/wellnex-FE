@@ -89,7 +89,7 @@ export default function WelcomeScreen() {
           document.cookie = `authorization=Bearer ${token}; path=/`
         }
         
-        router.push('/payment/currencySelection')
+        router.push('/dashboard')
       } else {
         setResendStatus("error")
         setStatusMessage("Please check your email and click the link to verify your account!!!")

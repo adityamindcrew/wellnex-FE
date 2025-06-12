@@ -40,7 +40,8 @@ const Index = () => {
     active: 0,
     paused: 0,
     cancelled: 0,
-    total: 0
+    total: 0,
+    cancelAtPeriodEndCount:0
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -52,28 +53,29 @@ const Index = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    const fetchSubscriptionCounts = async () => {
-      try {
-
-        const response = await fetch('https://wellnexai.com/api/admin/subscriptions/counts', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem("token")}`
-          }
-        });
-        const data = await response.json();
-
-        if (data.status === true) {
-          setSubscriptionCounts(data.data);
-        }
-      } catch (err) {
-        console.error('Error fetching subscription counts:', err);
-      }
-    };
-
     fetchSubscriptionCounts();
   }, []);
+
+
+  const fetchSubscriptionCounts = async () => {
+    try {
+
+      const response = await fetch('https://wellnexai.com/api/admin/subscriptions/counts', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      const data = await response.json();
+
+      if (data.status === true) {
+        setSubscriptionCounts(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching subscription counts:', err);
+    }
+  };
   const fetchBusinesses = async () => {
     try {
       setLoading(true);
@@ -483,7 +485,7 @@ const Index = () => {
       </Card>
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mt-8">
         <SubscriptionCard
           type="active"
           count={subscriptionCounts.active}
@@ -492,6 +494,8 @@ const Index = () => {
           color="green"
           imageSrc={activeImg}
         />
+
+
 
         <SubscriptionCard
           type="pending"
@@ -509,6 +513,15 @@ const Index = () => {
           description="Businesses that have terminated their subscriptions."
           color="red"
           imageSrc={cancel}
+        />
+
+<SubscriptionCard
+          type="canceled at period end"
+          count={subscriptionCounts.cancelAtPeriodEndCount}
+          label="Cancels At Period End"
+          description="Businesses currently utilizing services with active subcriptions and will cancel at the end of their billing cycle."
+          color="green"
+          imageSrc={activeImg}
         />
       </div>
 

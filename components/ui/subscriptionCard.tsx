@@ -3,7 +3,7 @@ import Image, { StaticImageData } from "next/image";
 import { cn } from "@/lib/utils";
 
 interface SubscriptionCardProps {
-  type: 'active' | 'pending' | 'canceled';
+  type: 'active' | 'pending' | 'canceled'|'canceled at period end';
   count: number;
   label: string;
   description: string;
@@ -25,7 +25,8 @@ const SubscriptionCard = ({
   const titleColorClass = {
     active: "text-[#19B100]",
     pending: "text-[#FF6F00]",
-    canceled: "text-[#DC2626]"
+    canceled: "text-[#DC2626]",
+    "canceled at period end" :"text-[#DC2626]"
   }[type];
   
   return (
