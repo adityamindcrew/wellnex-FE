@@ -15,63 +15,45 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const router = useRouter()
 
   const handleLogout = useCallback(async () => {
-    const token = localStorage.getItem("token")
-    console.log("Token:", token)
     try {
-      await fetch(`https://wellnexai.com/api/business/logout`, {
+      // First, call the server logout endpoint
+      const response = await fetch(`https://wellnexai.com/api/business/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
+        credentials: 'include',
       })
+
+      if (!response.ok) {
+        throw new Error('Logout failed')
+      }
+
+      // Clear all storage
+      localStorage.clear()
+      sessionStorage.clear()
+      
+      // Clear all cookies
+      const cookies = document.cookie.split(";")
+      cookies.forEach(cookie => {
+        const [name] = cookie.split("=")
+        document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+      })
+
+      // Force a complete page reload to signin
+      window.location.href = '/signin'
     } catch (err) {
-      // Optionally handle error
-    }
-
-    // Clear all storage
-    localStorage.clear()
-    sessionStorage.clear()
-    
-    // Clear all cookies with proper path and domain
-    const cookies = document.cookie.split(";")
-    cookies.forEach(cookie => {
-      const [name] = cookie.split("=")
-      document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${window.location.hostname}`
-    })
-    
-    // Clear specific important cookies
-    const cookiesToDelete = [
-      'onboardingToken',
-      'token',
-      'authorization',
-      'adminDashboardLock',
-      'dashboardLock',
-      'adminToken',
-      'adminAuthorization',
-      'currentStep',
-      'inOnboarding',
-      'userRole',
-      'userData',
-      'sessionId',
-      'refreshToken'
-    ]
-    
-    cookiesToDelete.forEach(cookieName => {
-      document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${window.location.hostname}`
-    })
-
-    // Clear any remaining data
-    if (window.caches) {
-      caches.keys().then(names => {
-        names.forEach(name => {
-          caches.delete(name)
-        })
+      console.error("Logout error:", err)
+      // Even if the server call fails, try to clear everything locally
+      localStorage.clear()
+      sessionStorage.clear()
+      document.cookie.split(";").forEach(cookie => {
+        const [name] = cookie.split("=")
+        document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
       })
+      window.location.href = '/signin'
     }
-
-    // Force reload to clear any remaining state
-    window.location.href = '/signin'
   }, [router])
 
   return (
