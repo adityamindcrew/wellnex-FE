@@ -96,11 +96,32 @@ console.log(token);
     })
     
     // Clear specific important cookies
-    response.cookies.delete('onboardingToken')
-    response.cookies.delete('token')
-    response.cookies.delete('authorization')
-    response.cookies.delete('adminDashboardLock')
-    response.cookies.delete('dashboardLock')
+    const importantCookies = [
+      'onboardingToken',
+      'token',
+      'authorization',
+      'adminDashboardLock',
+      'dashboardLock',
+      'adminToken',
+      'adminAuthorization',
+      'currentStep',
+      'inOnboarding',
+      'userRole',
+      'userData',
+      'sessionId',
+      'refreshToken'
+    ]
+    
+    importantCookies.forEach(cookieName => {
+      response.cookies.delete(cookieName)
+    })
+
+    // Add security headers
+    response.headers.set('Clear-Site-Data', '"cache", "cookies", "storage"')
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    
     return response
   }
 

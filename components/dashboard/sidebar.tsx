@@ -23,23 +23,49 @@ export default function Sidebar() {
       // Optionally handle error
     }
     
-    // Clear all localStorage items
-    localStorage.clear();
+    // Clear all storage
+    localStorage.clear()
+    sessionStorage.clear()
     
-    // Clear all cookies
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i];
-      const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    // Clear all cookies with proper path and domain
+    const cookies = document.cookie.split(";")
+    cookies.forEach(cookie => {
+      const [name] = cookie.split("=")
+      document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${window.location.hostname}`
+    })
+    
+    // Clear specific important cookies
+    const cookiesToDelete = [
+      'onboardingToken',
+      'token',
+      'authorization',
+      'adminDashboardLock',
+      'dashboardLock',
+      'adminToken',
+      'adminAuthorization',
+      'currentStep',
+      'inOnboarding',
+      'userRole',
+      'userData',
+      'sessionId',
+      'refreshToken'
+    ]
+    
+    cookiesToDelete.forEach(cookieName => {
+      document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${window.location.hostname}`
+    })
+
+    // Clear any remaining data
+    if (window.caches) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          caches.delete(name)
+        })
+      })
     }
-    
-    // Clear sessionStorage
-    sessionStorage.clear();
-    
-    // Force a page reload to ensure all state is cleared
-    window.location.href = "/signin"
+
+    // Force reload to clear any remaining state
+    window.location.href = '/signin'
   }, [router])
 
   return (
