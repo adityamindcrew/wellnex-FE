@@ -15,7 +15,7 @@ export default function LogoutButton() {
     
     // Clear localStorage
     localStorage.clear()
-    
+    sessionStorage.clear()
     // Then redirect to logout
     router.push("/signin");
   };

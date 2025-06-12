@@ -29,8 +29,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       // Optionally handle error
     }
     // Clear localStorage and cookies
-    localStorage.removeItem("token")
-    localStorage.removeItem("businessId")
+    localStorage.clear()
+    sessionStorage.clear()
     document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
     document.cookie = "authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
     document.cookie = "onboardingToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
