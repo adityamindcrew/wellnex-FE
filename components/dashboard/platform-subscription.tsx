@@ -701,7 +701,7 @@ export default function PlatformSubscription() {
                   <div className="text-sm font-medium">
                     {subscription?.status
                       ? subscription?.status === 'active' && subscription?.cancelAtPeriodEnd
-                        ? 'Active (Cancel at period end)'
+                        ? 'Active (Cancels at period end)'
                         : subscription?.status[0].toUpperCase() + subscription?.status.slice(1)
                       : 'N/A'}</div>
                 </div>

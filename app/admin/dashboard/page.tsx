@@ -412,16 +412,18 @@ const Index = () => {
                                     : 'bg-red-50 text-red-600 border-red-200'
                                     }`}
                                 >
-                                  {business.subscriptionDetail.status.charAt(0).toUpperCase() +
-                                    business.subscriptionDetail.status.slice(1)}
-
+                                  {business.subscriptionDetail.status === 'active' && business.subscriptionDetail.cancelAtPeriodEnd
+                                    ? 'Cancels At Period End'
+                                    : business.subscriptionDetail.status.charAt(0).toUpperCase() +
+                                    business.subscriptionDetail.status.slice(1)
+                                  }
                                 </Badge>
                                 {business.subscriptionDetail.cancelAtPeriodEnd
                                   && business.subscriptionDetail.status === 'active' && (
                                     <> <br />
                                       <span className="text-xs text-gray-500">
 
-                                        (Cancels at {new Date(business.subscriptionDetail.currentPeriodEnd).toLocaleDateString()})
+                                        (at {new Date(business.subscriptionDetail.currentPeriodEnd).toLocaleDateString()})
                                       </span></>
                                   )}
                               </>
