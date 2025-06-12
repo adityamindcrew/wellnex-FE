@@ -336,7 +336,9 @@ const Index = () => {
     <>
       {/* <Header onSearch={handleSearch} isLoading={loading} /> */}
       {/* <h1 className="text-2xl font-semibold text-gray-800 mb-6">Admin Dashboard</h1> */}
-      useMemo({<StatsOverview />},[allBusinesses.length])
+     
+      {useMemo(() => <StatsOverview />, [allBusinesses.length])}
+
       <Card className="mt-8">
         <div className="p-6">
           <Tabs defaultValue="profiles">

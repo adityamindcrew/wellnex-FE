@@ -35,6 +35,7 @@ function ForgotPasswordContent() {
 
       if (response.status) {
         setSuccess(true)
+        setEmail("")
       } else {
         throw new Error(response.message || "Failed to send reset password email")
       }
