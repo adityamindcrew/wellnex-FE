@@ -309,6 +309,7 @@ const Index = () => {
       if (response.ok && data.status) {
         // Update the business in the list
         fetchBusinesses();
+        fetchSubscriptionCounts();
         setSuccessMessage(data.message || 'Business information has been updated successfully.');
         setShowSuccessMessage(true);
         // Hide success message after 3 seconds
