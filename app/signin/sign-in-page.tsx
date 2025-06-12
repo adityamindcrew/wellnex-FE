@@ -54,9 +54,9 @@ export default function SignInPage() {
     try {
       const data = await businessApi.signin(email, password)
       // Set loginToken as token and _id as businessId
-      const token = data.data?.loginToken;
-      const businessId = data.data?._id;
-      const roles = data.data?.roles;
+      const token = data?.data?.loginToken;
+      const businessId = data?.data?._id;
+      const roles = data?.data?.roles;
 
       if (token) {
         localStorage.setItem("token", token);
@@ -71,14 +71,14 @@ export default function SignInPage() {
         if (roles && roles.includes('admin')) {
           window.location.href = "/admin/dashboard";
         } else {
-          if (data.data?.nextStep.length > 0) {
-            localStorage.setItem("nextStep", data.data?.nextStep);
-            router.push(`/onboarding/${data.data?.nextStep}`);
+          if (data?.data?.nextStep?.length > 0) {
+            localStorage.setItem("nextStep", data?.data?.nextStep);
+            router.push(`/onboarding/${data?.data?.nextStep}`);
           } else {
-            if (!data.data.isEmailVerified) {
+            if (!data?.data?.isEmailVerified) {
               router.push(`/onboarding/step-6`);
             }
-            else if (!data.data.subscription) {
+            else if (!data?.data?.subscription) {
               router.push(`/payment/currencySelection`);
             }
             else {
