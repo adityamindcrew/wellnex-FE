@@ -29,25 +29,40 @@ export function middleware(request: NextRequest) {
     (authCookie?.startsWith('Bearer ') ? authCookie.split(' ')[1] : null)
 console.log(token);
 
-  // Check if the route is public or protected
+  // STRICT DASHBOARD LOCK - Check this FIRST, before ANY other checks
+  if (request.cookies.get('dashboardLock')?.value === 'true') {
+    // Only allow dashboard and logout, block EVERYTHING else
+    if (pathname !== '/dashboard' && pathname !== '/logout') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    return NextResponse.next()
+  }
+
+  // STRICT ADMIN DASHBOARD LOCK - Check this right after regular dashboard lock
+  if (request.cookies.get('adminDashboardLock')?.value === 'true') {
+    // Only allow admin dashboard and logout, block EVERYTHING else
+    if (pathname !== '/admin/dashboard' && pathname !== '/logout') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    }
+    return NextResponse.next()
+  }
+
+  // Check if the route is public
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
-  const isProtectedRoute = protectedRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
 
   // If it's a public route, allow access immediately
   if (isPublicRoute) {
     return NextResponse.next()
   }
 
+  // Check if the route is protected
+  const isProtectedRoute = protectedRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
+
   // If it's a protected route and there's no token, redirect to signin
   if (isProtectedRoute && !token) {
     const url = new URL('/signin', request.url)
     url.searchParams.set('from', pathname)
     return NextResponse.redirect(url)
-  }
-
-  // If trying to access dashboard from public route, block it (this condition might become less relevant if isPublicRoute handles it)
-  if (pathname === '/dashboard' && isPublicRoute) {
-    return new Response('Access Denied', { status: 403 })
   }
 
   // If authenticated and on dashboard, set strict lock
@@ -68,20 +83,6 @@ console.log(token);
     response.headers.set('Expires', '0')
     response.cookies.set('adminDashboardLock', 'true', { path: '/' })
     return response
-  }
-
-  // If dashboard lock is set, only allow dashboard and logout
-  if (request.cookies.get('dashboardLock')?.value === 'true') {
-    if (pathname !== '/dashboard' && pathname !== '/logout') {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-  }
-
-  // If admin dashboard lock is set, only allow admin dashboard and logout
-  if (request.cookies.get('adminDashboardLock')?.value === 'true') {
-    if (pathname !== '/admin/dashboard' && pathname !== '/logout') {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
-    }
   }
 
   // Handle logout

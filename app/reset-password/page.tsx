@@ -77,9 +77,16 @@ function ResetPasswordContent() {
       await businessApi.resetPassword(password, token)
       setSuccess(true)
       // Redirect to sign in after 2 seconds
+      // setTimeout(() => {
+      //   router.push("/signin")
+      // }, 2000)
       setTimeout(() => {
-        router.push("/signin")
+        window.close()
+        // Fallback to redirect if window.close() doesn't work
+         router.push('/signin')
       }, 2000)
+      
+
     } catch (err: any) {
       setError(err.message || "Failed to reset password")
     } finally {
@@ -154,7 +161,7 @@ function ResetPasswordContent() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 px-4 bg-[#F5F0FF] border border-[#000000] text-[#000000] font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
+            className="w-full py-2 px-4 bg-[rgba(152,124,241,0.5)] border border-[#000000] text-[#000000] font-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-sm"
           >
             {isLoading ? "Resetting..." : "Reset Password"}
           </button>
