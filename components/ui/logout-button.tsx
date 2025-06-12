@@ -17,7 +17,7 @@ export default function LogoutButton() {
     localStorage.clear()
     
     // Then redirect to logout
-    router.push("/logout");
+    router.push("/signin");
   };
 
   return (
