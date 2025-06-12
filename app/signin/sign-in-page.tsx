@@ -78,9 +78,9 @@ export default function SignInPage() {
             if (!data?.data?.isEmailVerified) {
               router.push(`/onboarding/step-6`);
             }
-            else if (!data?.data?.subscription) {
-              router.push(`/payment/currencySelection`);
-            }
+            // else if (!data?.data?.subscription) {
+            //   router.push(`/payment/currencySelection`);
+            // }
             else {
               router.push(`/dashboard`);
             }
