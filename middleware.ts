@@ -94,35 +94,18 @@ console.log(token);
     cookies.forEach(cookie => {
       response.cookies.delete(cookie.name)
     })
-    
-    // Clear specific important cookies
-    const importantCookies = [
-      'onboardingToken',
-      'token',
-      'authorization',
-      'adminDashboardLock',
-      'dashboardLock',
-      'adminToken',
-      'adminAuthorization',
-      'currentStep',
-      'inOnboarding',
-      'userRole',
-      'userData',
-      'sessionId',
-      'refreshToken'
-    ]
-    
-    importantCookies.forEach(cookieName => {
-      response.cookies.delete(cookieName)
-    })
 
     // Add security headers
-    response.headers.set('Clear-Site-Data', '"cache", "cookies", "storage"')
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
     response.headers.set('Pragma', 'no-cache')
     response.headers.set('Expires', '0')
-    response.headers.set('Set-Cookie', 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=None')
-    response.headers.set('Set-Cookie', 'authorization=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=None')
+    
+    // Explicitly clear important cookies
+    response.cookies.set('token', '', { expires: new Date(0) })
+    response.cookies.set('authorization', '', { expires: new Date(0) })
+    response.cookies.set('onboardingToken', '', { expires: new Date(0) })
+    response.cookies.set('dashboardLock', '', { expires: new Date(0) })
+    response.cookies.set('adminDashboardLock', '', { expires: new Date(0) })
     
     return response
   }

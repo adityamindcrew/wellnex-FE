@@ -179,15 +179,13 @@ export default function PlatformSubscription() {
   const [showRenewSubscription, setShowRenewSubscription] = useState(false);
   const [specialOfferExpiry, setSpecialOfferExpiry] = useState<string>("");
   const handleLogout = useCallback(async () => {
-    const token = localStorage.getItem("token")
-    console.log("Token:", token)
     try {
       // First, call the server logout endpoint
       const response = await fetch(`https://wellnexai.com/api/business/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
         credentials: 'include',
       })
@@ -200,45 +198,15 @@ export default function PlatformSubscription() {
       localStorage.clear()
       sessionStorage.clear()
       
-      // Clear all cookies with proper path and domain
+      // Clear all cookies
       const cookies = document.cookie.split(";")
       cookies.forEach(cookie => {
         const [name] = cookie.split("=")
-        document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${window.location.hostname}; SameSite=None; Secure`
+        document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
       })
-      
-      // Clear specific important cookies with secure flags
-      const cookiesToDelete = [
-        'onboardingToken',
-        'token',
-        'authorization',
-        'adminDashboardLock',
-        'dashboardLock',
-        'adminToken',
-        'adminAuthorization',
-        'currentStep',
-        'inOnboarding',
-        'userRole',
-        'userData',
-        'sessionId',
-        'refreshToken'
-      ]
-      
-      cookiesToDelete.forEach(cookieName => {
-        document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${window.location.hostname}; SameSite=None; Secure`
-      })
-
-      // Clear any remaining data
-      if (window.caches) {
-        caches.keys().then(names => {
-          names.forEach(name => {
-            caches.delete(name)
-          })
-        })
-      }
 
       // Force a complete page reload to signin
-      window.location.replace('/signin')
+      window.location.href = '/signin'
     } catch (err) {
       console.error("Logout error:", err)
       // Even if the server call fails, try to clear everything locally
@@ -246,9 +214,9 @@ export default function PlatformSubscription() {
       sessionStorage.clear()
       document.cookie.split(";").forEach(cookie => {
         const [name] = cookie.split("=")
-        document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${window.location.hostname}; SameSite=None; Secure`
+        document.cookie = `${name.trim()}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
       })
-      window.location.replace('/signin')
+      window.location.href = '/signin'
     }
   }, [router])
   const fetchBusinessDetails = async () => {
