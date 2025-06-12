@@ -41,7 +41,7 @@ const Index = () => {
     paused: 0,
     cancelled: 0,
     total: 0,
-    cancelAtPeriodEndCount:0
+    cancelAtPeriodEndCount: 0
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -408,16 +408,18 @@ const Index = () => {
                                     : 'bg-red-50 text-red-600 border-red-200'
                                     }`}
                                 >
-                                  {business.subscriptionDetail.status.charAt(0).toUpperCase() +
-                                    business.subscriptionDetail.status.slice(1)}
-
+                                  {business.subscriptionDetail.status === 'active' && business.subscriptionDetail.cancelAtPeriodEnd
+                                    ? 'Cancels At Period End'
+                                    : business.subscriptionDetail.status.charAt(0).toUpperCase() +
+                                    business.subscriptionDetail.status.slice(1)
+                                  }
                                 </Badge>
                                 {business.subscriptionDetail.cancelAtPeriodEnd
                                   && business.subscriptionDetail.status === 'active' && (
                                     <> <br />
                                       <span className="text-xs text-gray-500">
 
-                                        (Cancels at {new Date(business.subscriptionDetail.currentPeriodEnd).toLocaleDateString()})
+                                        (at {new Date(business.subscriptionDetail.currentPeriodEnd).toLocaleDateString()})
                                       </span></>
                                   )}
                               </>
@@ -516,7 +518,7 @@ const Index = () => {
           imageSrc={cancel}
         />
 
-<SubscriptionCard
+        <SubscriptionCard
           type="canceled at period end"
           count={subscriptionCounts.cancelAtPeriodEndCount}
           label="Cancels At Period End"
