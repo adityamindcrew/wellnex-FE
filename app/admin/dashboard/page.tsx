@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import { Search, Mail, Eye, Pencil, Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import StatsOverview from "../../../components/ui/statsOverview";
 import SubscriptionCard from "../../../components/ui/subscriptionCard";
 import NotificationsCard from "../../../components/ui/notificationCard";
@@ -41,7 +41,7 @@ const Index = () => {
     paused: 0,
     cancelled: 0,
     total: 0,
-    cancelAtPeriodEndCount:0
+    cancelAtPeriodEndCount: 0
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -262,6 +262,8 @@ const Index = () => {
         setBusinesses(prev => prev.filter(business => business._id !== businessToDelete));
         setShowDeleteModal(false);
         setBusinessToDelete(null);
+        fetchSubscriptionCounts()
+
       } else {
         alert(data.message || 'Failed to delete business');
       }
@@ -334,7 +336,7 @@ const Index = () => {
     <>
       {/* <Header onSearch={handleSearch} isLoading={loading} /> */}
       {/* <h1 className="text-2xl font-semibold text-gray-800 mb-6">Admin Dashboard</h1> */}
-      <StatsOverview />
+      useMemo({<StatsOverview />},[allBusinesses.length])
       <Card className="mt-8">
         <div className="p-6">
           <Tabs defaultValue="profiles">
@@ -516,7 +518,7 @@ const Index = () => {
           imageSrc={cancel}
         />
 
-<SubscriptionCard
+        <SubscriptionCard
           type="canceled at period end"
           count={subscriptionCounts.cancelAtPeriodEndCount}
           label="Cancels At Period End"
