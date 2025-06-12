@@ -730,10 +730,10 @@ export default function PlatformSubscription() {
               <div className="text-sm text-green-600 text-center bg-green-50 p-2 rounded-md">{message1}</div>
             )}
             <div className="flex gap-2 pt-2">
-              {subscription?.status !== "canceled" && !subscription?.cancelAtPeriodEnd && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
+              {subscription?.status === "active" && !subscription?.cancelAtPeriodEnd && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
                 Cancel Subscription
               </button>}
-              {subscription?.status === "canceled" && shouldShowRenewButton() && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
+              {subscription?.status === "canceled" && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
                 Renew Subscription
               </button>}
             </div>
