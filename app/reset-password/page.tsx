@@ -10,9 +10,10 @@ import { Eye, EyeOff } from "lucide-react"
 function ResetPasswordContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [cnfPassword, setcnfPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [showCnfPassword, setShowCnfPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -24,8 +25,43 @@ function ResetPasswordContent() {
     }
   }, [searchParams])
 
+  const validatePassword = (password: string) => {
+    if (password.length < 8) {
+      return "Password must be at least 8 characters long";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number";
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return "Password must contain at least one special character (!@#$%^&*()_+-=[]{};':\"\\|,.<>/?";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!password || !cnfPassword) {
+      setError("Please fill in all fields")
+      return
+    }
+
+    if (password !== cnfPassword) {
+      setError("Passwords do not match")
+      return
+    }
+
+    const passwordError = validatePassword(password)
+    if (passwordError) {
+      setError(passwordError)
+      return
+    }
+
     setIsLoading(true)
     setError(null)
     setSuccess(false)
@@ -38,7 +74,7 @@ function ResetPasswordContent() {
     }
 
     try {
-      await businessApi.resetPassword(email, password, token)
+      await businessApi.resetPassword(password, token)
       setSuccess(true)
       // Redirect to sign in after 2 seconds
       setTimeout(() => {
@@ -60,7 +96,7 @@ function ResetPasswordContent() {
           </div>
           <h1 className="text-3xl font-bold mb-2 text-center">Reset Password</h1>
           <p className="text-gray-500 text-base mb-2 text-center">
-            Enter your email and new password.
+            Enter your new password.
           </p>
         </div>
 
@@ -77,16 +113,7 @@ function ResetPasswordContent() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
-            />
-          </div>
+
 
           <div className="relative">
             <input
@@ -106,7 +133,24 @@ function ResetPasswordContent() {
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
-
+          <div className="relative">
+            <input
+              type={showCnfPassword ? "text" : "password"}
+              value={cnfPassword}
+              onChange={(e) => setcnfPassword(e.target.value)}
+              placeholder="Enter confirm password"
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCnfPassword(!showCnfPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              tabIndex={-1}
+            >
+              {showCnfPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
           <button
             type="submit"
             disabled={isLoading}

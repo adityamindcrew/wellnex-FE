@@ -44,7 +44,7 @@ export const businessApi = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         businessId,
       }),
     });
@@ -67,7 +67,7 @@ export const businessApi = {
     const formData = new FormData();
     formData.append('logo', file);
     formData.append('businessId', businessId);
-    
+
     try {
       const response = await fetch('https://wellnexai.com/api/business/uploadBusinessLogo', {
         method: 'POST',
@@ -78,7 +78,7 @@ export const businessApi = {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Failed to upload logo');
-      
+
       // Format the logo URL to match the required format
       let logoUrl = data.logoUrl;
       if (logoUrl) {
@@ -87,7 +87,7 @@ export const businessApi = {
           logoUrl = `https://wellnexai.com${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`;
         }
       }
-      
+
       return { ...data, logoUrl };
     } catch (err) {
       throw err;
@@ -121,8 +121,8 @@ export const businessApi = {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
-          keywords, 
+        body: JSON.stringify({
+          keywords,
           businessId,
           replace: true
         }),
@@ -163,7 +163,7 @@ export const businessApi = {
       body: JSON.stringify({
         businessId,
         questions,
-     
+
       }),
     });
 
@@ -198,13 +198,13 @@ export const businessApi = {
       throw error;
     }
   },
-  resetPassword: async (email: string, password: string, token: string) => {
+  resetPassword: async (password: string, token: string) => {
     const response = await fetch(`${BASE_URL}/business/resetPassword`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password, token }),
+      body: JSON.stringify({ password, token }),
     });
 
     if (!response.ok) {
@@ -226,7 +226,7 @@ export const businessApi = {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || 'Failed to check verification status');
       }
