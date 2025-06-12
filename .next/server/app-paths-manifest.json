@@ -1,7 +1,12 @@
 {
+<<<<<<< HEAD
   "/landing/page": "app/landing/page.js",
   "/signin/page": "app/signin/page.js",
   "/forgot-password/page": "app/forgot-password/page.js",
+=======
+  "/_not-found/page": "app/_not-found/page.js",
+  "/signin/page": "app/signin/page.js",
+>>>>>>> 26f205e4e02357046f155d8e2f34b47de44fdf05
   "/dashboard/page": "app/dashboard/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js"
 }

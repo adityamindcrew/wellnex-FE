@@ -5,6 +5,7 @@
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
+<<<<<<< HEAD
     ],
     "/landing/page": [
       "static/chunks/webpack.js",
@@ -15,6 +16,8 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/signin/page.js"
+=======
+>>>>>>> 26f205e4e02357046f155d8e2f34b47de44fdf05
     ],
     "/dashboard/layout": [
       "static/chunks/webpack.js",
@@ -26,6 +29,7 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/page.js"
     ],
+<<<<<<< HEAD
     "/about/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -40,6 +44,12 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/faqs/page.js"
+=======
+    "/signin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/signin/page.js"
+>>>>>>> 26f205e4e02357046f155d8e2f34b47de44fdf05
     ],
     "/admin/dashboard/layout": [
       "static/chunks/webpack.js",
@@ -51,10 +61,17 @@
       "static/chunks/main-app.js",
       "static/chunks/app/admin/dashboard/page.js"
     ],
+<<<<<<< HEAD
     "/forgot-password/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/forgot-password/page.js"
+=======
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
+>>>>>>> 26f205e4e02357046f155d8e2f34b47de44fdf05
     ]
   }
 }

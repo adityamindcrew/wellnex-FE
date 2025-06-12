@@ -719,7 +719,7 @@ const Index = () => {
                       >
                         <option value="active">Active</option>
                         <option value="paused">Paused</option>
-                        <option value="canceled">Canceled</option>
+                        <option value="canceled">Cancel At Period End</option>
                         <option value="canceledImmediately">Canceled Immediately</option>
                       </select>
                     </div>
