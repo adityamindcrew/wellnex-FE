@@ -1,4 +1,4 @@
-// File: /Users/muskan/Documents/wellnex-signup/app/payment/currencySelection/page.tsx
+// File: /Users/muskan/Documents/wellnex/app/payment/currencySelection/page.tsx
 import * as entry from '../../../../../app/payment/currencySelection/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

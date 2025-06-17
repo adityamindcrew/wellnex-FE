@@ -1,4 +1,4 @@
-// File: /Users/muskan/Documents/wellnex-signup/app/admin/dashboard/layout.tsx
+// File: /Users/muskan/Documents/wellnex/app/admin/dashboard/layout.tsx
 import * as entry from '../../../../../app/admin/dashboard/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

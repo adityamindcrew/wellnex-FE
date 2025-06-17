@@ -96,7 +96,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/muskan/Documents/wellnex-signup",
+    "outputFileTracingRoot": "/Users/muskan/Documents/wellnex",
     "experimental": {
       "allowedDevOrigins": [],
       "nodeMiddleware": false,
@@ -175,7 +175,7 @@
       "forceSwcTransforms": false,
       "largePageDataBytes": 128000,
       "turbo": {
-        "root": "/Users/muskan/Documents/wellnex-signup"
+        "root": "/Users/muskan/Documents/wellnex"
       },
       "typedRoutes": false,
       "typedEnv": false,
@@ -281,7 +281,7 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs"
   },
-  "appDir": "/Users/muskan/Documents/wellnex-signup",
+  "appDir": "/Users/muskan/Documents/wellnex",
   "relativeAppDir": "",
   "files": [
     ".next/routes-manifest.json",
