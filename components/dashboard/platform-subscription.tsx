@@ -197,7 +197,7 @@ export default function PlatformSubscription() {
       // Clear all storage
       localStorage.clear()
       sessionStorage.clear()
-      
+
       // Clear all cookies
       const cookies = document.cookie.split(";")
       cookies.forEach(cookie => {
@@ -744,14 +744,14 @@ export default function PlatformSubscription() {
                       ? subscription?.status === 'active' && subscription?.cancelAtPeriodEnd
                         ? 'Active (Cancels at period end)'
                         : subscription?.status[0].toUpperCase() + subscription?.status.slice(1)
-                      : 'N/A'}</div>
+                      : 'N/A'}{subscription.isSpecialOffer && ' (Special Offer)'}</div>
                 </div>
                 <div className="flex justify-between">
                   <div className="text-sm font-medium text-gray-500">Start Date</div>
                   <div className="text-sm">{subscription?.currentPeriodStart ? subscription?.currentPeriodStart.slice(0, 10) : 'N/A'}</div>
                 </div>
                 <div className="flex justify-between">
-                  <div className="text-sm font-medium text-gray-500">{subscription?.cancelAtPeriodEnd ? 'End Date' : 'Next Renewal Date'}</div>
+                  <div className="text-sm font-medium text-gray-500">{subscription?.cancelAtPeriodEnd || subscription.isSpecialOffer ? 'End Date' : 'Next Renewal Date'}</div>
                   <div className="text-sm">
                     {subscription?.currentPeriodEnd ? subscription?.currentPeriodEnd.slice(0, 10) : 'N/A'}
                   </div>
