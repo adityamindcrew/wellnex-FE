@@ -178,6 +178,10 @@ export default function PlatformSubscription() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showRenewSubscription, setShowRenewSubscription] = useState(false);
   const [specialOfferExpiry, setSpecialOfferExpiry] = useState<string>("");
+  const [savedCards, setSavedCards] = useState<any[]>([]);
+  const [selectedCard, setSelectedCard] = useState<string | null>(null);
+  const [showSavedCards, setShowSavedCards] = useState(false);
+
   const handleLogout = useCallback(async () => {
     try {
       // First, call the server logout endpoint
@@ -667,8 +671,27 @@ export default function PlatformSubscription() {
     }
   };
 
-  const handleAcceptSpecialOffer = () => {
-    setShowPaymentForm(true);
+  const handleAcceptSpecialOffer = async () => {
+    try {
+      // Fetch saved cards
+      const response = await fetch('https://wellnexai.com/api/subscription/cards', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch saved cards');
+      }
+
+      const cardsData = await response.json();
+      setSavedCards(cardsData);
+      setShowSavedCards(true);
+      setShowSpecialOffer(false); // Close the special offer popup
+    } catch (err) {
+      console.error('Error fetching saved cards:', err);
+      setSubscriptionError('Failed to fetch saved cards');
+    }
   };
 
   const handlePaymentMethodCreated = async (paymentMethodId: string) => {
@@ -742,7 +765,7 @@ export default function PlatformSubscription() {
                   <div className="text-sm font-medium">
                     {subscription?.status
                       ? subscription?.status === 'active' && subscription?.cancelAtPeriodEnd
-                        ? 'Active (Cancels at period end)'
+                        ? 'Active'
                         : subscription?.status[0].toUpperCase() + subscription?.status.slice(1)
                       : 'N/A'}{subscription.isSpecialOffer && ' (Special Offer)'}</div>
                 </div>
@@ -1049,6 +1072,76 @@ export default function PlatformSubscription() {
           </div>
         </div>
       </div>}
+      {showSavedCards && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Select Payment Method</h3>
+              <button className="text-gray-600 hover:text-gray-800" onClick={() => setShowSavedCards(false)}>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {savedCards.map((card) => (
+                <div
+                  key={card.id}
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                    selectedCard === card.id ? 'border-black bg-gray-50' : 'border-gray-200'
+                  }`}
+                  onClick={() => setSelectedCard(card.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                        {card.brand === 'visa' && (
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                            <path d="M22.4 4.4H1.6C.7 4.4 0 5.1 0 6v12c0 .9.7 1.6 1.6 1.6h20.8c.9 0 1.6-.7 1.6-1.6V6c0-.9-.7-1.6-1.6-1.6z" fill="#1A1F71"/>
+                          </svg>
+                        )}
+                        {card.brand === 'mastercard' && (
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 4.4c-4.2 0-7.6 3.4-7.6 7.6s3.4 7.6 7.6 7.6 7.6-3.4 7.6-7.6-3.4-7.6-7.6-7.6z" fill="#EB001B"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-medium">{card.brand.charAt(0).toUpperCase() + card.brand.slice(1)}</div>
+                        <div className="text-sm text-gray-500">**** **** **** {card.last4}</div>
+                      </div>
+                    </div>
+                    {selectedCard === card.id && (
+                      <div className="w-5 h-5 rounded-full border-2 border-black flex items-center justify-center">
+                        <div className="w-3 h-3 rounded-full bg-black"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  setShowSavedCards(false);
+                  setShowPaymentForm(true);
+                }}
+                className="w-full py-2 text-center text-gray-600 hover:text-gray-800"
+              >
+                Use New Card
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedCard) {
+                    setShowSavedCards(false);
+                    handlePaymentMethodCreated(selectedCard);
+                  }
+                }}
+                disabled={!selectedCard}
+                className="w-full py-2 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Continue with Selected Card
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <style jsx>{`
                 .cancel-button {
                     margin-top: 20px;
