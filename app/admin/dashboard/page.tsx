@@ -310,8 +310,8 @@ const Index = () => {
 
       if (response.ok && data.status) {
         // Update the business in the list
-        fetchBusinesses();
-        fetchSubscriptionCounts();
+        // fetchBusinesses();
+        // fetchSubscriptionCounts();
         setSuccessMessage(data.message || 'Business information has been updated successfully.');
         setShowSuccessMessage(true);
         // Hide success message after 3 seconds
@@ -321,6 +321,7 @@ const Index = () => {
           setShowEditModal(false);
           setEditingBusiness(null);
         }, 3000);
+        window.location.reload();
       } else {
         alert(data.message || 'Failed to update business');
       }
