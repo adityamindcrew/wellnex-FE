@@ -20,6 +20,7 @@ const handleResponse = async (response: Response) => {
 export interface BusinessSignupData {
   email: string;
   password: string;
+  mobile: string;
   name: string;
   contact_name: string;
   website_url?: string;

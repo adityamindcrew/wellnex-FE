@@ -15,7 +15,7 @@ export default function CreateAccount() {
   const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     businessName: "",
-    phoneNumber: "",
+    mobile: "",
     businessEmail: "",
     password: "",
     websiteUrl: "",
@@ -29,7 +29,7 @@ export default function CreateAccount() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState({
     businessName: '',
-    phoneNumber: '',
+    mobile: '',
     businessEmail: '',
     contactName: '',
     password: '',
@@ -77,7 +77,7 @@ export default function CreateAccount() {
   const validateFields = () => {
     const errors: typeof formErrors = {
       businessName: '',
-      phoneNumber: '',
+      mobile: '',
       businessEmail: '',
       contactName: '',
       password: '',
@@ -85,10 +85,10 @@ export default function CreateAccount() {
     if (!formData.businessName.trim()) {
       errors.businessName = 'Business name is required.';
     }
-    if (!formData.phoneNumber.trim()) {
-      errors.phoneNumber = 'Phone number is required.';
-    } else if (!/^\+?\d{7,15}$/.test(formData.phoneNumber.trim())) {
-      errors.phoneNumber = 'Enter a valid phone number.';
+    if (!formData.mobile.trim()) {
+      errors.mobile = 'Phone number is required.';
+    } else if (!/^\+?\d{7,12}$/.test(formData.mobile.trim())) {
+      errors.mobile = 'Enter a valid phone number.';
     }
     if (!formData.businessEmail.trim()) {
       errors.businessEmail = 'Business email is required.';
@@ -122,6 +122,7 @@ export default function CreateAccount() {
       const signupData: BusinessSignupData = {
         email: formData.businessEmail,
         password: formData.password,
+        mobile: formData.mobile,
         name: formData.businessName,
         contact_name: formData.contactName,
         website_url: formData.websiteUrl || undefined,
@@ -183,14 +184,14 @@ export default function CreateAccount() {
             <div>
               <input
                 type="tel"
-                name="phoneNumber"
+                name="mobile"
                 placeholder="Phone Number"
-                value={formData.phoneNumber}
+                value={formData.mobile}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-[#FAFAFA] text-base"
               />
-              {formErrors.phoneNumber && <p className="text-xs text-red-600 mt-1">{formErrors.phoneNumber}</p>}
+              {formErrors.mobile && <p className="text-xs text-red-600 mt-1">{formErrors.mobile}</p>}
             </div>
             <div className="relative">
               <input
