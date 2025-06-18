@@ -103,6 +103,7 @@ export default function SignInPage() {
         <div className="w-full md:w-1/2 flex items-center justify-center bg-[#F8F8FA] order-1 md:order-2 mt-6 md:mt-0">
           <div className="relative w-full h-40 md:h-full min-h-[200px] min-w-[200px] max-w-[500px] overflow-hidden shadow-lg flex items-center justify-center">
             <Image
+            
               src={loginImage}
               alt="WellnexAI illustration"
               fill
@@ -116,7 +117,9 @@ export default function SignInPage() {
         <div className="w-full md:w-1/2 flex flex-col justify-center px-8 py-12 md:px-12 order-2 md:order-1">
           <div className="mb-10">
             <div className="mb-4">
-              <Image src={logo} alt="WellnexAI Logo" width={100} height={200} />
+              <Image src={logo} alt="WellnexAI Logo" width={100} height={200}
+                onClick={() => router.push("/landing")}
+              />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">Sign In</h1>
             <p className="text-gray-500 text-base mb-2 text-center">Your Business. Your AI. Welcome back!</p>
