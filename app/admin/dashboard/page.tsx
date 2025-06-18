@@ -835,9 +835,9 @@ const Index = () => {
                         accept=".png"
                         className="block w-full text-sm text-gray-700"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      {/* <p className="text-xs text-gray-500 mt-1">
                         Maximum file size: 1MB. PNG format only.
-                      </p>
+                      </p> */}
                     </div>
                   </div>
 

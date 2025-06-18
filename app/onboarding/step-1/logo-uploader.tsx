@@ -170,7 +170,7 @@ export default function LogoUploader({ onFileSelect }: LogoUploaderProps) {
     <Suspense>
     <div className="w-full space-y-4 font-[DM_Sans]">
       <p className="text-center font-[DM_Sans] text-sm font-medium">
-        Upload Company Logo (.png format only, max {MAX_FILE_SIZE / (1024 * 1024)}MB)
+        Upload Company Logo (.png format only)
       </p>
 
       <div className="flex flex-col items-center">
