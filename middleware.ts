@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
   const token = tokenCookie ||
     (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null) ||
     (authCookie?.startsWith('Bearer ') ? authCookie.split(' ')[1] : null)
-console.log(token);
+// console.log(token);
 
   // STRICT DASHBOARD LOCK - Check this FIRST, before ANY other checks
   if (request.cookies.get('dashboardLock')?.value === 'true') {

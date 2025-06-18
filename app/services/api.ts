@@ -77,8 +77,16 @@ export const businessApi = {
         },
         body: formData,
       });
+      
+      // Handle 413 error specifically
+      if (response.status === 413) {
+        throw new Error('File size too large. Please use a smaller image (max 5MB).');
+      }
+      
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to upload logo');
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to upload logo');
+      }
 
       // Format the logo URL to match the required format
       let logoUrl = data.logoUrl;
@@ -91,6 +99,10 @@ export const businessApi = {
 
       return { ...data, logoUrl };
     } catch (err) {
+      // Re-throw the error with more context if it's a network error
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
       throw err;
     }
   },
@@ -176,7 +188,7 @@ export const businessApi = {
     return response.json();
   },
   forgotPassword: async (email: string) => {
-    console.log("Making forgot password request for email:", email);
+ 
     try {
       const response = await fetch(`${BASE_URL}/business/forgotPassword`, {
         method: 'POST',
@@ -187,7 +199,7 @@ export const businessApi = {
       });
 
       const data = await response.json();
-      console.log("Forgot password API response:", data);
+   
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to send reset password email');

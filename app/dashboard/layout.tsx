@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
 
     if (!token) {
-      console.log("No token found, redirecting to signin")
+   
       router.replace("/signin")
       return
     }
@@ -24,8 +24,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     // Verify token is valid
     const verifyToken = async () => {
       try {
-        // You can add an API call here to verify the token if needed
-        console.log("Token verified")
+  
       } catch (error) {
         console.error("Token verification failed:", error)
         

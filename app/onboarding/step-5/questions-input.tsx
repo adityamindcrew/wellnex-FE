@@ -129,18 +129,18 @@ const QuestionsInputInner = forwardRef((props: QuestionsInputProps, ref) => {
         : [];
 
       // First call SetupChatbot
-      console.log("Setting up chatbot...")
+  
       const setupResponse = await businessApi.setupChatbot(
         businessId,
         formattedQuestions,
         token
       );
-      console.log("SetupChatbot response:", setupResponse)
+   
 
       // After successful setup, send verification email
-      console.log("Sending verification email...")
+   
       const verificationResponse = await businessApi.sendVerificationEmail(token, businessId)
-      console.log("Verification email response:", verificationResponse)
+     
 
       router.push("/onboarding/step-6");
     } catch (err: any) {

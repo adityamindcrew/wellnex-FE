@@ -130,7 +130,7 @@ export default function CreateAccount() {
       };
 
       const response = await businessApi.signup(signupData);
-      console.log("Signup successful:", response);
+
       
       if (response.data && response.data._id && response.data.loginToken) {
         localStorage.setItem('businessId', response.data._id);

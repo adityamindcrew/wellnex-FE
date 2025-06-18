@@ -31,7 +31,7 @@ function VerifyEmailContent({ params }: { params: Promise<{ businessId: string }
             throw new Error('No verification token found')
           }
 
-          console.log('Verifying email with token:', token)
+      
           const response = await businessApi.verifyEmailByLink(businessId, token);
 
           if (response.status) {

@@ -21,7 +21,7 @@ export default function Header() {
 
       if (response) {
         const data = await response.json();
-        console.log('dkdposf',data.data);
+
         setBusiness(data.data);
       }
     };

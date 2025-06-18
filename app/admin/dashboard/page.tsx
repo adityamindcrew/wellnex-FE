@@ -584,6 +584,19 @@ const Index = () => {
 
                     // Handle logo upload if a new file is selected
                     if (logoFile && logoFile instanceof File && logoFile.size > 0) {
+                      // Check file size (5MB limit)
+                      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+                      if (logoFile.size > MAX_FILE_SIZE) {
+                        alert(`File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB. Current size: ${(logoFile.size / (1024 * 1024)).toFixed(2)}MB`);
+                        return;
+                      }
+
+                      // Check if file is PNG
+                      if (!logoFile.type.includes("png")) {
+                        alert("Please upload a PNG file only");
+                        return;
+                      }
+
                       try {
                         const uploadForm = new FormData();
                         uploadForm.append('logo', logoFile);
@@ -604,8 +617,11 @@ const Index = () => {
                           body: uploadForm,
                         });
 
-                        // Log response details for debugging
-
+                        // Handle 413 error specifically
+                        if (uploadRes.status === 413) {
+                          alert('File size too large. Please use a smaller image (max 5MB).');
+                          return;
+                        }
 
                         // Check if response is JSON
                         const contentType = uploadRes.headers.get("content-type");
@@ -617,7 +633,6 @@ const Index = () => {
                         }
 
                         const uploadData = await uploadRes.json();
-
 
                         if (!uploadRes.ok) {
                           throw new Error(uploadData.message || 'Upload failed');
@@ -706,7 +721,7 @@ const Index = () => {
                       <input
                         type="file"
                         name="logo"
-                        accept="image/*"
+                        accept=".png"
                         className="block w-full text-sm text-gray-700"
                       />
                     </div>

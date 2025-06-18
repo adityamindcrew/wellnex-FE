@@ -148,7 +148,7 @@ export default function BusinessQuestions() {
       const token = localStorage.getItem('token');
       const businessId = localStorage.getItem('businessId');
       if (!token || !businessId) throw new Error('Missing businessId or token');
-      console.log('Updating question:', { questionId: editingQuestion, name: editValue.trim(), businessId });
+
       const response = await fetch('https://wellnexai.com/api/business/update-one-question', {
         method: 'PUT',
         headers: {

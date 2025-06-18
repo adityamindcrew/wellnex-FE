@@ -110,7 +110,7 @@ export default function ServicesInput() {
           services: filteredServices.map(name => ({ name }))
         })
       });
-      console.log('services',services)
+   
 
       if (!response.ok) {
         throw new Error('Failed to save services');

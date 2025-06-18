@@ -7,7 +7,7 @@ export default function SubscriptionCard() {
   const router = useRouter()
 
   const handleProceed = () => {
-    console.log("Proceeding to payment")
+   
     router.push("/payment/method-selection")
   }
 

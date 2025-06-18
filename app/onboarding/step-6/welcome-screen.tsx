@@ -41,7 +41,7 @@ export default function WelcomeScreen() {
 
       // Call sendVerificationEmail API
       const response = await businessApi.sendVerificationEmail(token, businessId)
-      console.log("Verification email response:", response)
+
       
       setResendStatus("success")
       // Reset the clicked state after 5 seconds

@@ -17,7 +17,7 @@ function ForgotPasswordContent() {
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Form submitted with email:", email)
+
 
     if (!email) {
       setError("Please enter your email address")
@@ -29,9 +29,9 @@ function ForgotPasswordContent() {
     setSuccess(false)
 
     try {
-      console.log("Calling forgotPassword API...")
+ 
       const response = await businessApi.forgotPassword(email)
-      console.log("API Response:", response)
+      
 
       if (response.status) {
         setSuccess(true)

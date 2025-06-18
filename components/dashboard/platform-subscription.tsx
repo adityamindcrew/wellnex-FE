@@ -11,6 +11,57 @@ import { useRouter } from "next/navigation"
 
 const stripePromise = loadStripe('pk_test_51LuNV2E2Y7YLkjxVuaZ1F13llOwUjsRcrodK7nbLAxmqxcnKqjnWxlc83V53bnFdnWOSW07fvBQjEmKXp2ChPXNo004z40bvvz');
 
+// Function to compress image
+const compressImage = (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new window.Image();
+    
+    img.onload = () => {
+      // Calculate new dimensions while maintaining aspect ratio
+      let { width, height } = img;
+      const maxDimension = 800; // Maximum dimension
+      
+      if (width > height) {
+        if (width > maxDimension) {
+          height = (height * maxDimension) / width;
+          width = maxDimension;
+        }
+      } else {
+        if (height > maxDimension) {
+          width = (width * maxDimension) / height;
+          height = maxDimension;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Draw and compress
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, width, height);
+      }
+      
+      // Convert to blob with compression
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const compressedFile = new File([blob], file.name, {
+            type: 'image/png',
+            lastModified: Date.now(),
+          });
+          resolve(compressedFile);
+        } else {
+          reject(new Error('Failed to compress image'));
+        }
+      }, 'image/png', 0.8); // 80% quality
+    };
+    
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+};
+
 function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paymentMethodId: string) => void }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -151,7 +202,6 @@ export default function PlatformSubscription() {
   const [showSpecialOffer, setShowSpecialOffer] = useState(false);
   const [showNoSubscriptionPopup, setShowNoSubscriptionPopup] = useState(false);
   const [showPausedSubscriptionPopup, setShowPausedSubscriptionPopup] = useState(false);
-
   const [specialOfferPrice, setSpecialOfferPrice] = useState<number | null>(null);
   const [specialOfferMessage, setSpecialOfferMessage] = useState<string>("");
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string>("");
@@ -239,8 +289,7 @@ export default function PlatformSubscription() {
       });
       const data = await response.json();
       if (data.data) {
-        console.log(data.data);
-
+   
         // Set logo if available
         if (data.data.logo) {
           setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
@@ -332,16 +381,34 @@ export default function PlatformSubscription() {
       return;
     }
 
-    // Show preview immediately and store in localStorage
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64String = event.target?.result as string;
-      setPreviewUrl(base64String);
-      localStorage.setItem('logoPreview', base64String);
-      setSelectedFile(file);
-      setHasChanges(true);
-    };
-    reader.readAsDataURL(file);
+    // Check file size (5MB limit)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_FILE_SIZE) {
+      setThemeError(`File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB. Current size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+      return;
+    }
+
+    try {
+      // Compress the image if it's larger than 1MB
+      let processedFile = file;
+      if (file.size > 1024 * 1024) { // 1MB
+        processedFile = await compressImage(file);
+      }
+
+      // Show preview immediately and store in localStorage
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64String = event.target?.result as string;
+        setPreviewUrl(base64String);
+        localStorage.setItem('logoPreview', base64String);
+        setSelectedFile(processedFile);
+        setHasChanges(true);
+      };
+      reader.readAsDataURL(processedFile);
+    } catch (err) {
+      console.error('Error processing file:', err);
+      setThemeError('Failed to process image. Please try again.');
+    }
   };
 
   const handleSaveChanges = async () => {
@@ -381,8 +448,14 @@ export default function PlatformSubscription() {
             body: formData,
           });
 
+          // Handle 413 error specifically
+          if (response.status === 413) {
+            throw new Error('File size too large. Please use a smaller image (max 5MB).');
+          }
+
           if (!response.ok) {
-            throw new Error('Failed to upload logo');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Failed to upload logo');
           }
 
           const savedPreview = localStorage.getItem('logoPreview');
