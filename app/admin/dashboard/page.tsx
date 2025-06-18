@@ -52,6 +52,49 @@ const Index = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Function to compress image before upload
+  const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.8): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/png',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('Failed to compress image'));
+            }
+          },
+          'image/png',
+          quality
+        );
+      };
+      
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   useEffect(() => {
     fetchSubscriptionCounts();
   }, []);
@@ -584,12 +627,12 @@ const Index = () => {
 
                     // Handle logo upload if a new file is selected
                     if (logoFile && logoFile instanceof File && logoFile.size > 0) {
-                      // Check file size (5MB limit)
-                      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-                      if (logoFile.size > MAX_FILE_SIZE) {
-                        alert(`File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB. Current size: ${(logoFile.size / (1024 * 1024)).toFixed(2)}MB`);
-                        return;
-                      }
+                      console.log('File details:', {
+                        name: logoFile.name,
+                        size: logoFile.size,
+                        type: logoFile.type,
+                        sizeInMB: (logoFile.size / (1024 * 1024)).toFixed(2)
+                      });
 
                       // Check if file is PNG
                       if (!logoFile.type.includes("png")) {
@@ -598,8 +641,25 @@ const Index = () => {
                       }
 
                       try {
+                        const compressedFile = await compressImage(logoFile);
+                        
+                        console.log('Compressed file details:', {
+                          name: compressedFile.name,
+                          size: compressedFile.size,
+                          type: compressedFile.type,
+                          sizeInMB: (compressedFile.size / (1024 * 1024)).toFixed(2),
+                          compressionRatio: ((1 - compressedFile.size / logoFile.size) * 100).toFixed(1) + '%'
+                        });
+
+                        // Check compressed file size
+                        const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
+                        if (compressedFile.size > MAX_FILE_SIZE) {
+                          alert(`File is still too large after compression (${(compressedFile.size / (1024 * 1024)).toFixed(2)}MB). Please use a smaller image.`);
+                          return;
+                        }
+
                         const uploadForm = new FormData();
-                        uploadForm.append('logo', logoFile);
+                        uploadForm.append('logo', compressedFile);
                         uploadForm.append('businessId', editingBusiness._id);
                         const token = localStorage.getItem("token");
 
@@ -608,18 +668,67 @@ const Index = () => {
                           return;
                         }
 
-                        // Using the business update endpoint
-                        const uploadRes = await fetch('https://wellnexai.com/api/business/updateBusinessDetail', {
-                          method: 'PUT',
-                          headers: {
-                            'Authorization': `Bearer ${token}`,
-                          },
-                          body: uploadForm,
+                        console.log('Uploading file...', {
+                          businessId: editingBusiness._id,
+                          fileSize: compressedFile.size,
+                          formDataEntries: Array.from(uploadForm.entries())
+                        });
+
+                        // First, try to upload just the logo file
+                        let uploadRes;
+                        try {
+                          uploadRes = await fetch('https://wellnexai.com/api/business/updateBusinessDetail', {
+                            method: 'PUT',
+                            headers: {
+                              'Authorization': `Bearer ${token}`,
+                              // Remove Content-Type header to let browser set it with boundary for FormData
+                            },
+                            body: uploadForm,
+                          });
+                        } catch (fetchError) {
+                          console.error('Fetch error:', fetchError);
+                          // If the main endpoint fails, try a different approach
+                          alert('Upload failed. Please try with a smaller image or contact support.');
+                          return;
+                        }
+
+                        console.log('Upload response:', {
+                          status: uploadRes.status,
+                          statusText: uploadRes.statusText,
+                          headers: Object.fromEntries(uploadRes.headers.entries())
                         });
 
                         // Handle 413 error specifically
                         if (uploadRes.status === 413) {
-                          alert('File size too large. Please use a smaller image (max 5MB).');
+                          alert('File size too large for server. Please try with an even smaller image (max 1MB) or compress your image further.');
+                          return;
+                        }
+
+                        // Handle other HTTP errors
+                        if (!uploadRes.ok) {
+                          let errorMessage = `Upload failed: ${uploadRes.status} ${uploadRes.statusText}`;
+                          
+                          try {
+                            const errorText = await uploadRes.text();
+                            console.error('Error response body:', errorText);
+                            
+                            // Try to parse as JSON for more detailed error
+                            try {
+                              const errorJson = JSON.parse(errorText);
+                              if (errorJson.message) {
+                                errorMessage = errorJson.message;
+                              }
+                            } catch (parseError) {
+                              // If not JSON, use the text as is
+                              if (errorText) {
+                                errorMessage += ` - ${errorText}`;
+                              }
+                            }
+                          } catch (readError) {
+                            console.error('Could not read error response:', readError);
+                          }
+                          
+                          alert(errorMessage);
                           return;
                         }
 
@@ -633,10 +742,7 @@ const Index = () => {
                         }
 
                         const uploadData = await uploadRes.json();
-
-                        if (!uploadRes.ok) {
-                          throw new Error(uploadData.message || 'Upload failed');
-                        }
+                        console.log('Upload success data:', uploadData);
 
                         if (uploadData.status && uploadData.data?.logo) {
                           logoUrl = uploadData.data.logo;
@@ -645,7 +751,11 @@ const Index = () => {
                         }
                       } catch (err) {
                         console.error('Error uploading logo:', err);
-                        alert(`Failed to upload logo: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                        if (err instanceof Error && err.message.includes('413')) {
+                          alert('File size too large. Please use a smaller image (max 1MB).');
+                        } else {
+                          alert(`Failed to upload logo: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                        }
                         return;
                       }
                     }
@@ -724,6 +834,9 @@ const Index = () => {
                         accept=".png"
                         className="block w-full text-sm text-gray-700"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Maximum file size: 1MB. PNG format only.
+                      </p>
                     </div>
                   </div>
 
