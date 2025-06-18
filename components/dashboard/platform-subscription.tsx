@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect, useCallback } from "react";
 import { businessApi } from "../../app/services/api";
+import { API_BASE_URL } from "../../lib/api/config";
 import Image from "next/image";
 import { ImageIcon, ChevronDown, ChevronUp, PipetteIcon, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -227,6 +228,7 @@ export default function PlatformSubscription() {
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showRenewSubscription, setShowRenewSubscription] = useState(false);
+  const [showRenewSavedCards, setShowRenewSavedCards] = useState(false);
   const [specialOfferExpiry, setSpecialOfferExpiry] = useState<string>("");
   const [savedCards, setSavedCards] = useState<any[]>([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
@@ -235,7 +237,7 @@ export default function PlatformSubscription() {
   const handleLogout = useCallback(async () => {
     try {
       // First, call the server logout endpoint
-      const response = await fetch(`https://wellnexai.com/api/business/logout`, {
+      const response = await fetch(`${API_BASE_URL}/business/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -279,7 +281,7 @@ export default function PlatformSubscription() {
       const businessId = localStorage.getItem('businessId');
       if (!token || !businessId) return;
 
-      const response = await fetch('https://wellnexai.com/api/business/getBusinessDetail', {
+      const response = await fetch(`${API_BASE_URL}/business/getBusinessDetail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -324,7 +326,7 @@ export default function PlatformSubscription() {
         setSubscriptionLoading(false);
         return;
       }
-      const response = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
+      const response = await fetch(`${API_BASE_URL}/subscription/status?businessId=${businessId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token.replace(/['"]/g, '')}`
@@ -440,7 +442,7 @@ export default function PlatformSubscription() {
           formData.append('logo', selectedFile);
           formData.append('businessId', businessId);
 
-          const response = await fetch('https://wellnexai.com/api/business/uploadBusinessLogo', {
+          const response = await fetch(`${API_BASE_URL}/business/uploadBusinessLogo`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -625,12 +627,32 @@ export default function PlatformSubscription() {
     setIsPickerOpen(false); // Close the color picker when resetting
   };
   const handleRenewSubscription = async () => {
-    setShowRenewSubscription(true);
+    try {
+      // Fetch saved cards
+      const response = await fetch(`${API_BASE_URL}/subscription/cards`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch saved cards');
+      }
+
+      const cardsData = await response.json();
+      setSavedCards(cardsData);
+      setShowRenewSavedCards(true);
+    } catch (err) {
+      console.error('Error fetching saved cards:', err);
+      setSubscriptionError('Failed to fetch saved cards');
+      // Fallback to direct payment form if cards fetch fails
+      setShowRenewSubscription(true);
+    }
   }
 
   const handleRenewSubscriptionAPI = async (paymentMethodId: string) => {
     try {
-      const response = await fetch('https://wellnexai.com/api/subscription/renew-after-special-offer', {
+      const response = await fetch(`${API_BASE_URL}/subscription/renew-after-special-offer`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -642,18 +664,23 @@ export default function PlatformSubscription() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to cancel subscription');
+        throw new Error('Failed to renew subscription');
       }
 
       const data = await response.json();
       // Close the popup
       setShowRenewSubscription(false);
+      setShowRenewSavedCards(false);
+      setSelectedCard(null);
+
+      setMessage1('Your subscription has been renewed successfully!');
+      setTimeout(() => setMessage1(null), 3000);
 
       // Refresh subscription data
       const token = localStorage.getItem('token');
       const businessId = localStorage.getItem('businessId');
       if (token && businessId) {
-        const statusResponse = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
+        const statusResponse = await fetch(`${API_BASE_URL}/subscription/status?businessId=${businessId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -672,7 +699,7 @@ export default function PlatformSubscription() {
   }
   const handleCancelSubscription = async () => {
     try {
-      const response = await fetch('https://wellnexai.com/api/subscription/cancel', {
+      const response = await fetch(`${API_BASE_URL}/subscription/cancel`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -697,7 +724,7 @@ export default function PlatformSubscription() {
         const token = localStorage.getItem('token');
         const businessId = localStorage.getItem('businessId');
         if (token && businessId) {
-          const statusResponse = await fetch('https://wellnexai.com/api/subscription/status?businessId=' + businessId, {
+          const statusResponse = await fetch(`${API_BASE_URL}/subscription/status?businessId=${businessId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -718,7 +745,7 @@ export default function PlatformSubscription() {
 
   const checkSpecialOffer = async () => {
     try {
-      const response = await fetch('https://wellnexai.com/api/subscription/check-special-offer', {
+      const response = await fetch(`${API_BASE_URL}/subscription/check-special-offer`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -747,7 +774,7 @@ export default function PlatformSubscription() {
   const handleAcceptSpecialOffer = async () => {
     try {
       // Fetch saved cards
-      const response = await fetch('https://wellnexai.com/api/subscription/cards', {
+      const response = await fetch(`${API_BASE_URL}/subscription/cards`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -769,7 +796,7 @@ export default function PlatformSubscription() {
 
   const handlePaymentMethodCreated = async (paymentMethodId: string) => {
     try {
-      const createResponse = await fetch('https://wellnexai.com/api/subscription/apply-special-offer', {
+      const createResponse = await fetch(`${API_BASE_URL}/subscription/apply-special-offer`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -788,6 +815,7 @@ export default function PlatformSubscription() {
 
       setShowPaymentForm(false);
       setShowSpecialOffer(false);
+      setSelectedCard(null);
       setMessage1('Your subscription has been renewed successfully!');
       setTimeout(() => setMessage1(null), 3000);
       fetchSubscription();
@@ -802,7 +830,7 @@ export default function PlatformSubscription() {
 
   const handleDeclineSpecialOffer = async () => {
     try {
-      const response = await fetch('https://wellnexai.com/api/subscription/cancel', {
+      const response = await fetch(`${API_BASE_URL}/subscription/cancel`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -1104,6 +1132,79 @@ export default function PlatformSubscription() {
           </div>
         </div>
       )}
+      {showRenewSavedCards && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Select Payment Method</h3>
+              <button className="text-gray-600 hover:text-gray-800" onClick={() => {
+                setShowRenewSavedCards(false);
+                setSelectedCard(null);
+              }}>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {savedCards.map((card) => (
+                <div
+                  key={card.id}
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                    selectedCard === card.id ? 'border-black bg-gray-50' : 'border-gray-200'
+                  }`}
+                  onClick={() => setSelectedCard(card.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                        {card.brand === 'visa' && (
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                            <path d="M22.4 4.4H1.6C.7 4.4 0 5.1 0 6v12c0 .9.7 1.6 1.6 1.6h20.8c.9 0 1.6-.7 1.6-1.6V6c0-.9-.7-1.6-1.6-1.6z" fill="#1A1F71"/>
+                          </svg>
+                        )}
+                        {card.brand === 'mastercard' && (
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 4.4c-4.2 0-7.6 3.4-7.6 7.6s3.4 7.6 7.6 7.6 7.6-3.4 7.6-7.6-3.4-7.6-7.6-7.6z" fill="#EB001B"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-medium">{card.brand.charAt(0).toUpperCase() + card.brand.slice(1)}</div>
+                        <div className="text-sm text-gray-500">**** **** **** {card.last4}</div>
+                      </div>
+                    </div>
+                    {selectedCard === card.id && (
+                      <div className="w-5 h-5 rounded-full border-2 border-black flex items-center justify-center">
+                        <div className="w-3 h-3 rounded-full bg-black"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  setShowRenewSavedCards(false);
+                  setShowRenewSubscription(true);
+                }}
+                className="w-full py-2 text-center text-gray-600 hover:text-gray-800"
+              >
+                Use New Card
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedCard) {
+                    setShowRenewSavedCards(false);
+                    handleRenewSubscriptionAPI(selectedCard);
+                  }
+                }}
+                disabled={!selectedCard}
+                className="w-full py-2 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Continue with Selected Card
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showNoSubscriptionPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
@@ -1150,7 +1251,10 @@ export default function PlatformSubscription() {
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Select Payment Method</h3>
-              <button className="text-gray-600 hover:text-gray-800" onClick={() => setShowSavedCards(false)}>
+              <button className="text-gray-600 hover:text-gray-800" onClick={() => {
+                setShowSavedCards(false);
+                setSelectedCard(null);
+              }}>
                 <X className="h-4 w-4" />
               </button>
             </div>
