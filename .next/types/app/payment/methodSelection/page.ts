@@ -1,4 +1,4 @@
-// File: /Users/muskan/Documents/wellnex/app/payment/methodSelection/page.tsx
+// File: D:\Kajal\wellnex\wellnex-FE\app\payment\methodSelection\page.tsx
 import * as entry from '../../../../../app/payment/methodSelection/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
