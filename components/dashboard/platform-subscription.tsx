@@ -18,12 +18,12 @@ const compressImage = (file: File): Promise<File> => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new window.Image();
-    
+
     img.onload = () => {
       // Calculate new dimensions while maintaining aspect ratio
       let { width, height } = img;
       const maxDimension = 800; // Maximum dimension
-      
+
       if (width > height) {
         if (width > maxDimension) {
           height = (height * maxDimension) / width;
@@ -35,15 +35,15 @@ const compressImage = (file: File): Promise<File> => {
           height = maxDimension;
         }
       }
-      
+
       canvas.width = width;
       canvas.height = height;
-      
+
       // Draw and compress
       if (ctx) {
         ctx.drawImage(img, 0, 0, width, height);
       }
-      
+
       // Convert to blob with compression
       canvas.toBlob((blob) => {
         if (blob) {
@@ -57,7 +57,7 @@ const compressImage = (file: File): Promise<File> => {
         }
       }, 'image/png', 0.8); // 80% quality
     };
-    
+
     img.onerror = () => reject(new Error('Failed to load image'));
     img.src = URL.createObjectURL(file);
   });
@@ -291,8 +291,10 @@ export default function PlatformSubscription() {
         body: JSON.stringify({ businessId })
       });
       const data = await response.json();
+      console.log(data);
+
       if (data.data) {
-   
+
         // Set logo if available
         if (data.data.logo) {
           setLogoUrl(`https://wellnexai.com/uploads/business-logos/${data.data.logo}`);
@@ -309,8 +311,10 @@ export default function PlatformSubscription() {
           setTimeout(() => {
             handleLogout()
           }, 10000);
+        } else if (data.data.subscriptionDetail.status === 'canceled') {
+          setShowNoSubscriptionPopup(true);
         }
-      } else if (data.message === "Error getting subscription details: No active subscription found") {
+      } else if (data.message === "Error getting subscription details: No active subscription found" || data.message === "No active subscription found. Please subscribe to access dashboard features.") {
         setShowNoSubscriptionPopup(true);
       }
     } catch (error) {
@@ -698,51 +702,6 @@ export default function PlatformSubscription() {
       setMessage1(null);
     }
   }
-  const handleCancelSubscription = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/subscription/cancel`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to cancel subscription');
-      }
-
-      const data = await response.json();
-
-      if (data.hasSpecialOffer) {
-        setSpecialOfferPrice(data.specialOfferPrice);
-        setSpecialOfferMessage(data.message);
-        setCurrentPeriodEnd(data.currentPeriodEnd);
-        setSpecialOfferExpiry(data.expiryDate || "");
-        setShowSpecialOffer(true);
-      } else {
-        // setMessage('Subscription will be canceled at the end of the billing period');
-        // Refresh subscription data
-        const token = localStorage.getItem('token');
-        const businessId = localStorage.getItem('businessId');
-        if (token && businessId) {
-          const statusResponse = await fetch(`${API_BASE_URL}/subscription/status?businessId=${businessId}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          if (statusResponse.ok) {
-            const statusData = await statusResponse.json();
-            setSubscription(statusData || null);
-          }
-        }
-      }
-    } catch (err: any) {
-      setSubscriptionError(err.message);
-      // Clear any existing message when there's an error
-      setMessage1(null);
-    }
-  };
 
   const checkSpecialOffer = async () => {
     try {
@@ -939,7 +898,7 @@ export default function PlatformSubscription() {
               <div className="text-sm text-green-600 text-center bg-green-50 p-2 rounded-md">{message1}</div>
             )}
             <div className="flex gap-2 pt-2">
-              {subscription?.status === "active" && !subscription?.cancelAtPeriodEnd && (
+              {subscription?.status === "active" && subscription?.specialOfferStatus !== "applied" && subscription?.specialOfferStatus !== "expired" && (
                 <>
                   <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
                     Cancel Subscription
@@ -1131,9 +1090,10 @@ export default function PlatformSubscription() {
               </button>
             </div>
             <p className="text-gray-600 mb-4">{specialOfferMessage}</p>
-            <p className="text-sm text-gray-500 mb-6">
-              Your current subscription will end on: {new Date(currentPeriodEnd).toLocaleDateString()}
-            </p>
+            {specialOfferMessage !== "Special offer already applied."
+              && <p className="text-sm text-gray-500 mb-6">
+                Your current subscription will end on: {new Date(currentPeriodEnd).toLocaleDateString()}
+              </p>}
             <div className="flex justify-end gap-4">
               <button
                 onClick={handleDeclineSpecialOffer}
@@ -1141,13 +1101,15 @@ export default function PlatformSubscription() {
               >
                 I want to cancel my subscription
               </button>
-              <button
-                onClick={handleAcceptSpecialOffer}
-                // onClick={() => alert("Coming Soon")}
-                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-              >
-                Yes, I accept the offer
-              </button>
+              {specialOfferMessage !== "Special offer already applied."
+                && <button
+                  onClick={handleAcceptSpecialOffer}
+                  // onClick={() => alert("Coming Soon")}
+                  className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+                >
+                  Yes, I accept the offer
+                </button>
+              }
             </div>
           </div>
         </div>
@@ -1166,7 +1128,7 @@ export default function PlatformSubscription() {
               </button>
             </div>
             <Elements stripe={stripePromise}>
-              <PaymentForm 
+              <PaymentForm
                 onPaymentMethodCreated={isPaymentFormForChangeCard ? handlePaymentMethodCreatedForChange : handlePaymentMethodCreated}
                 isForChangeCard={isPaymentFormForChangeCard}
               />
@@ -1205,9 +1167,8 @@ export default function PlatformSubscription() {
               {savedCards.map((card) => (
                 <div
                   key={card.id}
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    selectedCard === card.id ? 'border-black bg-gray-50' : 'border-gray-200'
-                  }`}
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedCard === card.id ? 'border-black bg-gray-50' : 'border-gray-200'
+                    }`}
                   onClick={() => setSelectedCard(card.id)}
                 >
                   <div className="flex items-center justify-between">
@@ -1215,12 +1176,12 @@ export default function PlatformSubscription() {
                       <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
                         {card.brand === 'visa' && (
                           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                            <path d="M22.4 4.4H1.6C.7 4.4 0 5.1 0 6v12c0 .9.7 1.6 1.6 1.6h20.8c.9 0 1.6-.7 1.6-1.6V6c0-.9-.7-1.6-1.6-1.6z" fill="#1A1F71"/>
+                            <path d="M22.4 4.4H1.6C.7 4.4 0 5.1 0 6v12c0 .9.7 1.6 1.6 1.6h20.8c.9 0 1.6-.7 1.6-1.6V6c0-.9-.7-1.6-1.6-1.6z" fill="#1A1F71" />
                           </svg>
                         )}
                         {card.brand === 'mastercard' && (
                           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 4.4c-4.2 0-7.6 3.4-7.6 7.6s3.4 7.6 7.6 7.6 7.6-3.4 7.6-7.6-3.4-7.6-7.6-7.6z" fill="#EB001B"/>
+                            <path d="M12 4.4c-4.2 0-7.6 3.4-7.6 7.6s3.4 7.6 7.6 7.6 7.6-3.4 7.6-7.6-3.4-7.6-7.6-7.6z" fill="#EB001B" />
                           </svg>
                         )}
                       </div>
@@ -1319,9 +1280,8 @@ export default function PlatformSubscription() {
               {savedCards.map((card) => (
                 <div
                   key={card.id}
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    selectedCard === card.id ? 'border-black bg-gray-50' : 'border-gray-200'
-                  }`}
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedCard === card.id ? 'border-black bg-gray-50' : 'border-gray-200'
+                    }`}
                   onClick={() => setSelectedCard(card.id)}
                 >
                   <div className="flex items-center justify-between">
@@ -1329,12 +1289,12 @@ export default function PlatformSubscription() {
                       <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
                         {card.brand === 'visa' && (
                           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                            <path d="M22.4 4.4H1.6C.7 4.4 0 5.1 0 6v12c0 .9.7 1.6 1.6 1.6h20.8c.9 0 1.6-.7 1.6-1.6V6c0-.9-.7-1.6-1.6-1.6z" fill="#1A1F71"/>
+                            <path d="M22.4 4.4H1.6C.7 4.4 0 5.1 0 6v12c0 .9.7 1.6 1.6 1.6h20.8c.9 0 1.6-.7 1.6-1.6V6c0-.9-.7-1.6-1.6-1.6z" fill="#1A1F71" />
                           </svg>
                         )}
                         {card.brand === 'mastercard' && (
                           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 4.4c-4.2 0-7.6 3.4-7.6 7.6s3.4 7.6 7.6 7.6 7.6-3.4 7.6-7.6-3.4-7.6-7.6-7.6z" fill="#EB001B"/>
+                            <path d="M12 4.4c-4.2 0-7.6 3.4-7.6 7.6s3.4 7.6 7.6 7.6 7.6-3.4 7.6-7.6-3.4-7.6-7.6-7.6z" fill="#EB001B" />
                           </svg>
                         )}
                       </div>

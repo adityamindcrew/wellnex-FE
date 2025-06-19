@@ -470,6 +470,12 @@ const Index = () => {
                                         (at {new Date(business.subscriptionDetail.currentPeriodEnd).toLocaleDateString()})
                                       </span></>
                                   )}
+                                  {business.subscriptionDetail.specialOfferStatus === 'applied' && (
+                                    <> <br />
+                                      <span className="text-xs text-gray-500">
+                                        (Special Offer Applied)
+                                      </span></>
+                                  )}
                               </>
                             ) : (
                               <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">

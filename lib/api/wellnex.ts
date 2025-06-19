@@ -63,6 +63,7 @@ export interface BusinessListItem {
     status: string;
     cancelAtPeriodEnd: string;
     currentPeriodEnd: string;
+    specialOfferStatus: string;
   };
   questions?: Array<{
     name: string;
