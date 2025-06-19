@@ -63,7 +63,7 @@ const compressImage = (file: File): Promise<File> => {
   });
 };
 
-function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paymentMethodId: string) => void }) {
+function PaymentForm({ onPaymentMethodCreated, isForChangeCard = false }: { onPaymentMethodCreated: (paymentMethodId: string) => void, isForChangeCard?: boolean }) {
   const stripe = useStripe();
   const elements = useElements();
   const [cardName, setCardName] = useState("");
@@ -187,7 +187,7 @@ function PaymentForm({ onPaymentMethodCreated }: { onPaymentMethodCreated: (paym
       {error && <div className="text-red-500 mt-3 text-base w-full text-center">{error}</div>}
       <div className="flex w-full mt-6 gap-3">
         <button type="submit" className="flex-1 py-2.5 rounded-md bg-black text-white font-semibold text-base" disabled={loading}>
-          {loading ? "Processing..." : `Pay ${paymentAmount}`}
+          {loading ? "Processing..." : isForChangeCard ? "Add New Card" : `Pay ${paymentAmount}`}
         </button>
       </div>
     </form>
@@ -233,6 +233,7 @@ export default function PlatformSubscription() {
   const [savedCards, setSavedCards] = useState<any[]>([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [showSavedCards, setShowSavedCards] = useState(false);
+  const [isPaymentFormForChangeCard, setIsPaymentFormForChangeCard] = useState(false);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -851,6 +852,49 @@ export default function PlatformSubscription() {
     }
   };
 
+  const handleChangePaymentCard = async () => {
+    try {
+      setIsPaymentFormForChangeCard(true);
+      setShowPaymentForm(true);
+    } catch (err) {
+      console.error('Error opening payment form:', err);
+      setSubscriptionError('Failed to open payment form');
+    }
+  };
+
+  const handlePaymentMethodCreatedForChange = async (paymentMethodId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/subscription/change-card`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          paymentMethodId: paymentMethodId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to change payment card');
+      }
+
+      const data = await response.json();
+      setShowSavedCards(false);
+      setShowPaymentForm(false);
+      setSelectedCard(null);
+      setMessage1('Payment card changed successfully!');
+      setTimeout(() => setMessage1(null), 3000);
+    } catch (err: any) {
+      console.error('Change card error:', err);
+      setSubscriptionError(err.message || 'An error occurred while changing your payment card. Please try again.');
+      setShowSavedCards(false);
+      setShowPaymentForm(false);
+      // Clear any existing message when there's an error
+      setMessage1(null);
+    }
+  };
+
   return (
     <div>
       <h2 className="mb-4 text-xl font-semibold">Platform Subscription</h2>
@@ -895,9 +939,16 @@ export default function PlatformSubscription() {
               <div className="text-sm text-green-600 text-center bg-green-50 p-2 rounded-md">{message1}</div>
             )}
             <div className="flex gap-2 pt-2">
-              {subscription?.status === "active" && !subscription?.cancelAtPeriodEnd && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
-                Cancel Subscription
-              </button>}
+              {subscription?.status === "active" && !subscription?.cancelAtPeriodEnd && (
+                <>
+                  <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
+                    Cancel Subscription
+                  </button>
+                  <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleChangePaymentCard}>
+                    Change Payment Card
+                  </button>
+                </>
+              )}
               {subscription?.status === "canceled" && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
                 Renew Subscription
               </button>}
@@ -1107,12 +1158,18 @@ export default function PlatformSubscription() {
           <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Payment Details</h3>
-              <button className="text-gray-600 hover:text-gray-800" onClick={() => setShowPaymentForm(false)}>
+              <button className="text-gray-600 hover:text-gray-800" onClick={() => {
+                setShowPaymentForm(false);
+                setIsPaymentFormForChangeCard(false);
+              }}>
                 <X className="h-4 w-4" />
               </button>
             </div>
             <Elements stripe={stripePromise}>
-              <PaymentForm onPaymentMethodCreated={handlePaymentMethodCreated} />
+              <PaymentForm 
+                onPaymentMethodCreated={isPaymentFormForChangeCard ? handlePaymentMethodCreatedForChange : handlePaymentMethodCreated}
+                isForChangeCard={isPaymentFormForChangeCard}
+              />
             </Elements>
           </div>
         </div>
@@ -1297,6 +1354,7 @@ export default function PlatformSubscription() {
               <button
                 onClick={() => {
                   setShowSavedCards(false);
+                  setIsPaymentFormForChangeCard(true);
                   setShowPaymentForm(true);
                 }}
                 className="w-full py-2 text-center text-gray-600 hover:text-gray-800"
