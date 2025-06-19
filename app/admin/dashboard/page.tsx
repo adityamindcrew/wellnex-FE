@@ -849,7 +849,13 @@ const Index = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Status</label>
                       <select
                         name="subscriptionStatus"
-                        defaultValue={editingBusiness.subscriptionDetail?.status || 'active'}
+                        defaultValue={
+                          editingBusiness.subscriptionDetail?.status === 'canceled'    
+                            ? 'canceledImmediately'
+                            : editingBusiness.subscriptionDetail?.status === 'active' && editingBusiness.subscriptionDetail?.cancelAtPeriodEnd
+                            ? 'canceled'
+                            : editingBusiness.subscriptionDetail?.status || 'active'
+                        }
                         className="block w-full rounded-md border border-gray-200 focus:border-[#987CF1] focus:ring-[#987CF1] focus:ring-1 py-2 px-3 text-base"
                       >
                         <option value="active">Active</option>
