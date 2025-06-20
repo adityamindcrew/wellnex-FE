@@ -234,6 +234,7 @@ export default function PlatformSubscription() {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [showSavedCards, setShowSavedCards] = useState(false);
   const [isPaymentFormForChangeCard, setIsPaymentFormForChangeCard] = useState(false);
+  const [specialOfferReason, setSpecialOfferReason] = useState<string>("");
 
   const handleLogout = useCallback(async () => {
     try {
@@ -723,6 +724,11 @@ export default function PlatformSubscription() {
         setSpecialOfferMessage(data.message);
         setCurrentPeriodEnd(data.currentPeriodEnd);
         setSpecialOfferExpiry(data.expiryDate || "");
+        setSpecialOfferReason(data.reason || "");
+        setShowSpecialOffer(true);
+      } else if (data.reason === "already_used") {
+        setSpecialOfferMessage(data.message);
+        setSpecialOfferReason(data.reason);
         setShowSpecialOffer(true);
       }
     } catch (err) {
@@ -732,29 +738,7 @@ export default function PlatformSubscription() {
   };
 
   const handleAcceptSpecialOffer = async () => {
-    try {
-      // Fetch saved cards
-      const response = await fetch(`${API_BASE_URL}/subscription/cards`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch saved cards');
-      }
-
-      const cardsData = await response.json();
-      setSavedCards(cardsData);
-      setShowSavedCards(true);
-      setShowSpecialOffer(false); // Close the special offer popup
-    } catch (err) {
-      console.error('Error fetching saved cards:', err);
-      setSubscriptionError('Failed to fetch saved cards');
-    }
-  };
-
-  const handlePaymentMethodCreated = async (paymentMethodId: string) => {
     try {
       const createResponse = await fetch(`${API_BASE_URL}/subscription/apply-special-offer`, {
         method: 'POST',
@@ -763,7 +747,7 @@ export default function PlatformSubscription() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          paymentMethodId: paymentMethodId
+          // paymentMethodId: paymentMethodId
         })
       });
 
@@ -786,6 +770,10 @@ export default function PlatformSubscription() {
       // Clear any existing message when there's an error
       setMessage1(null);
     }
+    // Just close the special offer popup and optionally show a message
+    setShowSpecialOffer(false);
+    setMessage1('Special offer accepted!'); // Optional: show a message
+    setTimeout(() => setMessage1(null), 3000);
   };
 
   const handleDeclineSpecialOffer = async () => {
@@ -811,6 +799,36 @@ export default function PlatformSubscription() {
     }
   };
 
+  const handlePaymentMethodCreated = async (paymentMethodId: string) => {
+    try {
+      const createResponse = await fetch(`${API_BASE_URL}/subscription/apply-special-offer`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          paymentMethodId: paymentMethodId
+        })
+      });
+      const responseData = await createResponse.json();
+      if (!createResponse.ok) {
+        throw new Error(responseData.message || 'Failed to create subscription');
+      }
+      setShowPaymentForm(false);
+      setShowSpecialOffer(false);
+      setSelectedCard(null);
+      setMessage1('Your subscription has been renewed successfully!');
+      setTimeout(() => setMessage1(null), 3000);
+      fetchSubscription();
+    } catch (err: any) {
+      console.error('Subscription error:', err);
+      setSubscriptionError(err.message || 'An error occurred while processing your subscription?. Please try again.');
+      setShowPaymentForm(false);
+      setMessage1(null);
+    }
+  };
+
   const handleChangePaymentCard = async () => {
     try {
       setIsPaymentFormForChangeCard(true);
@@ -833,11 +851,9 @@ export default function PlatformSubscription() {
           paymentMethodId: paymentMethodId
         })
       });
-
       if (!response.ok) {
         throw new Error('Failed to change payment card');
       }
-
       const data = await response.json();
       setShowSavedCards(false);
       setShowPaymentForm(false);
@@ -849,7 +865,6 @@ export default function PlatformSubscription() {
       setSubscriptionError(err.message || 'An error occurred while changing your payment card. Please try again.');
       setShowSavedCards(false);
       setShowPaymentForm(false);
-      // Clear any existing message when there's an error
       setMessage1(null);
     }
   };
@@ -898,16 +913,21 @@ export default function PlatformSubscription() {
               <div className="text-sm text-green-600 text-center bg-green-50 p-2 rounded-md">{message1}</div>
             )}
             <div className="flex gap-2 pt-2">
-              {subscription?.status === "active" && subscription?.specialOfferStatus !== "applied" && subscription?.specialOfferStatus !== "expired" && (
-                <>
-                  <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
-                    Cancel Subscription
-                  </button>
-                  <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleChangePaymentCard}>
-                    Change Payment Card
-                  </button>
-                </>
-              )}
+              <>
+              {
+subscription?.cancelAtPeriodEnd ===false ?
+              (
+                <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
+                  Cancel Subscription
+                </button>):
+                  null
+                
+}
+              </>
+
+              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleChangePaymentCard}>
+                Add New Card
+              </button>
               {subscription?.status === "canceled" && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
                 Renew Subscription
               </button>}
@@ -1082,34 +1102,46 @@ export default function PlatformSubscription() {
       </div>
       {showSpecialOffer && !showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Special Offer</h3>
-              <button className="text-gray-600 hover:text-gray-800" onClick={() => setShowSpecialOffer(false)}>
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <p className="text-gray-600 mb-4">{specialOfferMessage}</p>
-            {specialOfferMessage !== "Special offer already applied."
-              && <p className="text-sm text-gray-500 mb-6">
-                Your current subscription will end on: {new Date(currentPeriodEnd).toLocaleDateString()}
-              </p>}
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={handleDeclineSpecialOffer}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-              >
-                I want to cancel my subscription
-              </button>
-              {specialOfferMessage !== "Special offer already applied."
-                && <button
-                  onClick={handleAcceptSpecialOffer}
-                  // onClick={() => alert("Coming Soon")}
-                  className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+          <div className="bg-white rounded-lg p-12 max-w-sm w-full mx-4 min-h-[280px] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center mb-6 relative">
+                <h3 className="text-xl font-semibold flex-1">
+                  {specialOfferReason === "already_used" ? "Cancel Subscription" : "Special Offer"}
+                </h3>
+                <button
+                  className="absolute right-0 top-1 text-gray-600 hover:text-gray-800"
+                  onClick={() => setShowSpecialOffer(false)}
+                  style={{ lineHeight: 0 }}
                 >
-                  Yes, I accept the offer
+                  <X className="h-5 w-5" />
                 </button>
-              }
+              </div>
+              <p className="text-gray-600 mb-4">{specialOfferMessage}</p>
+            </div>
+            <div className="flex justify-end mt-4">
+              {specialOfferReason === "already_used" ? (
+                <button
+                  onClick={handleDeclineSpecialOffer}
+                  className="w-full px-4 py-2 text-white bg-black rounded-lg hover:bg-gray-800"
+                >
+                  I want to cancel my subscription
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={handleDeclineSpecialOffer}
+                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                  >
+                    I want to cancel my subscription
+                  </button>
+                  <button
+                    onClick={handleAcceptSpecialOffer}
+                    className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+                  >
+                    Yes, I accept the offer
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -1198,15 +1230,6 @@ export default function PlatformSubscription() {
                   </div>
                 </div>
               ))}
-              <button
-                onClick={() => {
-                  setShowRenewSavedCards(false);
-                  setShowRenewSubscription(true);
-                }}
-                className="w-full py-2 text-center text-gray-600 hover:text-gray-800"
-              >
-                Use New Card
-              </button>
               <button
                 onClick={() => {
                   if (selectedCard) {
@@ -1311,16 +1334,6 @@ export default function PlatformSubscription() {
                   </div>
                 </div>
               ))}
-              <button
-                onClick={() => {
-                  setShowSavedCards(false);
-                  setIsPaymentFormForChangeCard(true);
-                  setShowPaymentForm(true);
-                }}
-                className="w-full py-2 text-center text-gray-600 hover:text-gray-800"
-              >
-                Use New Card
-              </button>
               <button
                 onClick={() => {
                   if (selectedCard) {
