@@ -674,7 +674,6 @@ export default function PlatformSubscription() {
       }
 
       const data = await response.json();
-      // Close the popup
       setShowRenewSubscription(false);
       setShowRenewSavedCards(false);
       setSelectedCard(null);
@@ -682,7 +681,7 @@ export default function PlatformSubscription() {
       setMessage1('Your subscription has been renewed successfully!');
       setTimeout(() => setMessage1(null), 3000);
 
-      // Refresh subscription data
+
       const token = localStorage.getItem('token');
       const businessId = localStorage.getItem('businessId');
       if (token && businessId) {
@@ -760,7 +759,7 @@ export default function PlatformSubscription() {
       setShowPaymentForm(false);
       setShowSpecialOffer(false);
       setSelectedCard(null);
-      setMessage1('Your subscription has been renewed successfully!');
+      setMessage1('Subscription renewed! Offer applied for your next billing period.');
       setTimeout(() => setMessage1(null), 3000);
       fetchSubscription();
     } catch (err: any) {
@@ -772,7 +771,7 @@ export default function PlatformSubscription() {
     }
     // Just close the special offer popup and optionally show a message
     setShowSpecialOffer(false);
-    setMessage1('Special offer accepted!'); // Optional: show a message
+    setMessage1('Subscription renewed! Offer applied for your next billing period'); // Optional: show a message
     setTimeout(() => setMessage1(null), 3000);
   };
 
@@ -914,19 +913,19 @@ export default function PlatformSubscription() {
             )}
             <div className="flex gap-2 pt-2">
               <>
-              {
-subscription?.cancelAtPeriodEnd ===false ?
-              (
-                <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
-                  Cancel Subscription
-                </button>):
-                  null
-                
-}
+                {
+                  subscription?.cancelAtPeriodEnd === false ?
+                    (
+                      <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={checkSpecialOffer}>
+                        Cancel Subscription
+                      </button>) :
+                    null
+
+                }
               </>
 
               <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleChangePaymentCard}>
-                Add New Card
+                Change card details
               </button>
               {subscription?.status === "canceled" && <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm" onClick={handleRenewSubscription}>
                 Renew Subscription
@@ -1102,7 +1101,7 @@ subscription?.cancelAtPeriodEnd ===false ?
       </div>
       {showSpecialOffer && !showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-12 max-w-sm w-full mx-4 min-h-[280px] flex flex-col justify-between">
+          <div className="bg-white rounded-lg p-12 w-full max-w-md sm:max-w-lg mx-4 min-h-[280px] flex flex-col justify-between">
             <div>
               <div className="flex items-center mb-6 relative">
                 <h3 className="text-xl font-semibold flex-1">
@@ -1149,7 +1148,7 @@ subscription?.cancelAtPeriodEnd ===false ?
 
       {showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md sm:max-w-lg mx-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Payment Details</h3>
               <button className="text-gray-600 hover:text-gray-800" onClick={() => {

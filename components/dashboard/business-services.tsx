@@ -26,8 +26,10 @@ export default function BusinessServices() {
 
   const fetchServices = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const businessId = localStorage.getItem('businessId')
+      setIsLoading(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      const businessId = localStorage.getItem('businessId');
       
       const response = await fetch('https://wellnexai.com/api/business/getServicesList', {
         method: 'POST',
@@ -38,25 +40,25 @@ export default function BusinessServices() {
         body: JSON.stringify({
           businessId: businessId
         })
-      })
+      });
       
       if (!response.ok) {
-        throw new Error('Failed to fetch services')
+        throw new Error('Failed to fetch services');
       }
       
-      const responseData = await response.json()
+      const responseData = await response.json();
       
       if (!responseData.status || responseData.code !== 200) {
-        throw new Error(responseData.message || 'Failed to fetch services')
+        throw new Error(responseData.message || 'Failed to fetch services');
       }
 
-      const servicesData = responseData.data
+      const servicesData = responseData.data;
       
       if (!Array.isArray(servicesData)) {
-        throw new Error('Invalid response format: expected an array of services')
+        throw new Error('Invalid response format: expected an array of services');
       }
 
-      const transformedServices = servicesData.map((service: any) => ({
+      const transformedServices = servicesData.map((service) => ({
         id: service._id,
         name: service.name,
         createdAt: new Date(service.createdAt).toLocaleDateString('en-US', {
@@ -66,18 +68,27 @@ export default function BusinessServices() {
         }),
         active: true,
         checked: false
-      }))
-      setServices(transformedServices)
+      }));
+      setServices(transformedServices);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      // Do NOT clear the services list here!
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   useEffect(() => {
     fetchServices()
   }, [])
+
+  // Automatically clear error after 2 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const handleDeleteClick = (serviceId: string) => {
     setServiceToDelete(serviceId)
@@ -187,6 +198,13 @@ export default function BusinessServices() {
   const handleAddService = async () => {
     if (!newService.trim()) return
 
+    // Check for duplicate in local state before API call
+    if (services.some(s => s.name.toLowerCase() === newService.trim().toLowerCase())) {
+      setError('Service already exists');
+      setNewService("");
+      return;
+    }
+
     try {
       setIsAdding(true)
       setError(null)
@@ -216,15 +234,17 @@ export default function BusinessServices() {
       const responseData = await response.json()
 
       if (!responseData.status || responseData.code !== 200) {
-        throw new Error(responseData.message || 'Failed to add service')
+        setError(responseData.message || 'Service already exists');
+        return;
       }
 
+      // Only on success:
       await fetchServices()
       setNewService("")
       setShowAddInput(false)
     } catch (err) {
-      console.error('Add service error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to add service')
+      setError(err instanceof Error ? err.message : 'Service already exists')
+      // Do not clear input or hide add input on error
     } finally {
       setIsAdding(false)
     }
@@ -240,19 +260,14 @@ export default function BusinessServices() {
     )
   }
 
-  if (error) {
-    return (
-      <div className="rounded-lg border border-gray-200 bg-white p-8">
-        <div className="text-center text-red-600">
-          Error: {error}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <>
       <div className="rounded-lg border border-gray-200 bg-white">
+        {error && (
+          <div className="text-center text-red-600 py-2">
+            {error}
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-4 gap-4">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Business Services</h2>

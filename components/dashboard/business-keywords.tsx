@@ -80,6 +80,14 @@ export default function BusinessKeywords() {
     fetchKeywords()
   }, [])
 
+  // Automatically clear error after 2 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleDeleteClick = (keywordId: string) => {
     setKeywordToDelete(keywordId)
     setShowDeleteModal(true)
@@ -198,16 +206,23 @@ export default function BusinessKeywords() {
   }
 
   const handleAddKeyword = async () => {
-    if (!newKeyword.trim()) return
+    if (!newKeyword.trim()) return;
+
+    // Check for duplicate in local state before API call
+    if (keywords.some(k => k.name.toLowerCase() === newKeyword.trim().toLowerCase())) {
+      setError('Keyword already exists');
+      setNewKeyword(""); // Clear the input field on duplicate
+      return;
+    }
 
     try {
-      setIsAdding(true)
-      setError(null)
-      const token = localStorage.getItem('token')
-      const businessId = localStorage.getItem('businessId')
+      setIsAdding(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      const businessId = localStorage.getItem('businessId');
 
       if (!token || !businessId) {
-        throw new Error('Authentication token or business ID not found')
+        throw new Error('Authentication token or business ID not found');
       }
 
       const response = await fetch('https://wellnexai.com/api/business/addBusinessKeywords', {
@@ -221,22 +236,23 @@ export default function BusinessKeywords() {
           businessId: businessId,
           replace: false
         })
-      })
+      });
 
-      const responseData = await response.json()
+      const responseData = await response.json();
 
       if (!responseData.status || responseData.code !== 200) {
-        throw new Error(responseData.message || 'Failed to add keyword')
+        setError(responseData.message || 'Keyword already exists');
+        return;
       }
 
-      await fetchKeywords()
-      setNewKeyword("")
-      setShowAddInput(false)
+      await fetchKeywords();
+      setNewKeyword("");
+      setShowAddInput(false);
     } catch (err) {
-      console.error('Add keyword error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to add keyword')
+      setError(err instanceof Error ? err.message : 'Keyword already exists');
+      // Do not clear input or hide add input on error
     } finally {
-      setIsAdding(false)
+      setIsAdding(false);
     }
   }
 
@@ -250,19 +266,14 @@ export default function BusinessKeywords() {
     )
   }
 
-  if (error) {
-    return (
-      <div className="rounded-lg border border-gray-200 bg-white p-8">
-        <div className="text-center text-red-600">
-          Error: {error}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <>
       <div className="rounded-lg border border-gray-200 bg-white">
+        {error && (
+          <div className="text-center text-red-600 py-2">
+            {error}
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-4 gap-4">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Business Keywords</h2>
