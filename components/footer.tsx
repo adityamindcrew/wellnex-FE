@@ -87,7 +87,7 @@ export default function Footer() {
             <Link href="/policy-page" className="text-xs text-[#000000] hover:text-text-[#000000]">
               Privacy Policy
             </Link>
-            <Link href="" className="text-xs text-[#000000] hover:text-[#000000]">
+            <Link href="/policy-page" className="text-xs text-[#000000] hover:text-[#000000]">
               Terms of Service
             </Link>
           </div>
