@@ -96,7 +96,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/muskan/Documents/wellnex",
+    "outputFileTracingRoot": "D:\\Kajal\\wellnex\\wellnex-FE",
     "experimental": {
       "allowedDevOrigins": [],
       "nodeMiddleware": false,
@@ -175,7 +175,7 @@
       "forceSwcTransforms": false,
       "largePageDataBytes": 128000,
       "turbo": {
-        "root": "/Users/muskan/Documents/wellnex"
+        "root": "D:\\Kajal\\wellnex\\wellnex-FE"
       },
       "typedRoutes": false,
       "typedEnv": false,
@@ -281,28 +281,28 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs"
   },
-  "appDir": "/Users/muskan/Documents/wellnex",
+  "appDir": "D:\\Kajal\\wellnex\\wellnex-FE",
   "relativeAppDir": "",
   "files": [
-    ".next/routes-manifest.json",
-    ".next/server/pages-manifest.json",
-    ".next/build-manifest.json",
-    ".next/prerender-manifest.json",
-    ".next/server/functions-config-manifest.json",
-    ".next/server/middleware-manifest.json",
-    ".next/server/middleware-build-manifest.js",
-    ".next/server/middleware-react-loadable-manifest.js",
-    ".next/react-loadable-manifest.json",
-    ".next/server/app-paths-manifest.json",
-    ".next/app-path-routes-manifest.json",
-    ".next/app-build-manifest.json",
-    ".next/server/server-reference-manifest.js",
-    ".next/server/server-reference-manifest.json",
-    ".next/BUILD_ID",
-    ".next/server/next-font-manifest.js",
-    ".next/server/next-font-manifest.json"
+    ".next\\routes-manifest.json",
+    ".next\\server\\pages-manifest.json",
+    ".next\\build-manifest.json",
+    ".next\\prerender-manifest.json",
+    ".next\\server\\functions-config-manifest.json",
+    ".next\\server\\middleware-manifest.json",
+    ".next\\server\\middleware-build-manifest.js",
+    ".next\\server\\middleware-react-loadable-manifest.js",
+    ".next\\react-loadable-manifest.json",
+    ".next\\server\\app-paths-manifest.json",
+    ".next\\app-path-routes-manifest.json",
+    ".next\\app-build-manifest.json",
+    ".next\\server\\server-reference-manifest.js",
+    ".next\\server\\server-reference-manifest.json",
+    ".next\\BUILD_ID",
+    ".next\\server\\next-font-manifest.js",
+    ".next\\server\\next-font-manifest.json"
   ],
   "ignore": [
-    "node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*"
+    "node_modules\\next\\dist\\compiled\\@ampproject\\toolbox-optimizer\\**\\*"
   ]
 }

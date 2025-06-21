@@ -1,4 +1,4 @@
-// File: /Users/muskan/Documents/wellnex/app/payment/planSelection/page.tsx
+// File: D:\Kajal\wellnex\wellnex-FE\app\payment\planSelection\page.tsx
 import * as entry from '../../../../../app/payment/planSelection/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

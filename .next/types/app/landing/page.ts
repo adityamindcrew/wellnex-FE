@@ -1,4 +1,4 @@
-// File: /Users/muskan/Documents/wellnex/app/landing/page.tsx
+// File: D:\Kajal\wellnex\wellnex-FE\app\landing\page.tsx
 import * as entry from '../../../../app/landing/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
