@@ -325,105 +325,109 @@ export default function BusinessQuestions() {
       <div className="px-4 sm:px-6 py-2">
         {loading && <div className="text-center py-4 text-gray-500">Loading questions...</div>}
         {error && <div className="text-center py-4 text-red-500">{error}</div>}
-        <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto] items-center border-b border-gray-100 py-3 text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <div className="w-6"></div>
-            <div className="flex items-center gap-1 font-medium">
-              Questions
-            </div>
-          </div>
-          <div className="w-32 font-medium text-right sm:text-left">Last Edited</div>
-          <div className="w-20 font-medium text-right sm:text-left">Status</div>
-          <div className="w-24"></div>
-        </div>
-        {questions.map((question) => (
-          <div 
-            key={question.id} 
-            className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] items-center border-b border-gray-100 py-3 text-sm gap-2 sm:gap-4"
-          >
+        <div>
+          <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto] items-center border-b border-gray-100 py-3 text-sm text-gray-500">
             <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center">
-                {/* checkbox placeholder */}
+              <div className="w-6"></div>
+              <div className="flex items-center gap-1 font-medium">
+                Questions
               </div>
-              {editingQuestion === question.id ? (
-                <div className="flex-1 flex items-center gap-2">
-                  <span
-                    ref={measureRef}
-                    className="invisible absolute whitespace-pre px-2 py-1 border border-transparent text-base font-normal"
-                    style={{
-                      fontFamily: 'inherit',
-                      fontSize: 'inherit',
-                      lineHeight: 'inherit',
-                      letterSpacing: 'inherit'
-                    }}
-                    aria-hidden="true"
-                  >
-                    {editValue || question.text}
-                  </span>
-                  <input
-                    type="text"
-                    value={editValue}
-                    onChange={e => setEditValue(e.target.value)}
-                    className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1]"
-                    disabled={isUpdating}
-                    style={{
-                      width: `${Math.max(inputWidth, 200)}px`,
-                      minWidth: '200px',
-                      maxWidth: '100%'
-                    }}
-                  />
-                  <button
-                    onClick={handleUpdateQuestion}
-                    disabled={isUpdating}
-                    className="p-1 text-green-600 hover:bg-green-50 rounded-full"
-                  >
-                    <Check size={18} />
-                  </button>
-                  <button
-                    onClick={handleCancelEdit}
-                    disabled={isUpdating}
-                    className="p-1 text-red-600 hover:bg-red-50 rounded-full"
-                  >
-                    <X size={18} />
-                  </button>
+            </div>
+            <div className="w-32 font-medium text-right sm:text-left">Last Edited</div>
+            <div className="w-20 font-medium text-right sm:text-left">Status</div>
+            <div className="w-24"></div>
+          </div>
+          {questions.map((question) => (
+            <div 
+              key={question.id} 
+              className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_auto_auto] items-start sm:items-center border-b border-gray-100 py-3 text-sm gap-2 sm:gap-4"
+            >
+              <div className="flex items-center gap-2 w-full">
+                <div className="flex h-6 w-6 items-center justify-center">
+                  {/* checkbox placeholder */}
                 </div>
-              ) : (
-                <div className="flex-1">{question.text}</div>
-              )}
-            </div>
-            <div className="flex items-center justify-between sm:justify-start">
-              <span className="sm:hidden text-gray-500">Last Edited:</span>
-              <div className="w-32 text-gray-500">{question.createdAt}</div>
-            </div>
-            <div className="flex items-center justify-between sm:justify-start">
-              <span className="sm:hidden text-gray-500">Status:</span>
-              <div className="w-20">
-                {question.active && (
-                  <div className="flex items-center gap-1">
-                    <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
-                    <span className="text-green-600 ">Active</span>
+                {editingQuestion === question.id ? (
+                  <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 min-w-0 w-full">
+                    <span
+                      ref={measureRef}
+                      className="invisible absolute whitespace-pre px-2 py-1 border border-transparent text-base font-normal"
+                      style={{
+                        fontFamily: 'inherit',
+                        fontSize: 'inherit',
+                        lineHeight: 'inherit',
+                        letterSpacing: 'inherit'
+                      }}
+                      aria-hidden="true"
+                    >
+                      {editValue || question.text}
+                    </span>
+                    <input
+                      type="text"
+                      value={editValue}
+                      onChange={e => setEditValue(e.target.value)}
+                      className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1] w-full min-w-0"
+                      disabled={isUpdating}
+                      style={{
+                        width: `${Math.max(inputWidth, 200)}px`,
+                        minWidth: 200,
+                        maxWidth: '100%'
+                      }}
+                    />
+                    <div className="flex gap-2 sm:gap-2">
+                      <button
+                        onClick={handleUpdateQuestion}
+                        disabled={isUpdating}
+                        className="p-1 text-green-600 hover:bg-green-50 rounded-full"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={isUpdating}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded-full"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
                   </div>
+                ) : (
+                  <div className="flex-1 break-words w-full">{question.text}</div>
                 )}
               </div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center w-full">
+                <span className="text-gray-500 block sm:hidden">Last Edited:</span>
+                <div className="text-gray-500">{question.createdAt}</div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center w-full">
+                <span className="text-gray-500 block sm:hidden">Status:</span>
+                <div>
+                  {question.active && (
+                    <div className="flex items-center gap-1">
+                      <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+                      <span className="text-green-600 ">Active</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
+                <button 
+                  onClick={() => handleEditClick(question)}
+                  disabled={isUpdating}
+                  className="rounded-full p-1 hover:bg-gray-100"
+                >
+                  <Pencil size={18} className="text-gray-500" />
+                </button>
+                <button 
+                  onClick={() => handleDeleteClick(question.id)}
+                  disabled={deleteLoading}
+                  className="rounded-full p-1 hover:bg-gray-100 disabled:opacity-50"
+                >
+                  <Trash2 size={18} className="text-gray-500" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center justify-end gap-2">
-              <button 
-                onClick={() => handleEditClick(question)}
-                disabled={isUpdating}
-                className="rounded-full p-1 hover:bg-gray-100"
-              >
-                <Pencil size={18} className="text-gray-500" />
-              </button>
-              <button 
-                onClick={() => handleDeleteClick(question.id)}
-                disabled={deleteLoading}
-                className="rounded-full p-1 hover:bg-gray-100 disabled:opacity-50"
-              >
-                <Trash2 size={18} className="text-gray-500" />
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

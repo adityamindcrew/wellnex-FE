@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ChevronDown, Eye, Pencil, Trash2, Plus, Check, X } from "lucide-react"
 
 type Keyword = {
@@ -24,6 +24,8 @@ export default function BusinessKeywords() {
   const [newKeyword, setNewKeyword] = useState("")
   const [isAdding, setIsAdding] = useState(false)
   const [showAddInput, setShowAddInput] = useState(false)
+  const measureRef = useRef<HTMLSpanElement | null>(null);
+  const [inputWidth, setInputWidth] = useState(200);
 
   const fetchKeywords = async () => {
     try {
@@ -87,6 +89,12 @@ export default function BusinessKeywords() {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  useEffect(() => {
+    if (editingKeyword && measureRef.current) {
+      setInputWidth(measureRef.current.offsetWidth + 24); // 24px for padding/border
+    }
+  }, [editValue, editingKeyword]);
 
   const handleDeleteClick = (keywordId: string) => {
     setKeywordToDelete(keywordId)
@@ -345,32 +353,51 @@ export default function BusinessKeywords() {
                   {/* checkbox placeholder */}
                 </div>
                 {editingKeyword === keyword.id ? (
-                  <div className="flex-1 flex items-center gap-2">
+                  <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 min-w-0">
+                    <span
+                      ref={measureRef}
+                      className="invisible absolute whitespace-pre px-2 py-1 border border-transparent text-base font-normal"
+                      style={{
+                        fontFamily: 'inherit',
+                        fontSize: 'inherit',
+                        lineHeight: 'inherit',
+                        letterSpacing: 'inherit'
+                      }}
+                      aria-hidden="true"
+                    >
+                      {editValue || keyword.name}
+                    </span>
                     <input
                       type="text"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1]"
-                      style={{ width: `${editValue.length * 8}px`, minWidth: '100px' }}
+                      className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1] overflow-x-auto whitespace-nowrap"
+                      style={{
+                        width: `${Math.max(inputWidth, 100)}px`,
+                        minWidth: '100px',
+                        maxWidth: '100%'
+                      }}
                       disabled={isUpdating}
                     />
-                    <button
-                      onClick={handleUpdateKeyword}
-                      disabled={isUpdating}
-                      className="p-1 text-green-600 hover:bg-green-50 rounded-full"
-                    >
-                      <Check size={18} />
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      disabled={isUpdating}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded-full"
-                    >
-                      <X size={18} />
-                    </button>
+                    <div className="flex gap-2 sm:gap-2">
+                      <button
+                        onClick={handleUpdateKeyword}
+                        disabled={isUpdating}
+                        className="p-1 text-green-600 hover:bg-green-50 rounded-full"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={isUpdating}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded-full"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex-1">{keyword.name}</div>
+                  <div className="flex-1 min-w-0 break-words whitespace-normal">{keyword.name}</div>
                 )}
               </div>
               <div className="flex items-center justify-between sm:justify-start">

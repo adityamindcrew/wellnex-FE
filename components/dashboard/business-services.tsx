@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ChevronDown, Eye, Pencil, Trash2, Plus, Check, X } from "lucide-react"
 
 type Service = {
@@ -23,6 +23,8 @@ export default function BusinessServices() {
   const [newService, setNewService] = useState("")
   const [isAdding, setIsAdding] = useState(false)
   const [showAddInput, setShowAddInput] = useState(false)
+  const measureRef = useRef<HTMLSpanElement | null>(null);
+  const [inputWidth, setInputWidth] = useState(200);
 
   const fetchServices = async () => {
     try {
@@ -89,6 +91,12 @@ export default function BusinessServices() {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  useEffect(() => {
+    if (editingService && measureRef.current) {
+      setInputWidth(measureRef.current.offsetWidth + 24); // 24px for padding/border
+    }
+  }, [editValue, editingService]);
 
   const handleDeleteClick = (serviceId: string) => {
     setServiceToDelete(serviceId)
@@ -351,32 +359,51 @@ export default function BusinessServices() {
                   {/* checkbox placeholder */}
                 </div>
                 {editingService === service.id ? (
-                  <div className="flex-1 flex items-center gap-2">
+                  <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 min-w-0">
+                    <span
+                      ref={measureRef}
+                      className="invisible absolute whitespace-pre px-2 py-1 border border-transparent text-base font-normal"
+                      style={{
+                        fontFamily: 'inherit',
+                        fontSize: 'inherit',
+                        lineHeight: 'inherit',
+                        letterSpacing: 'inherit'
+                      }}
+                      aria-hidden="true"
+                    >
+                      {editValue || service.name}
+                    </span>
                     <input
                       type="text"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
                       className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#987CF1]"
-                      style={{ width: `${editValue.length * 8}px`, minWidth: '100px' }}
+                      style={{
+                        width: `${Math.max(inputWidth, 100)}px`,
+                        minWidth: '100px',
+                        maxWidth: '100%'
+                      }}
                       disabled={isUpdating}
                     />
-                    <button
-                      onClick={handleUpdateService}
-                      disabled={isUpdating}
-                      className="p-1 text-green-600 hover:bg-green-50 rounded-full"
-                    >
-                      <Check size={18} />
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      disabled={isUpdating}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded-full"
-                    >
-                      <X size={18} />
-                    </button>
+                    <div className="flex gap-2 sm:gap-2">
+                      <button
+                        onClick={handleUpdateService}
+                        disabled={isUpdating}
+                        className="p-1 text-green-600 hover:bg-green-50 rounded-full"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={isUpdating}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded-full"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex-1">{service.name}</div>
+                  <div className="flex-1 min-w-0 break-words whitespace-normal">{service.name}</div>
                 )}
               </div>
               <div className="flex items-center justify-between sm:justify-start">
