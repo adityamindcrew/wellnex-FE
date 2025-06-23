@@ -384,18 +384,18 @@ const Index = () => {
       {useMemo(() => <StatsOverview />, [allBusinesses.length])}
 
       <Card className="mt-8">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <Tabs defaultValue="profiles">
-            <div className="flex mb-4">
-              <TabsList>
+            <div className="flex flex-row items-center justify-between mb-4 gap-2 w-full max-w-full">
+              <TabsList className="flex-shrink-0">
                 <TabsTrigger value="profiles">Business Profiles</TabsTrigger>
               </TabsList>
-              <Badge variant="outline" className="bg-gray-100 ml-2 text-[#000000]">{totalItems} Users</Badge>
+              <Badge variant="outline" className="flex-shrink-0 whitespace-nowrap bg-gray-100 text-[#000000]">{totalItems} Users</Badge>
             </div>
 
             <TabsContent value="profiles">
-              <div className="overflow-x-auto">
-                <Table>
+              <div className="overflow-x-auto w-full">
+                <Table className="min-w-full">
                   <TableHeader>
                     <TableRow>
                       <TableHead>Business Name</TableHead>

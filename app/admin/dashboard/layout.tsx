@@ -22,12 +22,12 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
   return (
     <DashboardSearchContext.Provider value={{ searchTerm, setSearchTerm, isLoading, setIsLoading }}>
-      <div className="flex min-h-screen bg-white">
+      <div className="flex min-h-screen bg-white overflow-x-hidden w-full">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <div className="hidden md:block w-px bg-gray-200 min-h-screen" />
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col min-h-screen w-full">
           <Header onHamburgerClick={() => setIsSidebarOpen(true)} />
-          <main className="flex-1 p-6 overflow-auto bg-white">{children}</main>
+          <main className="flex-1 p-4 sm:p-6 overflow-auto bg-white w-full">{children}</main>
         </div>
       </div>
     </DashboardSearchContext.Provider>
