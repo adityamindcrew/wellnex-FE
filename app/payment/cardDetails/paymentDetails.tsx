@@ -15,8 +15,9 @@ import Image from "next/image";
 import CardImage from "../../assets/images/card.png";
 
 // Stripe publishable key from your .env.local
-const stripePromise = loadStripe('pk_test_51LuNV2E2Y7YLkjxVuaZ1F13llOwUjsRcrodK7nbLAxmqxcnKqjnWxlc83V53bnFdnWOSW07fvBQjEmKXp2ChPXNo004z40bvvz');
-
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? (() => { throw new Error("Stripe key missing"); })()
+);
 function PaymentForm({ priceId }: { priceId: string }) {
   const stripe = useStripe();
   const elements = useElements();
