@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation"
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? (() => { throw new Error("Stripe key missing"); })()
 );
-console.log(stripePromise);
 
 // Function to compress image
 const compressImage = (file: File): Promise<File> => {

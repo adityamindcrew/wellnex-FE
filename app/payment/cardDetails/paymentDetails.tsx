@@ -29,7 +29,7 @@ function PaymentForm({ priceId }: { priceId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState("");
- 
+
   useEffect(() => {
     const currency = localStorage.getItem("planCurrency");
     const amount = localStorage.getItem("planAmount");
@@ -88,7 +88,7 @@ function PaymentForm({ priceId }: { priceId: string }) {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || "Payment failed");
       }
@@ -96,8 +96,19 @@ function PaymentForm({ priceId }: { priceId: string }) {
       if (data.error) {
         throw new Error(data.error);
       }
-
-      router.push("/payment/success");
+      const { error: cardError, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret);
+      if (cardError) {
+        // Display error to user
+        console.error('Payment failed:', cardError.message);
+        setError(cardError.message ?? 'Payment failed. Try Again.')
+      } else {
+        if (paymentIntent && paymentIntent.status === "succeeded") {
+          router.push("/payment/success");
+        } else if (paymentIntent) {
+          setError("Subscription Status is " + paymentIntent?.status)
+        } else
+          setError("Payment failed. Try Again.")
+      }
     } catch (err) {
       console.error("Subscription error:", err);
       setError(err instanceof Error ? err.message : "Failed to create subscription");
