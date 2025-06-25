@@ -26,7 +26,7 @@ const SubscriptionStatus = ({ subscriptionId }: { subscriptionId: string }) => {
     const pollSubscriptionStatus = async () => {
         try {
             const token = localStorage.getItem('token')
-            const response = await fetch(`https://wellnexai.com/api/subscription/status`, {
+            const response = await fetch(`${process.env.NEXT_API_URL}/subscription/status`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

@@ -73,7 +73,7 @@ const ServicesGrid = forwardRef((props: ServicesGridProps, ref) => {
         return;
       }
 
-      const response = await fetch('https://wellnexai.com/api/business/addBusinessServices', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/addBusinessServices`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

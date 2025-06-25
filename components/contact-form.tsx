@@ -45,7 +45,7 @@ export default function ContactForm() {
     setSuccess(false)
 
     try {
-      const response = await fetch('https://wellnexai.com/api/contact/submit', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/contact/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -33,7 +33,7 @@ export default function BusinessServices() {
       const token = localStorage.getItem('token');
       const businessId = localStorage.getItem('businessId');
       
-      const response = await fetch('https://wellnexai.com/api/business/getServicesList', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/getServicesList`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export default function BusinessServices() {
         throw new Error('Authentication token not found')
       }
 
-      const response = await fetch('https://wellnexai.com/api/business/deleteService', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/deleteService`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export default function BusinessServices() {
         throw new Error('Authentication token not found')
       }
 
-      const response = await fetch('https://wellnexai.com/api/business/updateOneService', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/updateOneService`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -223,7 +223,7 @@ export default function BusinessServices() {
         throw new Error('Authentication token or business ID not found')
       }
 
-      const response = await fetch('https://wellnexai.com/api/business/addBusinessServices', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/addBusinessServices`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://wellnexai.com/api';
+const BASE_URL = process.env.NEXT_API_URL;
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -70,7 +70,7 @@ export const businessApi = {
     formData.append('businessId', businessId);
 
     try {
-      const response = await fetch('https://wellnexai.com/api/business/uploadBusinessLogo', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/uploadBusinessLogo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -111,7 +111,7 @@ export const businessApi = {
       const body = businessId
         ? JSON.stringify({ themeColor, businessId })
         : JSON.stringify({ themeColor });
-      const response = await fetch('https://wellnexai.com/api/business/setBusinessThemeColor', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/setBusinessThemeColor`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ export const businessApi = {
   },
   addBusinessKeywords: async (keywords: { name: string }[], token: string, businessId: string) => {
     try {
-      const response = await fetch('https://wellnexai.com/api/business/addBusinessKeywords', {
+      const response = await fetch(`${process.env.NEXT_API_URL}/business/addBusinessKeywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ export const businessApi = {
     const businessId = typeof window !== 'undefined' ? localStorage.getItem('businessId') : undefined;
     const body: any = { email, password };
     if (businessId) body.businessId = businessId;
-    const response = await fetch('https://wellnexai.com/api/business/signin', {
+    const response = await fetch(`${process.env.NEXT_API_URL}/business/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
