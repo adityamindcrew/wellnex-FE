@@ -10,7 +10,7 @@ export default function Header() {
       const businessId = localStorage.getItem('businessId');
       if (!token || !businessId) return;
 
-      const response = await fetch(`http://13.61.105.209/api/business/getBusinessDetail`, {
+      const response = await fetch(`https://13.61.105.209/api/business/getBusinessDetail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export default function Header() {
         </div>
         <div className="h-8 w-8 md:h-10 md:w-10 overflow-hidden rounded-full bg-gray-200">
           <img
-            src={business?.logo ? `http://13.61.105.209/uploads/business-logos/${business.logo}` : "/avatar.png"}
+            src={business?.logo ? `https://13.61.105.209/uploads/business-logos/${business.logo}` : "/avatar.png"}
             alt={business?.name || "Business Logo"}
             className="h-full w-full object-cover"
           />

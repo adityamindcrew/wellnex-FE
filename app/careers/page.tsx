@@ -75,7 +75,7 @@ export default function CareersForm() {
       data.append("resume", formData.file as File);
       // Optionally include message if your backend supports it
       data.append("message", formData.message);
-      const response = await fetch("http://13.61.105.209/api/careers", {
+      const response = await fetch("https://13.61.105.209/api/careers", {
         method: "POST",
         body: data
       });

@@ -32,7 +32,7 @@ export default function BusinessKeywords() {
       const token = localStorage.getItem('token')
       const businessId = localStorage.getItem('businessId')
       
-      const response = await fetch(`http://13.61.105.209/api/business/getKeywords`, {
+      const response = await fetch(`https://13.61.105.209/api/business/getKeywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default function BusinessKeywords() {
         throw new Error('Authentication token not found')
       }
 
-      const response = await fetch(`http://13.61.105.209/api/business/deleteKeyword`, {
+      const response = await fetch(`https://13.61.105.209/api/business/deleteKeyword`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export default function BusinessKeywords() {
         throw new Error('Authentication token not found')
       }
 
-      const response = await fetch(`http://13.61.105.209/api/business/updateOneKeyword`, {
+      const response = await fetch(`https://13.61.105.209/api/business/updateOneKeyword`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -233,7 +233,7 @@ export default function BusinessKeywords() {
         throw new Error('Authentication token or business ID not found');
       }
 
-      const response = await fetch(`http://13.61.105.209/api/business/addBusinessKeywords`, {
+      const response = await fetch(`https://13.61.105.209/api/business/addBusinessKeywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

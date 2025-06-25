@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = "http://13.61.105.209/api";
+const BASE_URL = "https://13.61.105.209/api";
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -28,7 +28,7 @@ export interface BusinessSignupData {
 }
 export const businessApi = {
   signup: async (data: BusinessSignupData) => {
-    const response = await fetch(`http://13.61.105.209/api/business/signup`, {
+    const response = await fetch(`https://13.61.105.209/api/business/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export const businessApi = {
     formData.append('businessId', businessId);
 
     try {
-      const response = await fetch(`http://13.61.105.209/api/business/uploadBusinessLogo`, {
+      const response = await fetch(`https://13.61.105.209/api/business/uploadBusinessLogo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -110,7 +110,7 @@ export const businessApi = {
       const body = businessId
         ? JSON.stringify({ themeColor, businessId })
         : JSON.stringify({ themeColor });
-      const response = await fetch(`http://13.61.105.209/api/business/setBusinessThemeColor`, {
+      const response = await fetch(`https://13.61.105.209/api/business/setBusinessThemeColor`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export const businessApi = {
   },
   addBusinessKeywords: async (keywords: { name: string }[], token: string, businessId: string) => {
     try {
-      const response = await fetch(`http://13.61.105.209/api/business/addBusinessKeywords`, {
+      const response = await fetch(`https://13.61.105.209/api/business/addBusinessKeywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export const businessApi = {
     const businessId = typeof window !== 'undefined' ? localStorage.getItem('businessId') : undefined;
     const body: any = { email, password };
     if (businessId) body.businessId = businessId;
-    const response = await fetch(`http://13.61.105.209/api/business/signin`, {
+    const response = await fetch(`https://13.61.105.209/api/business/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

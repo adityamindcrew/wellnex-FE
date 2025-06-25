@@ -25,7 +25,7 @@ export default function PaymentMethodSelection() {
   const fetchPaymentMethods = async () => {
     try {
       setLoading(true)
-      const response = await fetch("http://13.61.105.209/api/subscription/cards", {
+      const response = await fetch("https://13.61.105.209/api/subscription/cards", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

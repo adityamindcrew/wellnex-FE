@@ -26,7 +26,7 @@ const SubscriptionStatus = ({ subscriptionId }: { subscriptionId: string }) => {
     const pollSubscriptionStatus = async () => {
         try {
             const token = localStorage.getItem('token')
-            const response = await fetch(`http://13.61.105.209/api/subscription/status`, {
+            const response = await fetch(`https://13.61.105.209/api/subscription/status`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
