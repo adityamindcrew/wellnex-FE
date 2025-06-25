@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import Link from "next/link"
 
 export default function CreateAccount() {
+  console.log(process.env, " process.env.")
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
@@ -67,7 +68,7 @@ export default function CreateAccount() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    
+
     if (name === 'password') {
       const error = validatePassword(value);
       setPasswordError(error);
@@ -131,7 +132,7 @@ export default function CreateAccount() {
 
       const response = await businessApi.signup(signupData);
 
-      
+
       if (response.data && response.data._id && response.data.loginToken) {
         localStorage.setItem('businessId', response.data._id);
         localStorage.setItem('token', response.data.loginToken);
@@ -157,8 +158,8 @@ export default function CreateAccount() {
           {/* Centered logo and headings */}
           <div className="mb-8">
             <div className="mb-4 flex justify-center">
-              <Image src={logo} alt="WellnexAI Logo" width={100} height={200} 
-                      onClick={() => router.push("/landing")}/>
+              <Image src={logo} alt="WellnexAI Logo" width={100} height={200}
+                onClick={() => router.push("/landing")} />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">Create Account</h1>
             <p className="text-gray-500 text-base mb-2 text-center">Start by telling us about your business.</p>
@@ -276,10 +277,10 @@ export default function CreateAccount() {
 
           </form>
           <div className="text-sm text-gray-700 mt-4 text-center">
-              Do have an account?{" "}
-              <Link href="/signin" className="text-gray-900 font-medium underline">
-                Sign In
-              </Link>
+            Do have an account?{" "}
+            <Link href="/signin" className="text-gray-900 font-medium underline">
+              Sign In
+            </Link>
           </div>
         </div>
       </div>
