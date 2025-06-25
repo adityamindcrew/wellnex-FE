@@ -26,10 +26,10 @@ export interface BusinessSignupData {
   website_url?: string;
   instagram_url?: string;
 }
-
+console.log(process.env.NEXT_API_URL, 'process.env.NEXT_API_URL')
 export const businessApi = {
   signup: async (data: BusinessSignupData) => {
-    const response = await fetch(`${BASE_URL}/business/signup`, {
+    const response = await fetch(`${process.env.NEXT_API_URL}/business/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
