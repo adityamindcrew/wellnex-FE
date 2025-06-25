@@ -75,7 +75,7 @@ function PaymentForm({ priceId }: { priceId: string }) {
       }
 
       // Call your backend API
-      const response = await fetch("${process.env.NEXT_API_URL}/subscription/create", {
+      const response = await fetch("http://13.61.105.209/api/subscription/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -24,7 +24,7 @@ const SubscriptionPlans = () => {
 
     const fetchPlans = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_API_URL}/subscription/plans`, {
+            const response = await fetch(`http://13.61.105.209/api/subscription/plans`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

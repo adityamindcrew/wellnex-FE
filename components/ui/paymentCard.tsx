@@ -34,7 +34,7 @@ const PaymentsCard = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`${process.env.NEXT_API_URL}/admin/subscriptions/payments?limit=25&skip=0&status=paid`, {
+        const response = await fetch(`http://13.61.105.209/api/admin/subscriptions/payments?limit=25&skip=0&status=paid`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

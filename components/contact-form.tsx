@@ -45,7 +45,7 @@ export default function ContactForm() {
     setSuccess(false)
 
     try {
-      const response = await fetch(`${process.env.NEXT_API_URL}/contact/submit`, {
+      const response = await fetch(`http://13.61.105.209/api/contact/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

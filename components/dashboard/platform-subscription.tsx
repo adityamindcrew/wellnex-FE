@@ -300,8 +300,8 @@ export default function PlatformSubscription() {
 
         // Set logo if available
         if (data.data.logo) {
-          setLogoUrl(`${process.env.NEXT_UPLOADS_URL}/business-logos/${data.data.logo}`);
-          localStorage.setItem('businessLogo', `${process.env.NEXT_UPLOADS_URL}/business-logos/${data.data.logo}`);
+          setLogoUrl(`http://13.61.105.209/uploads/business-logos/${data.data.logo}`);
+          localStorage.setItem('businessLogo', `http://13.61.105.209/uploads/business-logos/${data.data.logo}`);
         }
         // Set theme color if available
         if (data.data.themeColor) {

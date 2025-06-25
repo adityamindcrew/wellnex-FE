@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_API_URL;
+export const API_BASE_URL = "http://13.61.105.209/api";
 
 const getToken = () => {
   if (typeof window !== 'undefined') {

@@ -40,7 +40,7 @@ export default function BusinessQuestions() {
           setLoading(false);
           return;
         }
-        const response = await fetch(`${process.env.NEXT_API_URL}/business/get-questions`, {
+        const response = await fetch(`http://13.61.105.209/api/business/get-questions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export default function BusinessQuestions() {
         setDeleteLoading(false);
         return;
       }
-      const response = await fetch(`${process.env.NEXT_API_URL}/business/delete-question`, {
+      const response = await fetch(`http://13.61.105.209/api/business/delete-question`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ export default function BusinessQuestions() {
       const businessId = localStorage.getItem('businessId');
       if (!token || !businessId) throw new Error('Missing businessId or token');
 
-      const response = await fetch(`${process.env.NEXT_API_URL}/business/update-one-question`, {
+      const response = await fetch(`http://13.61.105.209/api/business/update-one-question`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ export default function BusinessQuestions() {
         throw new Error('Missing businessId or token');
       }
 
-      const response = await fetch(`${process.env.NEXT_API_URL}/business/add-business-questions`, {
+      const response = await fetch(`http://13.61.105.209/api/business/add-business-questions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ export default function BusinessQuestions() {
       setShowInput(false);
 
       // Refresh the questions list
-      const refreshResponse = await fetch(`${process.env.NEXT_API_URL}/business/get-questions`, {
+      const refreshResponse = await fetch(`http://13.61.105.209/api/business/get-questions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -49,7 +49,7 @@ export default function CurrencySelectionPage() {
 
       try {
         setIsLoading(true)
-        const response = await fetch(`${process.env.NEXT_API_URL}/currency/list`, {
+        const response = await fetch(`http://13.61.105.209/api/currency/list`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ export default function CurrencySelectionPage() {
         throw new Error('Authentication required')
       }
 
-      const response = await fetch(`${process.env.NEXT_API_URL}/subscription/update-preferred-currency`, {
+      const response = await fetch(`http://13.61.105.209/api/subscription/update-preferred-currency`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
