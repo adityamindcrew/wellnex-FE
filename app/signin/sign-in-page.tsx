@@ -15,6 +15,7 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
 
   useEffect(() => {
     const onboardingStep = localStorage.getItem("onboardingStep");
