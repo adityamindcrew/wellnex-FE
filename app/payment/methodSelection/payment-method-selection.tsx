@@ -25,7 +25,7 @@ export default function PaymentMethodSelection() {
   const fetchPaymentMethods = async () => {
     try {
       setLoading(true)
-      const response = await fetch("https://dev.wellnexai.com/api/subscription/cards", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/cards`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

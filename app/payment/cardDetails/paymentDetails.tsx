@@ -75,7 +75,7 @@ function PaymentForm({ priceId }: { priceId: string }) {
       }
 
       // Call your backend API
-      const response = await fetch("https://dev.wellnexai.com/api/subscription/create", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

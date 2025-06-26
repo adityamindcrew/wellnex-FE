@@ -32,7 +32,7 @@ export default function BusinessKeywords() {
       const token = localStorage.getItem('token')
       const businessId = localStorage.getItem('businessId')
       
-      const response = await fetch(`https://dev.wellnexai.com/api/business/getKeywords`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/getKeywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default function BusinessKeywords() {
         throw new Error('Authentication token not found')
       }
 
-      const response = await fetch(`https://dev.wellnexai.com/api/business/deleteKeyword`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/deleteKeyword`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export default function BusinessKeywords() {
         throw new Error('Authentication token not found')
       }
 
-      const response = await fetch(`https://dev.wellnexai.com/api/business/updateOneKeyword`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/updateOneKeyword`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -233,7 +233,7 @@ export default function BusinessKeywords() {
         throw new Error('Authentication token or business ID not found');
       }
 
-      const response = await fetch(`https://dev.wellnexai.com/api/business/addBusinessKeywords`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/addBusinessKeywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

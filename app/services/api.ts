@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = "https://dev.wellnexai.com/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -28,7 +28,7 @@ export interface BusinessSignupData {
 }
 export const businessApi = {
   signup: async (data: BusinessSignupData) => {
-    const response = await fetch(`https://dev.wellnexai.com/api/business/signup`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export const businessApi = {
     formData.append('businessId', businessId);
 
     try {
-      const response = await fetch(`https://dev.wellnexai.com/api/business/uploadBusinessLogo`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/uploadBusinessLogo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -86,13 +86,13 @@ export const businessApi = {
       if (!response.ok) {
         throw new Error(data.message || 'Failed to upload logo');
       }
-
+      console.log(process.env.NEXT_PUBLIC_INSTANCE_URL, "process.env.NEXT_PUBLIC_INSTANCE_URL")
       // Format the logo URL to match the required format
       let logoUrl = data.logoUrl;
       if (logoUrl) {
         // If the URL doesn't start with https://wellnexai.com, add it
-        if (!logoUrl.startsWith('https://wellnexai.com')) {
-          logoUrl = `https://wellnexai.com${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`;
+        if (!logoUrl.startsWith(process.env.NEXT_PUBLIC_INSTANCE_URL)) {
+          logoUrl = `${process.env.NEXT_PUBLIC_INSTANCE_URL}${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`;
         }
       }
 
@@ -110,7 +110,7 @@ export const businessApi = {
       const body = businessId
         ? JSON.stringify({ themeColor, businessId })
         : JSON.stringify({ themeColor });
-      const response = await fetch(`https://dev.wellnexai.com/api/business/setBusinessThemeColor`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/setBusinessThemeColor`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export const businessApi = {
   },
   addBusinessKeywords: async (keywords: { name: string }[], token: string, businessId: string) => {
     try {
-      const response = await fetch(`https://dev.wellnexai.com/api/business/addBusinessKeywords`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/addBusinessKeywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export const businessApi = {
     const businessId = typeof window !== 'undefined' ? localStorage.getItem('businessId') : undefined;
     const body: any = { email, password };
     if (businessId) body.businessId = businessId;
-    const response = await fetch(`https://dev.wellnexai.com/api/business/signin`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

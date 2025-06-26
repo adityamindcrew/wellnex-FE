@@ -75,7 +75,7 @@ export default function CareersForm() {
       data.append("resume", formData.file as File);
       // Optionally include message if your backend supports it
       data.append("message", formData.message);
-      const response = await fetch("https://dev.wellnexai.com/api/careers", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/careers`, {
         method: "POST",
         body: data
       });

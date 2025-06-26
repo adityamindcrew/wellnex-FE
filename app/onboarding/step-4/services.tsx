@@ -99,7 +99,7 @@ export default function ServicesInput() {
         return
       }
 
-      const response = await fetch(`https://dev.wellnexai.com/api/business/addBusinessServices`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/addBusinessServices`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

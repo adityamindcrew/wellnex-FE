@@ -71,7 +71,7 @@ export default function WelcomeScreen() {
         throw new Error("Missing token or businessId")
       }
 
-      const response = await fetch("https://dev.wellnexai.com/api/business/checkEmailVerified", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/business/checkEmailVerified`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,

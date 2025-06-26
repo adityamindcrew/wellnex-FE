@@ -34,7 +34,7 @@ export default function PlanSelectionCard() {
   const fetchPlan = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`https://dev.wellnexai.com/api/subscription/plans`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/plans`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
