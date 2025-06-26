@@ -48,7 +48,7 @@ export default function Header() {
         </div>
         <div className="h-8 w-8 md:h-10 md:w-10 overflow-hidden rounded-full bg-gray-200">
           <img
-            src={business?.logo ? `${process.env.NEXT_UPLOADS_URL}/business-logos/${business.logo}` : "/avatar.png"}
+            src={business?.logo ? `${process.env.NEXT_PUBLIC_UPLOADS_URL}/business-logos/${business.logo}` : "/avatar.png"}
             alt={business?.name || "Business Logo"}
             className="h-full w-full object-cover"
           />

@@ -431,7 +431,7 @@ const Index = () => {
                             <div className="flex items-center gap-2">
                               {business.logo ? (
                                 <img
-                                  src={`${process.env.NEXT_UPLOADS_URL}/business-logos/${business.logo}`}
+                                  src={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/business-logos/${business.logo}`}
                                   alt={`${business.name} logo`}
                                   className="w-8 h-8 rounded-full object-cover"
                                 />
@@ -828,7 +828,7 @@ const Index = () => {
                   <div className="flex items-center gap-4">
                     {editingBusiness.logo && (
                       <img
-                        src={`${process.env.NEXT_UPLOADS_URL}/business-logos/${editingBusiness.logo}`}
+                        src={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/business-logos/${editingBusiness.logo}`}
                         alt="Current Logo"
                         className="w-16 h-16 rounded-full object-cover mb-2"
                       />
