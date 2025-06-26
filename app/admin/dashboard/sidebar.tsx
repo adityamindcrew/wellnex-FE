@@ -17,7 +17,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const handleLogout = useCallback(async () => {
     try {
       // First, call the server logout endpoint
-      const response = await fetch(`https://13.61.105.209/api/business/logout`, {
+      const response = await fetch(`https://dev.wellnexai.com/api/business/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

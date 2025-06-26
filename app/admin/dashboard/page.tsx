@@ -103,7 +103,7 @@ const Index = () => {
   const fetchSubscriptionCounts = async () => {
     try {
 
-      const response = await fetch(`https://13.61.105.209/api/admin/subscriptions/counts`, {
+      const response = await fetch(`https://dev.wellnexai.com/api/admin/subscriptions/counts`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -287,7 +287,7 @@ const Index = () => {
         return;
       }
 
-      const response = await fetch(`https://13.61.105.209/api/admin/business/${businessToDelete}`, {
+      const response = await fetch(`https://dev.wellnexai.com/api/admin/business/${businessToDelete}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -340,7 +340,7 @@ const Index = () => {
         return;
       }
 
-      const response = await fetch(`https://13.61.105.209/api/business/updateBusinessDetail`, {
+      const response = await fetch(`https://dev.wellnexai.com/api/business/updateBusinessDetail`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -431,7 +431,7 @@ const Index = () => {
                             <div className="flex items-center gap-2">
                               {business.logo ? (
                                 <img
-                                  src={`https://13.61.105.209/uploads/business-logos/${business.logo}`}
+                                  src={`https://dev.wellnexai.com/uploads/business-logos/${business.logo}`}
                                   alt={`${business.name} logo`}
                                   className="w-8 h-8 rounded-full object-cover"
                                 />
@@ -684,7 +684,7 @@ const Index = () => {
                         // First, try to upload just the logo file
                         let uploadRes;
                         try {
-                          uploadRes = await fetch(`https://13.61.105.209/api/business/updateBusinessDetail`, {
+                          uploadRes = await fetch(`https://dev.wellnexai.com/api/business/updateBusinessDetail`, {
                             method: 'PUT',
                             headers: {
                               'Authorization': `Bearer ${token}`,
@@ -828,7 +828,7 @@ const Index = () => {
                   <div className="flex items-center gap-4">
                     {editingBusiness.logo && (
                       <img
-                        src={`https://13.61.105.209/uploads/business-logos/${editingBusiness.logo}`}
+                        src={`https://dev.wellnexai.com/uploads/business-logos/${editingBusiness.logo}`}
                         alt="Current Logo"
                         className="w-16 h-16 rounded-full object-cover mb-2"
                       />

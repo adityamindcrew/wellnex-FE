@@ -19,7 +19,7 @@ const StatsOverview = () => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("https://13.61.105.209/api/admin/lead-counts", {
+        const response = await fetch("https://dev.wellnexai.com/api/admin/lead-counts", {
           headers: {
             "Authorization": `Bearer ${token}`,
           },

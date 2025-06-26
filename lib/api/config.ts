@@ -1,4 +1,4 @@
-export const API_BASE_URL = "https://13.61.105.209/api";
+export const API_BASE_URL = "https://dev.wellnexai.com/api";
 
 const getToken = () => {
   if (typeof window !== 'undefined') {
