@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import logo from '../app/assets/images/logo.png'
 import Instagram from '../app/assets/images/Instagram.png';
-import linkedIn from '../app/assets/images/LinkedIn.png';
+import linkedIn from '../app/assets/images/linkedIn.png';
 
 export default function Footer() {
   return (
