@@ -314,7 +314,7 @@ export default function PlatformSubscription() {
           setTimeout(() => {
             handleLogout()
           }, 10000);
-        } else if (data.data.subscriptionDetail.status === 'canceled') {
+        } else if (data.data.subscriptionDetail.status === 'canceled' || data.data.subscriptionDetail.status === 'incomplete') {
           setShowNoSubscriptionPopup(true);
         }
       } else if (data.message === "Error getting subscription details: No active subscription found" || data.message === "No active subscription found. Please subscribe to access dashboard features.") {
