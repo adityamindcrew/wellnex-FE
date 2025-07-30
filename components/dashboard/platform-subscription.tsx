@@ -294,8 +294,6 @@ export default function PlatformSubscription() {
         body: JSON.stringify({ businessId })
       });
       const data = await response.json();
-      console.log(data);
-
       if (data.data) {
 
         // Set logo if available
